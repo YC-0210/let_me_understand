@@ -1,0 +1,552 @@
+{
+ "switches": {
+  "fork": false,
+  "parent_closes": true,
+  "reap": "waitpid_nohang",
+  "eintr_safe": false
+ },
+ "events": [
+  {
+   "t": 0.2,
+   "kind": "listen",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 21.7,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 101.9,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 102.0,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 182.3,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 182.4,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 262.6,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 262.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 343.0,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 343.2,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 423.5,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 423.6,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 503.9,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 504.0,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 584.3,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 584.4,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 664.7,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 664.9,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 745.3,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 745.4,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 825.7,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 825.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 906.1,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 906.3,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 986.6,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 986.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1067.1,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1067.2,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1147.5,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1147.7,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1227.9,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1228.1,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1308.3,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1308.5,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1388.7,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1388.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1469.2,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1469.3,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1549.6,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1549.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1630.0,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1630.2,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1710.6,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1710.7,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1791.0,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1791.2,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1871.4,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1871.5,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 1951.8,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 1951.9,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2032.2,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2032.3,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2112.6,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2112.7,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2193.0,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2193.2,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2273.5,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2273.6,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2353.9,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2354.1,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2434.4,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2434.6,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2514.8,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2515.0,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2595.4,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2595.5,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2675.8,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2675.9,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2756.2,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2756.4,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2836.7,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2836.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2917.2,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2917.3,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 2997.5,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 2997.6,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 3078.0,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 3078.1,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 3158.4,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 3158.6,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 3238.8,
+   "kind": "handled_inline",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 3840.3,
+   "kind": "shutdown",
+   "fds": 5,
+   "zombies": 0
+  }
+ ],
+ "summary": {
+  "accepted": 40,
+  "peak_fds": 6,
+  "fd_limit": 32,
+  "peak_zombies": 0,
+  "errors": [],
+  "forks": 0,
+  "reaped": 0,
+  "wall_ms": 3840.5
+ }
+}
