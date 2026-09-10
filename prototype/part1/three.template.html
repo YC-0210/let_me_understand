@@ -1,0 +1,463 @@
+<title>Eight Requests, One Answer</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#EFF3F6; --surface:#FFFFFF; --sunk:#E5EBF0; --wire:#DCE4EB;
+  --ink:#111A21; --ink2:#3B4B57; --muted:#6B7C8A; --line:#D5DEE6; --line2:#BAC7D2;
+  --blue:#1668B8; --amber:#C4762A; --teal:#00907A; --crimson:#C0392B;
+  --blue-w:rgba(22,104,184,.10); --teal-w:rgba(0,144,122,.10); --amber-w:rgba(196,118,42,.13);
+  --shadow:0 1px 2px rgba(17,26,33,.05),0 8px 22px rgba(17,26,33,.07);
+}
+:root:not([data-theme="light"]){@media (prefers-color-scheme:dark){
+  --ground:#0C1116; --surface:#141B22; --sunk:#1B242C; --wire:#28323B;
+  --ink:#E1E9EF; --ink2:#B2C0CB; --muted:#82939F; --line:#27313A; --line2:#3A4753;
+  --blue:#4A90D9; --amber:#C2872F; --teal:#0FA98C; --crimson:#DD6353;
+  --blue-w:rgba(74,144,217,.14); --teal-w:rgba(15,169,140,.14); --amber-w:rgba(194,135,47,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 8px 22px rgba(0,0,0,.32);
+}}
+:root[data-theme="dark"]{
+  --ground:#0C1116; --surface:#141B22; --sunk:#1B242C; --wire:#28323B;
+  --ink:#E1E9EF; --ink2:#B2C0CB; --muted:#82939F; --line:#27313A; --line2:#3A4753;
+  --blue:#4A90D9; --amber:#C2872F; --teal:#0FA98C; --crimson:#DD6353;
+  --blue-w:rgba(74,144,217,.14); --teal-w:rgba(15,169,140,.14); --amber-w:rgba(194,135,47,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 8px 22px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--ground); color:var(--ink); font-size:14.5px; line-height:1.5;
+  font-family:"Source Sans 3",system-ui,-apple-system,Segoe UI,sans-serif; padding-block:0 92px}
+.wrap{max-width:1120px; margin:0 auto; padding:0 20px}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+h1{font-size:27px; margin:0; letter-spacing:-.02em; line-height:1.12; text-wrap:balance}
+h2{font-size:15px; margin:0}
+h3{font-size:12px; margin:0; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); font-weight:600}
+.eyebrow{font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); font-weight:600; margin:0 0 3px}
+.sub{color:var(--ink2); max-width:64ch; margin:8px 0 0}
+header{background:var(--surface); border-bottom:1px solid var(--line); padding-block:22px 18px; margin-bottom:20px}
+.hrow{display:flex; gap:20px; justify-content:space-between; align-items:flex-start; flex-wrap:wrap}
+.realchip{display:inline-flex; gap:8px; align-items:center; border:1px solid var(--line2); border-radius:999px;
+  padding:5px 12px; font-size:12px; color:var(--ink2); background:var(--sunk)}
+.realchip b{color:var(--teal)}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:11px; box-shadow:var(--shadow); margin-bottom:18px}
+.phead{display:flex; gap:10px; align-items:baseline; padding:13px 16px; border-bottom:1px solid var(--line); flex-wrap:wrap}
+.phead .note{margin-left:auto; font-size:12px; color:var(--muted)}
+.body{padding:16px}
+
+/* request picker */
+.picks{display:flex; gap:6px; flex-wrap:wrap; padding:12px 16px; border-bottom:1px solid var(--line)}
+.pick{font:inherit; font-size:12.5px; padding:6px 11px; border-radius:7px; cursor:pointer;
+  border:1px solid var(--line2); background:var(--surface); color:var(--ink2)}
+.pick[aria-pressed=true]{background:var(--blue); border-color:var(--blue); color:#fff; font-weight:600}
+.pick:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+
+/* ---- byte rendering: the star of view A ---- */
+.bytes{font-family:"IBM Plex Mono",monospace; font-size:12.5px; line-height:1.85; white-space:pre-wrap;
+  word-break:break-all; margin:0}
+.bytes .cr,.bytes .lf{color:var(--amber); background:var(--amber-w); border-radius:2px; padding:0 1px; font-size:11px}
+.bytes .sp{color:var(--line2)}
+.bytes .none{color:var(--muted); font-style:italic; font-family:"Source Sans 3",sans-serif}
+.buf{border:1px solid var(--line); border-radius:8px; background:var(--sunk); padding:10px 12px; min-height:74px; overflow-x:auto}
+.buf.empty{display:flex; align-items:center; justify-content:center; color:var(--muted)}
+
+.flow{display:grid; grid-template-columns:1fr 116px 1fr; gap:0; align-items:stretch}
+.node{border:1px solid var(--line2); border-radius:10px; padding:12px 14px; background:var(--surface); min-width:0}
+.node.srv{border-color:var(--blue)}
+.node header{background:none; border:0; padding:0; margin:0 0 9px}
+.node .ttl{display:flex; align-items:baseline; gap:8px}
+.node .ttl b{font-size:13.5px}
+.node .ttl span{font-size:11.5px; color:var(--muted); font-family:"IBM Plex Mono",monospace}
+.pipe{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:0 6px}
+.pipe .lbl{font-size:11px; color:var(--muted); font-family:"IBM Plex Mono",monospace; text-align:center; line-height:1.3}
+.pipe svg{display:block}
+.varname{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--blue); margin:0 0 5px; font-weight:500}
+
+/* the punchline strip */
+.strip{width:100%; border-collapse:collapse; font-size:13px}
+.strip th{text-align:left; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+  font-weight:600; padding:0 10px 7px; border-bottom:1px solid var(--line)}
+.strip td{padding:6px 10px; border-bottom:1px solid var(--line); vertical-align:middle}
+.strip tr:last-child td{border-bottom:0}
+.strip tr.on td{background:var(--blue-w)}
+.strip tr{cursor:pointer}
+.strip .req{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink2); white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; max-width:250px}
+.bar{display:flex; align-items:center; gap:7px}
+.bar i{display:block; height:11px; border-radius:2px; background:var(--blue); min-width:2px}
+.bar i.same{background:var(--teal)}
+.bar em{font-style:normal; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted);
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.verdict{margin:0; padding:13px 16px; border-top:1px solid var(--line); background:var(--teal-w);
+  font-size:13.5px; color:var(--ink); border-radius:0 0 10px 10px}
+.verdict b{color:var(--teal)}
+
+/* ---- view B : socket objects ---- */
+.socks{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.sock{border:2px solid var(--line2); border-radius:10px; padding:0; background:var(--sunk); overflow:hidden;
+  transition:border-color .15s, opacity .15s}
+.sock.live{border-color:var(--teal); background:var(--surface)}
+.sock.listening{border-color:var(--blue); background:var(--surface)}
+.sock.ghost{opacity:.36; border-style:dashed}
+.sock .sh{display:flex; align-items:baseline; gap:8px; padding:9px 12px; border-bottom:1px solid var(--line)}
+.sock .sh b{font-family:"IBM Plex Mono",monospace; font-size:13px}
+.sock .st{margin-left:auto; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; font-weight:700}
+.sock.live .st{color:var(--teal)} .sock.listening .st{color:var(--blue)} .sock.ghost .st{color:var(--muted)}
+.sock dl{display:grid; grid-template-columns:auto 1fr; gap:5px 12px; margin:0; padding:11px 12px; font-size:12.5px}
+.sock dt{color:var(--muted)}
+.sock dd{margin:0; font-family:"IBM Plex Mono",monospace; color:var(--ink); word-break:break-all}
+.sock dd.nil{color:var(--muted); font-style:italic}
+.tuple{margin-top:14px; padding:13px 14px; border:1px dashed var(--line2); border-radius:9px; background:var(--sunk)}
+.tuple .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-family:"IBM Plex Mono",monospace; font-size:13px}
+.tuple .ep{padding:5px 9px; border-radius:6px; background:var(--surface); border:1px solid var(--line2)}
+.tuple .ep.a{border-color:var(--blue); color:var(--blue)}
+.tuple .ep.b{border-color:var(--teal); color:var(--teal)}
+.tuple p{margin:8px 0 0; font-size:12.5px; color:var(--ink2); font-family:"Source Sans 3",sans-serif}
+
+/* ---- view C : code ---- */
+.codegrid{display:grid; grid-template-columns:1.15fr .85fr; gap:1px; background:var(--line)}
+.codegrid>div{background:var(--surface); padding:14px 16px; min-width:0}
+pre.src{margin:0; font-family:"IBM Plex Mono",monospace; font-size:12.5px; line-height:1.72; overflow-x:auto}
+pre.src .ln{display:block; border-left:3px solid transparent; padding-right:8px; white-space:pre}
+pre.src .ln.on{background:var(--blue-w); border-left-color:var(--blue)}
+pre.src .n{display:inline-block; width:24px; text-align:right; margin-right:12px; color:var(--muted); user-select:none}
+pre.src .kw{color:var(--blue)} pre.src .str{color:var(--teal)} pre.src .cm{color:var(--muted); font-style:italic}
+.says{border-left:3px solid var(--blue); padding:2px 0 2px 12px; margin:0 0 14px; font-size:13.5px; color:var(--ink2)}
+.says b{color:var(--ink)}
+.vars dl{display:grid; grid-template-columns:auto 1fr; gap:6px 12px; margin:0; font-size:12.5px}
+.vars dt{font-family:"IBM Plex Mono",monospace; color:var(--blue)}
+.vars dd{margin:0; font-family:"IBM Plex Mono",monospace; color:var(--ink2); word-break:break-all;
+  max-height:88px; overflow:auto}
+.vars dd.nil{color:var(--muted); font-style:italic; font-family:"Source Sans 3",sans-serif}
+
+.transport{display:flex; gap:12px; align-items:center; padding:12px 16px; border-top:1px solid var(--line)}
+.transport button{font:inherit; font-size:13px; font-weight:500; padding:6px 15px; border-radius:7px;
+  border:1px solid var(--line2); background:var(--sunk); color:var(--ink); cursor:pointer; min-width:76px}
+.transport button:focus-visible{outline:2px solid var(--blue); outline-offset:1px}
+.transport input[type=range]{flex:1; accent-color:var(--blue); min-width:70px}
+.tc{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums}
+
+.bar-nav{position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:50; display:flex; gap:4px;
+  background:var(--surface); border:1px solid var(--line2); border-radius:12px; padding:4px; box-shadow:var(--shadow)}
+.bar-nav button{font:inherit; font-size:13px; font-weight:500; border:0; border-radius:9px; padding:8px 15px;
+  background:transparent; color:var(--ink2); cursor:pointer; white-space:nowrap}
+.bar-nav button[aria-pressed=true]{background:var(--ink); color:var(--surface)}
+.bar-nav button:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:820px){
+  .flow{grid-template-columns:1fr} .pipe{padding:10px 0; flex-direction:row; gap:10px}
+  .socks,.codegrid{grid-template-columns:1fr} .bar-nav button{padding:8px 10px; font-size:12px}
+}
+</style>
+
+<header><div class="wrap hrow">
+  <div>
+    <p class="eyebrow">Prototype · three versions · <em>Let's Build A Web Server</em>, part 1</p>
+    <h1>Eight Requests, One Answer</h1>
+    <p class="sub">The same captured runs of the article's <code>webserver1.py</code>, drawn three ways.
+      Pick the version that makes the mechanism obvious — the bar at the bottom switches between them.</p>
+  </div>
+  <div class="realchip"><b>REAL</b>&nbsp; unmodified <code>webserver1.py</code> · line-traced · 8 real requests</div>
+</div></header>
+
+<main class="wrap">
+
+<!-- ============ A : BYTES ============ -->
+<section id="vA">
+  <div class="panel">
+    <div class="phead"><h2>Version A — the bytes are the star</h2>
+      <span class="note">Pick a request. Every character below was really sent and really received.</span></div>
+    <div class="picks" id="picksA"></div>
+    <div class="body">
+      <div class="flow">
+        <div class="node">
+          <div class="ttl"><b>Your client</b><span id="aPeer"></span></div>
+          <p class="varname">the bytes you send</p>
+          <div class="buf" id="aReqOut"></div>
+        </div>
+        <div class="pipe">
+          <span class="lbl" id="aOutLbl"></span>
+          <svg width="90" height="16" viewBox="0 0 90 16" fill="none" aria-hidden="true">
+            <path d="M2 8h78" stroke="var(--blue)" stroke-width="2"/>
+            <path d="m74 3 6 5-6 5" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="lbl">one TCP<br>connection</span>
+        </div>
+        <div class="node srv">
+          <div class="ttl"><b>webserver1.py</b><span>0.0.0.0:8888</span></div>
+          <p class="varname">request = client_connection.recv(1024)</p>
+          <div class="buf" id="aReqIn"></div>
+        </div>
+      </div>
+
+      <div class="flow" style="margin-top:14px">
+        <div class="node">
+          <p class="varname">what came back</p>
+          <div class="buf" id="aRespIn"></div>
+        </div>
+        <div class="pipe">
+          <span class="lbl" id="aRespLbl"></span>
+          <svg width="90" height="16" viewBox="0 0 90 16" fill="none" aria-hidden="true">
+            <path d="M88 8H10" stroke="var(--teal)" stroke-width="2"/>
+            <path d="m16 3-6 5 6 5" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="lbl">then<br><code>close()</code></span>
+        </div>
+        <div class="node srv">
+          <p class="varname">http_response = b"""..."""</p>
+          <div class="buf" id="aRespOut"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="phead"><h2>All eight at once</h2><span class="note">Click a row to load it above</span></div>
+    <div class="body" style="overflow-x:auto"><table class="strip" id="stripT"></table></div>
+    <p class="verdict"><b>The request length varies from 0 to 82 bytes. Every response is the same 31 bytes.</b>
+      This server never looks at what you sent — <code>recv()</code> fills the variable, <code>print()</code> echoes it,
+      and then it is thrown away. The reply is a hard-coded string. That is the whole of part 1.</p>
+  </div>
+</section>
+
+<!-- ============ B : SOCKETS ============ -->
+<section id="vB" hidden>
+  <div class="panel">
+    <div class="phead"><h2>Version B — the socket is the star</h2>
+      <span class="note">Step through and watch the two socket objects appear, connect and vanish</span></div>
+    <div class="picks" id="picksB"></div>
+    <div class="body">
+      <p class="says" id="bSays"></p>
+      <div class="socks">
+        <div id="bS1"></div>
+        <div id="bS2"></div>
+      </div>
+      <div class="tuple">
+        <h3 style="margin-bottom:9px">The socket pair</h3>
+        <div class="row" id="bTuple"></div>
+        <p id="bTupleNote"></p>
+      </div>
+    </div>
+    <div class="transport">
+      <button id="bPlay" type="button">Play</button>
+      <input type="range" id="bScrub" min="0" max="1" value="0" step="1" aria-label="Step through the socket lifecycle">
+      <span class="tc" id="bTc"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ C : CODE ============ -->
+<section id="vC" hidden>
+  <div class="panel">
+    <div class="phead"><h2>Version C — the code is the star</h2>
+      <span class="note">Every highlighted line really executed, in this order</span></div>
+    <div class="picks" id="picksC"></div>
+    <div class="codegrid">
+      <div><pre class="src" id="cSrc"></pre></div>
+      <div>
+        <h3>What this line just did</h3>
+        <p class="says" id="cSays" style="margin-top:9px"></p>
+        <h3>Live variables</h3>
+        <div class="vars" style="margin-top:9px"><dl id="cVars"></dl></div>
+      </div>
+    </div>
+    <div class="transport">
+      <button id="cPlay" type="button">Play</button>
+      <input type="range" id="cScrub" min="0" max="1" value="0" step="1" aria-label="Step through the code">
+      <span class="tc" id="cTc"></span>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="bar-nav" role="group" aria-label="Choose a version">
+  <button id="nA" type="button" aria-pressed="true">A · Bytes</button>
+  <button id="nB" type="button" aria-pressed="false">B · Sockets</button>
+  <button id="nC" type="button" aria-pressed="false">C · Code</button>
+</div>
+
+<script>
+const D = /*__DATA__*/ null;
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* render a byte string as a picture of its characters */
+function bytes(str){
+  if (str === '' || str == null)
+    return '<span class="none">nothing at all — 0 bytes</span>';
+  let out = '';
+  for (const ch of str){
+    if (ch === '\r') out += '<span class="cr">CR</span>';
+    else if (ch === '\n') out += '<span class="lf">LF</span>\n';
+    else if (ch === ' ') out += '<span class="sp">·</span>';
+    else out += esc(ch);
+  }
+  return out;
+}
+function picker(host, cb){
+  host.innerHTML = D.runs.map((r,i) =>
+    '<button class="pick" type="button" data-i="'+i+'" aria-pressed="'+(i===0)+'">'+r.title+'</button>').join('');
+  host.querySelectorAll('.pick').forEach(b => b.onclick = () => {
+    host.querySelectorAll('.pick').forEach(x => x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true'); cb(+b.dataset.i);
+  });
+}
+function setPick(host, i){
+  host.querySelectorAll('.pick').forEach(x =>
+    x.setAttribute('aria-pressed', String(+x.dataset.i === i)));
+}
+
+/* ================= A ================= */
+let aI = 0;
+function renderA(i){
+  aI = i; const r = D.runs[i];
+  const req = r.request_seen !== undefined ? r.request_seen : r.request;
+  $('#aReqOut').className = 'buf' + (req ? '' : ' empty');
+  $('#aReqOut').innerHTML = '<p class="bytes">'+bytes(req)+'</p>';
+  $('#aReqIn').className  = 'buf' + (req ? '' : ' empty');
+  $('#aReqIn').innerHTML  = '<p class="bytes">'+bytes(req)+'</p>';
+  $('#aOutLbl').innerHTML = r.request_bytes+' bytes<br>in one recv()';
+  const resp = r.client_saw || '';
+  $('#aRespOut').innerHTML = '<p class="bytes">'+bytes(r.response || resp)+'</p>';
+  $('#aRespIn').innerHTML  = '<p class="bytes">'+bytes(resp)+'</p>';
+  $('#aRespLbl').innerHTML = r.response_bytes+' bytes<br>in one sendall()';
+  const peer = (r.trace.find(s => s.peer) || {}).peer || '';
+  $('#aPeer').textContent = peer;
+  document.querySelectorAll('#stripT tr[data-i]').forEach(tr =>
+    tr.classList.toggle('on', +tr.dataset.i === i));
+  setPick($('#picksA'), i);
+}
+function buildStrip(){
+  const mx = Math.max(...D.runs.map(r => r.request_bytes)) || 1;
+  $('#stripT').innerHTML =
+   '<tr><th>What was sent</th><th>The actual bytes</th><th>Request size</th><th>Response size</th></tr>' +
+   D.runs.map((r,i) =>
+    '<tr data-i="'+i+'"><td>'+r.title+'</td>'+
+    '<td class="req">'+esc((r.request_seen||'').replace(/\r/g,'␍').replace(/\n/g,'␊') || '—')+'</td>'+
+    '<td><span class="bar"><i style="width:'+Math.max(2,(r.request_bytes/mx)*130)+'px"></i>'+
+      '<em>'+r.request_bytes+' B</em></span></td>'+
+    '<td><span class="bar"><i class="same" style="width:'+((r.response_bytes/mx)*130)+'px"></i>'+
+      '<em>'+r.response_bytes+' B</em></span></td></tr>').join('');
+  $('#stripT').querySelectorAll('tr[data-i]').forEach(tr => tr.onclick = () => renderA(+tr.dataset.i));
+}
+
+/* ================= B ================= */
+let bI = 0, bK = 0, bT = null;
+const bSteps = () => D.boot.concat(D.runs[bI].trace);
+const SAYS = {
+  1:'Nothing exists yet. <b>socket</b> is just a module.',
+  3:'Two names bound. <code>PORT</code> is 8888; <code>HOST</code> is the empty string, which means <b>every</b> address on this machine.',
+  5:'<b>socket()</b> creates the object and the kernel hands back file descriptor 3. It has no address yet — look at <code>0.0.0.0:0</code>.',
+  6:'<b>setsockopt</b> lets the port be reused straight after a restart, instead of sitting in TIME_WAIT.',
+  7:'<b>bind()</b> nails the socket to a port. That is where <code>:0</code> becomes <code>:8888</code>.',
+  8:'<b>listen()</b> flips it from an ordinary socket into a <b>listening</b> one. It will never carry data — its only job is to produce new sockets.',
+  9:'The banner prints. The server is now waiting.',
+  10:'Top of the loop. Back to waiting for the next client.',
+  11:'<b>accept()</b> blocked here until someone connected — then returned a <b>second, brand-new socket</b> on fd 4. This is the part people miss: you now have two sockets, not one.',
+  12:'<b>recv()</b> reads whatever arrived, up to 1024 bytes, into <code>request</code>.',
+  13:'The request is printed to the terminal — and that is the only thing that ever happens to it.',
+  15:'A hard-coded response. It does not depend on the request in any way.',
+  20:'<b>sendall()</b> pushes those bytes back down the connection socket.',
+  21:'<b>close()</b> destroys the connection socket. fd 4 is returned to the kernel. The listening socket on fd 3 is untouched.',
+};
+function sockCard(name, s, kind, label){
+  if (!s || s.fd === -1)
+    return '<div class="sock ghost"><div class="sh"><b>'+name+'</b><span class="st">does not exist</span></div>'+
+      '<dl><dt>fd</dt><dd class="nil">—</dd><dt>local</dt><dd class="nil">—</dd><dt>peer</dt><dd class="nil">—</dd></dl></div>';
+  return '<div class="sock '+kind+'"><div class="sh"><b>'+name+'</b><span class="st">'+label+'</span></div><dl>'+
+    '<dt>fd</dt><dd>'+s.fd+'</dd>'+
+    '<dt>local</dt><dd>'+(s.local || '<span class="nil">—</span>')+'</dd>'+
+    '<dt>peer</dt><dd class="'+(s.peer?'':'nil')+'">'+(s.peer || 'none — it never talks to anyone')+'</dd></dl></div>';
+}
+function renderB(){
+  const st = bSteps(), s = st[Math.min(bK, st.length-1)];
+  $('#bScrub').max = st.length-1; $('#bScrub').value = bK;
+  $('#bSays').innerHTML = '<code>line '+s.line+'</code> &nbsp;'+(SAYS[s.line] || esc(s.src.trim()));
+  const L = (s.sock||{}).listen, C = (s.sock||{}).conn;
+  const listening = L && s.line >= 8;
+  $('#bS1').innerHTML = sockCard('listen_socket', L, listening ? 'listening' : 'live',
+      listening ? 'listening' : 'created, not bound');
+  $('#bS2').innerHTML = sockCard('client_connection', C, 'live', 'connected');
+  if (C && C.fd !== -1 && C.peer){
+    $('#bTuple').innerHTML =
+      '<span class="ep a">'+C.local+'</span><span style="color:var(--muted)">&harr;</span>'+
+      '<span class="ep b">'+C.peer+'</span>';
+    $('#bTupleNote').innerHTML = 'Four numbers identify this connection and no other: ' +
+      'the server address and port, the client address and port. The client never chose ' +
+      '<code>'+C.peer.split(':')[1]+'</code> — the kernel handed it out.';
+  } else {
+    $('#bTuple').innerHTML = '<span style="color:var(--muted);font-family:Source Sans 3,sans-serif">'+
+      'No connection yet — a listening socket has only one end.</span>';
+    $('#bTupleNote').textContent = '';
+  }
+  $('#bTc').textContent = 'step '+(bK+1)+' / '+st.length+'  ·  '+s.t.toFixed(0)+' ms';
+}
+
+/* ================= C ================= */
+let cI = 0, cK = 0, cT = null;
+const cSteps = () => D.boot.concat(D.runs[cI].trace);
+function renderC(){
+  const st = cSteps(), s = st[Math.min(cK, st.length-1)];
+  $('#cScrub').max = st.length-1; $('#cScrub').value = cK;
+  const blk = s.line === 15 ? [15,16,17,18,19] : [s.line];
+  $('#cSrc').innerHTML = D.source.map((l,ix) => {
+    const n = ix+1;
+    let t = esc(l).replace(/(#.*)$/,'<span class="cm">$1</span>')
+      .replace(/\b(import|while|True|print|b)\b/g,'<span class="kw">$1</span>')
+      .replace(/('[^']*')/g,'<span class="str">$1</span>');
+    return '<span class="ln'+(blk.includes(n)?' on':'')+'"><span class="n">'+n+'</span>'+t+'</span>';
+  }).join('');
+  $('#cSays').innerHTML = SAYS[s.line] || esc(s.src.trim());
+  const req = s.request, C = (s.sock||{}).conn, L = (s.sock||{}).listen;
+  const row = (k,v,nil) => '<dt>'+k+'</dt><dd class="'+(nil?'nil':'')+'">'+v+'</dd>';
+  $('#cVars').innerHTML =
+    row('listen_socket', L && L.fd!==-1 ? 'fd '+L.fd+' &rarr; '+L.local : 'not created yet', !(L&&L.fd!==-1)) +
+    row('client_connection', C && C.fd!==-1 ? 'fd '+C.fd+' &rarr; '+C.peer : 'not created yet', !(C&&C.fd!==-1)) +
+    row('client_address', s.peer || 'not assigned yet', !s.peer) +
+    row('request', req !== undefined
+        ? (req === '' ? "b'' — empty" : esc(req.replace(/\r/g,'␍').replace(/\n/g,'␊')))
+        : 'not assigned yet', req === undefined) +
+    row('http_response', s.line >= 15 ? 'HTTP/1.1␍␊␍␊Hello, World!' : 'not assigned yet', s.line < 15);
+  $('#cTc').textContent = 'step '+(cK+1)+' / '+st.length+'  ·  line '+s.line;
+}
+
+/* transport helpers */
+function transport(playSel, scrubSel, get, set, redraw, ref){
+  $(playSel).onclick = () => {
+    if (ref.t){ clearInterval(ref.t); ref.t = null; $(playSel).textContent = 'Play'; return; }
+    if (get() >= ref.len()-1) set(0);
+    $(playSel).textContent = 'Pause';
+    ref.t = setInterval(() => {
+      set(get()+1);
+      if (get() >= ref.len()-1){ set(ref.len()-1); clearInterval(ref.t); ref.t = null; $(playSel).textContent = 'Play'; }
+      redraw();
+    }, 620);
+  };
+  $(scrubSel).oninput = e => {
+    if (ref.t){ clearInterval(ref.t); ref.t = null; $(playSel).textContent = 'Play'; }
+    set(+e.target.value); redraw();
+  };
+}
+const bRef = {t:null, len:()=>bSteps().length};
+const cRef = {t:null, len:()=>cSteps().length};
+transport('#bPlay','#bScrub',()=>bK,v=>bK=v,()=>renderB(),bRef);
+transport('#cPlay','#cScrub',()=>cK,v=>cK=v,()=>renderC(),cRef);
+
+/* view switching */
+function show(v){
+  ['A','B','C'].forEach(x => {
+    $('#v'+x).hidden = x !== v;
+    $('#n'+x).setAttribute('aria-pressed', String(x === v));
+  });
+  [bRef,cRef].forEach(r => { if (r.t){ clearInterval(r.t); r.t = null; } });
+  $('#bPlay').textContent = 'Play'; $('#cPlay').textContent = 'Play';
+  const u = new URL(location); u.searchParams.set('v', v); history.replaceState({}, '', u);
+}
+['A','B','C'].forEach(x => $('#n'+x).onclick = () => show(x));
+
+picker($('#picksA'), renderA);
+picker($('#picksB'), i => { bI = i; bK = 0; renderB(); });
+picker($('#picksC'), i => { cI = i; cK = 0; renderC(); });
+buildStrip(); renderA(0); renderB(); renderC();
+const v0 = (new URL(location).searchParams.get('v') || 'A').toUpperCase();
+show(['A','B','C'].includes(v0) ? v0 : 'A');
+</script>
