@@ -29,6 +29,126 @@
    "path": "/index.html",
    "request": "GET /index.html HTTP/1.1\r\n\r\n",
    "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/home",
+   "request": "GET /home HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/banana",
+   "request": "GET /banana HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/login",
+   "request": "GET /login HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/hello.html",
+   "request": "GET /hello.html HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/Hello",
+   "request": "GET /Hello HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/hello/",
+   "request": "GET /hello/ HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/hi",
+   "request": "GET /hi HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/goodby",
+   "request": "GET /goodby HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/greetings",
+   "request": "GET /greetings HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/contact",
+   "request": "GET /contact HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/help",
+   "request": "GET /help HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/search",
+   "request": "GET /search HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/admin",
+   "request": "GET /admin HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/favicon.ico",
+   "request": "GET /favicon.ico HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/robots.txt",
+   "request": "GET /robots.txt HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/style.css",
+   "request": "GET /style.css HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/api",
+   "request": "GET /api HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/users/1",
+   "request": "GET /users/1 HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/a/b/c",
+   "request": "GET /a/b/c HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/hello?x=1",
+   "request": "GET /hello?x=1 HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/404",
+   "request": "GET /404 HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/HELLO",
+   "request": "GET /HELLO HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/greeting/",
+   "request": "GET /greeting/ HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/dog",
+   "request": "GET /dog HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
   }
  ]
 }

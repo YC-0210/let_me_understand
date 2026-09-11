@@ -3,7 +3,11 @@
 import io, json, os, runpy, socket, sys, threading, time
 HERE, PORT = os.path.dirname(os.path.abspath(__file__)), 8888
 SRC = os.path.join(HERE, 'webserver1_pages.py')
-PATHS = ['/hello', '/goodbye', '/greeting', '/about', '/cats', '/index.html']
+PATHS = ['/hello', '/goodbye', '/greeting',
+         '/about', '/cats', '/index.html', '/home', '/banana', '/login', '/hello.html',
+         '/Hello', '/hello/', '/hi', '/goodby', '/greetings', '/contact', '/help',
+         '/search', '/admin', '/favicon.ico', '/robots.txt', '/style.css', '/api',
+         '/users/1', '/a/b/c', '/hello?x=1', '/404', '/HELLO', '/greeting/', '/dog']
 runs = [{'path': p, 'request': 'GET %s HTTP/1.1\r\n\r\n' % p, 'response': None} for p in PATHS]
 cur = {'i': -1}
 lines = open(SRC).read().split('\n')

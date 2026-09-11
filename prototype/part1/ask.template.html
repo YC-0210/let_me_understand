@@ -110,6 +110,56 @@ header{padding-block:32px 4px}
 .note a{color:var(--more); font-weight:600}
 .note code{font-size:12px; background:var(--card); border:1px solid var(--line); border-radius:4px; padding:0 4px}
 
+/* ---- rungs ---- */
+.rung{margin-top:34px; border-top:1px solid var(--line); padding-top:18px}
+.rhead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:0 0 3px}
+.rn{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted); border:1px solid var(--line2); border-radius:5px; padding:2px 6px}
+.rt{font-size:17px; font-weight:700; margin:0; letter-spacing:-.01em}
+.rs{color:var(--ink2); margin:3px 0 14px; font-size:13.5px; max-width:56ch}
+
+/* rung 1 — all of them at once */
+.six{display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:10px}
+.mini{all:unset; cursor:pointer; border:1.5px solid var(--line2); border-radius:8px; background:var(--card);
+  overflow:hidden; display:block; box-sizing:border-box}
+.mini:hover{border-color:var(--ink2)}
+.mini.on{border-color:var(--ask)}
+.mini:focus-visible{outline:2px solid var(--ask); outline-offset:2px}
+.mini .mc{display:flex; align-items:center; gap:6px; padding:5px 8px; background:var(--sunk);
+  border-bottom:1px solid var(--line2); font-family:"IBM Plex Mono",monospace; font-size:11.5px;
+  color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.mini .mc i{width:5px; height:5px; border-radius:50%; background:var(--line2); flex:none}
+.mini .mb{padding:16px 10px; text-align:center; font-size:14px; font-weight:600; min-height:62px;
+  display:flex; align-items:center; justify-content:center}
+.mini .ms{display:block; font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
+  letter-spacing:.05em; color:var(--muted); padding:0 0 7px}
+.mini.miss .mb{color:var(--warn)}
+
+/* rung 2 — the space of names */
+.field{border:1px dashed var(--line2); border-radius:11px; padding:11px 12px 13px; background:var(--sunk)}
+.fieldlab{margin:0 0 9px; font-size:10px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; color:var(--muted)}
+.cols{display:grid; grid-template-columns:minmax(0,auto) minmax(0,1fr); gap:12px; align-items:start}
+.known{border:1.5px solid var(--ans); border-radius:9px; background:var(--card); padding:8px 10px}
+.klab{margin:0 0 7px; font-size:10px; letter-spacing:.06em; text-transform:uppercase; font-weight:700; color:var(--ans)}
+.chips{display:flex; flex-wrap:wrap; gap:5px}
+.chip{all:unset; cursor:pointer; font-family:"IBM Plex Mono",monospace; font-size:11.5px; padding:2px 7px;
+  border-radius:5px; border:1px solid var(--line2); color:var(--ink2); background:var(--card)}
+.chip:hover{border-color:var(--ink); color:var(--ink)}
+.chip:focus-visible{outline:2px solid var(--ask); outline-offset:1px}
+.chip.k{border-color:var(--ans); color:var(--ans); font-weight:600}
+.chip.on{outline:2px solid var(--ask); outline-offset:1px}
+.outs{display:grid; grid-template-columns:minmax(0,auto) minmax(0,1fr); gap:12px; margin-top:2px}
+.out{display:flex; flex-direction:column; align-items:center; gap:0}
+.out .arr{font-size:17px; line-height:1.4; color:var(--line2)}
+.ocard{width:100%; border:1.5px solid var(--line2); border-radius:9px; background:var(--card);
+  padding:9px 11px; text-align:center; box-shadow:var(--sh)}
+.ocard b{display:block; font-family:"IBM Plex Mono",monospace; font-size:13px}
+.ocard span{font-size:12px; color:var(--muted)}
+.ocard.ok{border-color:var(--ans)} .ocard.ok b{color:var(--ans)}
+.ocard.no{border-color:var(--warn)} .ocard.no b{color:var(--warn)}
+.count{margin:13px 0 0; font-size:13px; color:var(--ink2)}
+.count b{color:var(--ink)}
+
 /* ---- path menu ---- */
 .menu{position:absolute; z-index:40; background:var(--card); border:1px solid var(--line2); border-radius:9px;
   box-shadow:var(--sh); padding:5px; max-height:272px; overflow-y:auto; min-width:214px}
@@ -133,6 +183,8 @@ header{padding-block:32px 4px}
 </header>
 
 <div style="margin-top:22px">
+  <div class="rhead" style="margin-bottom:10px"><span class="rn">Rung 0</span>
+    <h2 class="rt">One name, one page</h2></div>
   <div class="browser">
     <div class="chrome"><div class="lights"><i></i><i></i><i></i></div>
       <div class="urlbar"><span class="dim">http://localhost:8888</span><button class="pathbtn"></button></div>
@@ -264,6 +316,36 @@ header{padding-block:32px 4px}
   <p class="cap" id="resultCap"></p>
 </div>
 
+<section class="rung">
+  <div class="rhead"><span class="rn">Rung 1</span><h2 class="rt">All of them at once</h2></div>
+  <p class="rs">The same six, no longer one at a time. Click any of them to go back to asking for
+  just that one.</p>
+  <div class="six" id="six"></div>
+</section>
+
+<section class="rung">
+  <div class="rhead"><span class="rn">Rung 2</span><h2 class="rt">Every name you could type</h2></div>
+  <p class="rs">Six was never the whole space — you can type anything. Here is the shape of it: a
+  small set of names the server knows, sitting inside everything else.</p>
+  <div class="field">
+    <p class="fieldlab">every page name you could type</p>
+    <div class="cols">
+      <div class="known">
+        <p class="klab">the three it knows</p>
+        <div class="chips" id="chipsK"></div>
+      </div>
+      <div><div class="chips" id="chipsU"></div></div>
+    </div>
+  </div>
+  <div class="outs">
+    <div class="out"><span class="arr">↓</span>
+      <div class="ocard ok"><b>200 OK</b><span>its own page</span></div></div>
+    <div class="out"><span class="arr">↓</span>
+      <div class="ocard no"><b>404 Not Found</b><span>the same reply for all of them</span></div></div>
+  </div>
+  <p class="count" id="count"></p>
+</section>
+
 <p class="foot">Every reply here really came back: each page name was sent over a real connection to a real
 running server. That server is the article's <code>webserver1.py</code> with one line added so the path
 decides the answer — see the note on the server block. Notes marked
@@ -276,6 +358,10 @@ const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const RUNS = D.runs;
+const SIX = ['/hello','/goodbye','/greeting','/about','/cats','/index.html'];
+const statusOf = r => r.response.split('\n')[0].split(' ')[1];
+const KNOWN = RUNS.filter(r => statusOf(r) === '200');
+const UNKNOWN = RUNS.filter(r => statusOf(r) !== '200');
 let path = '/hello', menu = null;
 
 const runOf = p => RUNS.find(r => r.path === p);
@@ -300,7 +386,39 @@ function render(){
   $('#resultCap').textContent = miss
     ? 'There is no page by that name, and the server said so.'
     : 'The page name decided what came back.';
+
+  $$('.mini').forEach(m => m.classList.toggle('on', m.dataset.p === path));
+  $$('.chip').forEach(c => c.classList.toggle('on', c.dataset.p === path));
 }
+
+function goTo(p){
+  path = p; render();
+  document.querySelector('.browser').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function buildRungs(){
+  $('#six').innerHTML = SIX.map(p => {
+    const r = runOf(p), code = statusOf(r), body = bodyOf(r.response), miss = code !== '200';
+    return '<button class="mini'+(miss?' miss':'')+'" data-p="'+esc(p)+'" type="button">'+
+      '<span class="mc"><i></i><i></i><i></i>'+esc(p)+'</span>'+
+      '<span class="mb">'+esc(body)+'</span>'+
+      '<span class="ms">'+esc(r.response.split('\n')[0])+'</span></button>';
+  }).join('');
+  $$('.mini').forEach(m => m.onclick = () => goTo(m.dataset.p));
+
+  const chip = (r, cls) => '<button class="chip '+cls+'" type="button" data-p="'+esc(r.path)+'">'+
+    esc(r.path)+'</button>';
+  $('#chipsK').innerHTML = KNOWN.map(r => chip(r,'k')).join('');
+  $('#chipsU').innerHTML = UNKNOWN.map(r => chip(r,'')).join('');
+  $$('.chip').forEach(c => c.onclick = () => goTo(c.dataset.p));
+
+  $('#count').innerHTML = '<b>'+RUNS.length+' names were really sent to this server.</b> The '+
+    KNOWN.length+' inside the box each came back with their own page. All '+UNKNOWN.length+
+    ' of the others came back with the same 404 — and so would any name you can think of that '+
+    'is not one of the three. That is the whole behaviour, and you can now predict it without '+
+    'trying it.';
+}
+buildRungs();
 
 const fb = $('#foldbtn');
 fb.onclick = () => { const o = fb.getAttribute('aria-expanded') === 'true';
