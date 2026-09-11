@@ -1,0 +1,228 @@
+<title>Ask For Any Page</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#FBFBFA; --card:#FFFFFF; --sunk:#F1F2F0; --ink:#191A18; --ink2:#45473F; --muted:#78796F;
+  --line:#DFE0DB; --line2:#C3C5BD; --ask:#1668B8; --ask-w:rgba(22,104,184,.10);
+  --ans:#00907A; --ans-w:rgba(0,144,122,.10);
+  --sh:0 1px 2px rgba(25,26,24,.05),0 8px 22px rgba(25,26,24,.06);
+}
+:root:not([data-theme="light"]){@media (prefers-color-scheme:dark){
+  --paper:#0E100F; --card:#171A18; --sunk:#1E2220; --ink:#E8EAE5; --ink2:#BCC0B8; --muted:#8A8F85;
+  --line:#2A2E2B; --line2:#3D423E; --ask:#4A90D9; --ask-w:rgba(74,144,217,.15);
+  --ans:#0FA98C; --ans-w:rgba(15,169,140,.15);
+  --sh:0 1px 2px rgba(0,0,0,.5),0 8px 22px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#0E100F; --card:#171A18; --sunk:#1E2220; --ink:#E8EAE5; --ink2:#BCC0B8; --muted:#8A8F85;
+  --line:#2A2E2B; --line2:#3D423E; --ask:#4A90D9; --ask-w:rgba(74,144,217,.15);
+  --ans:#0FA98C; --ans-w:rgba(15,169,140,.15);
+  --sh:0 1px 2px rgba(0,0,0,.5),0 8px 22px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink); font-size:15px; line-height:1.55;
+  font-family:"Source Sans 3",system-ui,-apple-system,sans-serif}
+.wrap{max-width:680px; margin:0 auto; padding:0 20px}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+h1{font-size:27px; font-weight:700; margin:0; letter-spacing:-.015em; line-height:1.15}
+.lede{color:var(--ink2); margin:9px 0 0; max-width:56ch}
+header{padding-block:34px 6px}
+
+/* ---- the drawing ---- */
+.fig{display:grid; grid-template-columns:58px 1fr; margin:26px 0 0}
+.timecol{position:relative}
+.timecol svg{position:absolute; left:14px; top:6px; bottom:6px; height:calc(100% - 12px)}
+.timecol span{position:absolute; bottom:-4px; left:0; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted); font-weight:700}
+.col{display:flex; flex-direction:column; align-items:stretch; gap:0}
+
+.browser{border:1.5px solid var(--line2); border-radius:9px; background:var(--card); box-shadow:var(--sh); overflow:hidden}
+.chrome{display:flex; align-items:center; gap:9px; padding:8px 11px; border-bottom:1.5px solid var(--line2); background:var(--sunk)}
+.lights{display:flex; gap:4px}
+.lights i{width:8px; height:8px; border-radius:50%; background:var(--line2); display:block}
+.urlbar{flex:1; background:var(--card); border:1px solid var(--line); border-radius:6px; padding:5px 10px;
+  font-family:"IBM Plex Mono",monospace; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.urlbar .dim{color:var(--muted)}
+.pathbtn{all:unset; cursor:pointer; color:var(--ask); font-weight:600; border-bottom:2px dotted var(--ask);
+  border-radius:3px; padding:0 3px}
+.pathbtn:hover{background:var(--ask-w)}
+.pathbtn:focus-visible{outline:2px solid var(--ask); outline-offset:2px}
+.pathbtn::after{content:"⌄"; font-size:10px; opacity:.6; margin-left:4px; vertical-align:2px}
+.page{padding:22px 18px; min-height:82px; display:flex; align-items:center; justify-content:center}
+.page b{font-size:21px; font-weight:600}
+.page.blank{color:var(--muted); font-style:italic; font-size:14px}
+
+.cap{font-size:13px; color:var(--muted); margin:7px 2px 0}
+.hop{display:grid; grid-template-columns:34px 1fr; align-items:center; gap:10px; padding:13px 0 13px 2px}
+.hop svg{display:block}
+.hoplab{font-size:11px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; margin:0 0 4px}
+.hoplab.ask{color:var(--ask)} .hoplab.ans{color:var(--ans)}
+.wireline{font-family:"IBM Plex Mono",monospace; font-size:13px; background:var(--sunk); border:1px solid var(--line);
+  border-radius:7px; padding:8px 11px; margin:0; white-space:pre-wrap; word-break:break-all; line-height:1.6}
+.wireline.ask{border-left:3px solid var(--ask)}
+.wireline.ans{border-left:3px solid var(--ans)}
+
+.server{border:1.5px solid var(--line2); border-radius:9px; background:var(--card); box-shadow:var(--sh);
+  padding:14px 16px; text-align:center}
+.server b{display:block; font-size:15px; letter-spacing:.01em}
+.server span{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted)}
+
+/* ---- path menu ---- */
+.menu{position:absolute; z-index:40; background:var(--card); border:1px solid var(--line2); border-radius:9px;
+  box-shadow:var(--sh); padding:5px; max-height:264px; overflow-y:auto; min-width:196px}
+.menu button{all:unset; display:block; width:100%; box-sizing:border-box; cursor:pointer; padding:5px 9px;
+  border-radius:6px; font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink2)}
+.menu button:hover{background:var(--ask-w); color:var(--ask)}
+.menu button[aria-current=true]{color:var(--ask); font-weight:600}
+.menu button.seen::after{content:"·  asked"; float:right; font-size:10.5px; color:var(--muted); font-weight:400}
+.menu button:focus-visible{outline:2px solid var(--ask); outline-offset:-2px}
+
+/* ---- tally ---- */
+.tally{margin-top:30px; border-top:1px solid var(--line); padding-top:20px}
+.tally h2{font-size:16px; margin:0 0 3px}
+.tally p.s{color:var(--ink2); margin:0 0 13px; font-size:14px}
+.tally ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0}
+.tally li{display:grid; grid-template-columns:1fr auto; gap:12px; align-items:baseline; padding:6px 2px;
+  border-bottom:1px solid var(--line); font-family:"IBM Plex Mono",monospace; font-size:13px}
+.tally li:last-child{border-bottom:0}
+.tally li .p{color:var(--ink2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.tally li .r{color:var(--ans); white-space:nowrap}
+.tally li.fresh .p{color:var(--ask); font-weight:600}
+.foot{padding-block:26px 46px; color:var(--muted); font-size:12.5px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:560px){ .fig{grid-template-columns:30px 1fr} .timecol svg{left:6px} .timecol span{font-size:10px} }
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Ask For Any Page</h1>
+  <p class="lede">This is the picture from the article, except you can use it. Click the page name in the
+  address bar and ask the web server for something else.</p>
+</header>
+
+<div class="fig">
+  <div class="timecol">
+    <svg width="14" viewBox="0 0 14 100" preserveAspectRatio="none" fill="none" aria-hidden="true">
+      <path d="M7 0 V94" stroke="var(--line2)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+      <path d="M2.5 88 L7 96 L11.5 88" stroke="var(--line2)" stroke-width="1.5" fill="none"
+            vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>time</span>
+  </div>
+
+  <div class="col">
+    <div class="browser">
+      <div class="chrome"><div class="lights"><i></i><i></i><i></i></div>
+        <div class="urlbar"><span class="dim">http://localhost:8888</span><button class="pathbtn" id="pathbtn"></button></div>
+      </div>
+      <div class="page blank">you ask for a page</div>
+    </div>
+    <p class="cap">Your browser. Port 8888 is where the web server is listening.</p>
+
+    <div class="hop">
+      <svg width="34" height="52" viewBox="0 0 34 52" fill="none" aria-hidden="true">
+        <path d="M17 2 C17 22, 17 26, 17 42" stroke="var(--ask)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M11 36 L17 46 L23 36" stroke="var(--ask)" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div><p class="hoplab ask">HTTP request</p><p class="wireline ask" id="wireAsk"></p></div>
+    </div>
+
+    <div class="server"><b>the web server</b><span>webserver1.py, listening on port 8888</span></div>
+
+    <div class="hop">
+      <svg width="34" height="52" viewBox="0 0 34 52" fill="none" aria-hidden="true">
+        <path d="M17 2 C17 22, 17 26, 17 42" stroke="var(--ans)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M11 36 L17 46 L23 36" stroke="var(--ans)" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div><p class="hoplab ans">HTTP response</p><p class="wireline ans" id="wireAns"></p></div>
+    </div>
+
+    <div class="browser">
+      <div class="chrome"><div class="lights"><i></i><i></i><i></i></div>
+        <div class="urlbar"><span class="dim">http://localhost:8888</span><span class="mono"
+          style="color:var(--ink2)" id="urlEcho"></span></div>
+      </div>
+      <div class="page"><b id="shown"></b></div>
+    </div>
+    <p class="cap">What the browser shows you.</p>
+  </div>
+</div>
+
+<section class="tally">
+  <h2 id="tallyH"></h2>
+  <p class="s" id="tallyS"></p>
+  <ol id="tallyL"></ol>
+</section>
+
+<p class="foot">Every reply on this page is a real one: each page name was really asked for, over a real
+connection, from the web server exactly as the article writes it.</p>
+</div>
+
+<script>
+const D = /*__DATA__*/ null;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const RUNS = D.runs;
+let path = '/hello', asked = [];
+let menu = null;
+
+const runOf = p => RUNS.find(r => r.path === p);
+const bodyOf = resp => resp.split('\n\n').slice(1).join('\n\n').trim();
+
+function render(){
+  const r = runOf(path);
+  $('#pathbtn').textContent = path;
+  $('#urlEcho').textContent = path;
+  $('#wireAsk').textContent = r.request.replace(/\r\n/g, '\n').trimEnd();
+  $('#wireAns').textContent = r.response.trimEnd();
+  $('#shown').textContent = bodyOf(r.response);
+
+  const n = asked.length, same = new Set(asked.map(p => runOf(p).response)).size;
+  $('#tallyH').textContent = n === 1
+    ? 'You have asked for 1 page'
+    : 'You have asked for ' + n + ' different pages';
+  $('#tallyS').textContent = n === 1
+    ? 'Keep going. Ask for a page that does not exist, or one with a different name.'
+    : (same === 1
+        ? 'All ' + n + ' came back the same. Not one of them changed the answer.'
+        : same + ' different answers came back.');
+  $('#tallyL').innerHTML = asked.slice().reverse().map((p,i) =>
+    '<li class="'+(i===0 && n>1 ? 'fresh':'')+'"><span class="p">GET '+esc(p)+
+    '</span><span class="r">'+esc(bodyOf(runOf(p).response))+'</span></li>').join('');
+}
+
+function closeMenu(){ if (menu){ menu.remove(); menu = null;
+  document.removeEventListener('click', onDoc, true);
+  $('#pathbtn').setAttribute('aria-expanded','false'); } }
+function onDoc(e){ if (menu && !menu.contains(e.target) && e.target !== $('#pathbtn')) closeMenu(); }
+
+$('#pathbtn').onclick = e => {
+  e.stopPropagation();
+  if (menu) return closeMenu();
+  menu = document.createElement('div');
+  menu.className = 'menu'; menu.setAttribute('role','listbox');
+  menu.innerHTML = RUNS.map(r =>
+    '<button type="button" role="option" data-p="'+esc(r.path)+'" aria-current="'+(r.path===path)+
+    '" class="'+(asked.includes(r.path)?'seen':'')+'">'+esc(r.path)+'</button>').join('');
+  document.body.appendChild(menu);
+  const b = $('#pathbtn').getBoundingClientRect();
+  menu.style.left = Math.min(b.left, innerWidth - menu.offsetWidth - 14) + 'px';
+  menu.style.top  = Math.min(b.bottom + 6 + scrollY, scrollY + innerHeight - menu.offsetHeight - 14) + 'px';
+  menu.querySelectorAll('button').forEach(x => x.onclick = () => {
+    path = x.dataset.p;
+    if (!asked.includes(path)) asked.push(path);
+    closeMenu(); render();
+  });
+  $('#pathbtn').setAttribute('aria-expanded','true');
+  setTimeout(() => document.addEventListener('click', onDoc, true), 0);
+};
+$('#pathbtn').setAttribute('aria-haspopup','listbox');
+$('#pathbtn').setAttribute('aria-expanded','false');
+addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+asked.push(path);
+render();
+</script>
