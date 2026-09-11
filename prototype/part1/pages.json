@@ -1,0 +1,34 @@
+{
+ "runs": [
+  {
+   "path": "/hello",
+   "request": "GET /hello HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 200 OK\n\nHello, World!\n"
+  },
+  {
+   "path": "/goodbye",
+   "request": "GET /goodbye HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 200 OK\n\nGoodbye, World!\n"
+  },
+  {
+   "path": "/greeting",
+   "request": "GET /greeting HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 200 OK\n\nNice to meet you!\n"
+  },
+  {
+   "path": "/about",
+   "request": "GET /about HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/cats",
+   "request": "GET /cats HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  },
+  {
+   "path": "/index.html",
+   "request": "GET /index.html HTTP/1.1\r\n\r\n",
+   "response": "HTTP/1.1 404 Not Found\n\nNo such page\n"
+  }
+ ]
+}
