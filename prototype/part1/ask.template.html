@@ -85,19 +85,41 @@ header{padding-block:34px 6px}
 .rline .lab{font-size:10.5px; letter-spacing:.05em; color:var(--muted); font-weight:600; text-align:right; white-space:nowrap}
 .rline .empty{color:var(--muted); font-style:italic; font-size:12.5px}
 
-/* ---- the TCP connection channel ---- */
-.channel{border:1px dashed var(--line2); border-radius:10px; padding:12px 14px 14px; margin:4px 0 0;
-  background:linear-gradient(var(--sunk),var(--sunk)) no-repeat; background-size:100% 100%}
-.chanhead{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; margin:0 0 4px}
-.chanhead b{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink2)}
-.chanhead span{font-size:12.5px; color:var(--muted)}
+/* ---- the TCP connection block ---- */
+.tcp{border:1.5px solid var(--line2); border-radius:9px; background:var(--card); box-shadow:var(--sh);
+  padding:13px 15px; display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center}
+.tcp .who{display:flex; align-items:center; gap:9px; font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px; color:var(--muted); margin-bottom:6px; flex-wrap:wrap}
+.tcp .who svg{flex:none}
+.tcp b{font-size:15px; display:block}
+.rail{border-left:1px dashed var(--line2); margin-left:17px; padding-left:16px}
+.railnote{font-size:11.5px; color:var(--muted); margin:8px 0 0; font-style:italic}
 
-/* ---- asides quoting the article ---- */
-.says{margin-top:28px; border-top:1px solid var(--line); padding-top:18px}
-.says h2{font-size:16px; margin:0 0 11px}
-.says blockquote{margin:0 0 12px; padding:0 0 0 13px; border-left:2px solid var(--line2);
-  color:var(--ink2); font-size:14px}
-.says blockquote cite{display:block; font-style:normal; font-size:11.5px; color:var(--muted); margin-top:3px}
+/* ---- popouts quoting the article ---- */
+details.src{margin:0}
+details.src summary{list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;
+  font-size:11.5px; font-weight:600; color:var(--ink2); border:1px solid var(--line2); border-radius:999px;
+  padding:3px 10px; background:var(--sunk); white-space:nowrap}
+details.src summary::-webkit-details-marker{display:none}
+details.src summary:hover{border-color:var(--ink2)}
+details.src summary:focus-visible{outline:2px solid var(--ask); outline-offset:2px}
+details.src[open] summary{border-color:var(--ink2)}
+details.src summary .i{width:13px; height:13px; border-radius:50%; border:1.4px solid currentColor;
+  display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; font-style:italic}
+.srcbtn{font:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:5px; font-size:11.5px;
+  font-weight:600; color:var(--ink2); border:1px solid var(--line2); border-radius:999px; padding:3px 10px;
+  background:var(--sunk); white-space:nowrap}
+.srcbtn:hover{border-color:var(--ink2)}
+.srcbtn:focus-visible{outline:2px solid var(--ask); outline-offset:2px}
+.srcbtn[aria-expanded=true]{border-color:var(--ink2); background:var(--card)}
+.srcbtn .i{width:13px; height:13px; border-radius:50%; border:1.4px solid currentColor; display:inline-flex;
+  align-items:center; justify-content:center; font-size:9px; font-weight:700; font-style:italic}
+.srcpanel blockquote{margin:0; padding:9px 12px; border-left:2px solid var(--line2); background:var(--sunk);
+  border-radius:0 7px 7px 0; color:var(--ink2); font-size:13.5px; line-height:1.6}
+.srcpanel blockquote cite{display:block; font-style:normal; font-size:11px; color:var(--muted); margin-top:6px}
+details.src blockquote{margin:9px 0 0; padding:9px 12px; border-left:2px solid var(--line2);
+  background:var(--sunk); border-radius:0 7px 7px 0; color:var(--ink2); font-size:13.5px; line-height:1.6}
+details.src blockquote cite{display:block; font-style:normal; font-size:11px; color:var(--muted); margin-top:6px}
 
 /* ---- path menu ---- */
 .menu{position:absolute; z-index:40; background:var(--card); border:1px solid var(--line2); border-radius:9px;
@@ -151,9 +173,31 @@ header{padding-block:34px 6px}
     </div>
     <p class="cap">Your browser. <code>8888</code> is the port the web server is listening on.</p>
 
-    <div class="channel">
-      <p class="chanhead"><b>TCP connection</b>
-        <span>established first — the request and the response both travel over it</span></p>
+    <div class="tcp">
+      <div>
+        <div class="who">
+          <span>your browser</span>
+          <svg width="52" height="12" viewBox="0 0 52 12" fill="none" aria-hidden="true">
+            <path d="M8 6h36" stroke="var(--line2)" stroke-width="1.5"/>
+            <path d="M12 2 L6 6 L12 10M40 2 L46 6 L40 10" stroke="var(--line2)" stroke-width="1.5"
+                  fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>the web server</span>
+        </div>
+        <b>TCP connection</b>
+      </div>
+      <button class="srcbtn" id="tcpToggle" type="button" aria-expanded="false" aria-controls="tcpQuote">
+        <span class="i">i</span>from the article</button>
+    </div>
+    <div class="srcpanel" id="tcpQuote" hidden>
+      <blockquote>“Before your browser can send a HTTP request though, it first needs to establish a
+        TCP connection with the Web server.”
+        <cite>That is everything the article says about it, so it is everything this page says about it.</cite>
+      </blockquote>
+    </div>
+
+    <div class="rail">
+      <p class="railnote">Everything below travels over that connection.</p>
 
       <div class="hop">
         <svg width="34" height="52" viewBox="0 0 34 52" fill="none" aria-hidden="true">
@@ -170,6 +214,12 @@ header{padding-block:34px 6px}
               <span class="part"><span class="tok">HTTP/1.1</span><i class="tick"></i><em>protocol version</em></span>
             </div>
           </div>
+          <details class="src" style="margin-top:8px">
+            <summary><span class="i">i</span>from the article</summary>
+            <blockquote>“The HTTP request consists of the line indicating the HTTP method (<b>GET</b>,
+              because we are asking our server to return us something), the path <b>/hello</b> that
+              indicates a “page” on the server we want and the protocol version.”</blockquote>
+          </details>
         </div>
       </div>
 
@@ -195,6 +245,11 @@ header{padding-block:34px 6px}
               <div class="rline"><code id="bodyLine"></code><span class="lab">HTTP response body</span></div>
             </div>
           </div>
+          <details class="src" style="margin-top:8px">
+            <summary><span class="i">i</span>from the article</summary>
+            <blockquote>“The response consists of a status line <b>HTTP/1.1 200 OK</b>, followed by a
+              required empty line, and then the HTTP response body.”</blockquote>
+          </details>
         </div>
       </div>
     </div>
@@ -209,17 +264,6 @@ header{padding-block:34px 6px}
     <p class="cap">The browser displays the response body.</p>
   </div>
 </div>
-
-<section class="says">
-  <h2>What the article says about these</h2>
-  <blockquote>“Before your browser can send a HTTP request though, it first needs to establish a TCP
-    connection with the Web server.”<cite>That is as far as the article goes on TCP, so it is as far as this page goes.</cite></blockquote>
-  <blockquote>“The HTTP request consists of the line indicating the HTTP method (<b>GET</b>, because we are
-    asking our server to return us something), the path <b>/hello</b> that indicates a “page” on the server
-    we want and the protocol version.”</blockquote>
-  <blockquote>“The response consists of a status line <b>HTTP/1.1 200 OK</b>, followed by a required empty
-    line, and then the HTTP response body.”</blockquote>
-</section>
 
 <section class="tally">
   <h2 id="tallyH"></h2>
@@ -291,6 +335,10 @@ document.querySelectorAll('.pathbtn').forEach(pb => pb.onclick = e => {
 document.querySelectorAll('.pathbtn').forEach(pb => {
   pb.setAttribute('aria-haspopup','listbox'); pb.setAttribute('aria-expanded','false'); });
 addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+const tt = $('#tcpToggle');
+tt.onclick = () => { const open = tt.getAttribute('aria-expanded') === 'true';
+  tt.setAttribute('aria-expanded', String(!open)); $('#tcpQuote').hidden = open; };
 
 asked.push(path);
 render();
