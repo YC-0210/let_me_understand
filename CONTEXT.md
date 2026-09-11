@@ -62,9 +62,16 @@ _Avoid_: collapse, accordion, progressive disclosure
 ## The ladder
 
 **Parameter**:
-The one thing the reader turns. Must be ordered, so that values can be laid out and
-compared; a set of unordered choices is a menu, not a Parameter.
+The one thing the reader turns. Its values must be either ordered or partitionable, so
+that a Rung above the ground has something to lay out; a set of choices that is neither
+is a menu, not a Parameter.
 _Avoid_: input, option, setting, knob
+
+**Region**:
+A set of Parameter values sharing one Metric outcome. What an unordered Parameter offers
+in place of an order, and what a Rung above the ground draws: the three page names the
+server knows are one Region, every other name is the other.
+_Avoid_: group, bucket, category
 
 **Metric**:
 The single readable outcome that a Parameter's value produces. What a Rung above the

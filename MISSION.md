@@ -42,6 +42,11 @@ Five, and they decide arguments rather than describe them.
    makes the ladder possible; without it there is only the ground rung wearing different
    clothes.
 
+   Where a Parameter genuinely has no order — a page name, a method — it can still be
+   **partitioned** into regions that share an outcome. Partitioning is how an unordered
+   Parameter supports a Rung above the ground: not a plot, but a picture of the space
+   and the regions in it.
+
 5. **Start at the bottom of the ladder and climb with the reader.** One parameter, fully
    concrete, before any abstraction. Every abstract view must offer a way back down to
    the concrete instance behind any point in it. From Bret Victor's
