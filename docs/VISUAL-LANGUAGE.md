@@ -100,7 +100,10 @@ Three roles. Everything else is grey.
 
 1. **The word is the door.** Captions are what the reader clicks. Marks are never
    buttons — a circle that is also a button stops being a symbol and becomes a control.
-2. **A door looks like a link**: accent colour, dotted underline. No invented affordance.
+2. **A door looks like a link**: dotted underline, accent colour. Where the caption *is* the
+   datum — the page name riding the dot, the body that came back — it **keeps its data
+   colour** and the underline alone makes it a door. Colour rule 6 wins over the accent;
+   the affordance is the underline.
 3. **Every mark has a door.** "Some are clickable" is a rule a reader must discover;
    "every one is" is a rule they can guess.
 4. **Opening a door stops time**, and closing it resumes from the same instant.

@@ -44,7 +44,9 @@ header{padding-block:var(--sp-xxl) 0}
 /* the drawing panel */
 .panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
 #svg{display:block; width:100%; height:auto; cursor:pointer}
-#svg [data-mark]{cursor:pointer}
+#svg .door{cursor:pointer}
+#svg .door:hover .lbl,#svg .door:hover .lbl-u{opacity:.72}
+#svg .door:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
 .mark{display:block; flex:none}
 .phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-sm) 2px 0}
 .phase b{color:var(--ink); font-weight:500}
@@ -202,6 +204,20 @@ header{padding-block:var(--sp-xxl) 0}
         representation for the target resource”.</p></div>
     </div>
   </div>
+  <div class="piece" id="pYou">
+    <p class="phead">
+      <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
+        <circle cx="13" cy="7" r="5.5" fill="none" stroke="#8a8f98" stroke-width="2"/></svg>
+      <span class="pname">The circle on the left — you</span></p>
+    <p class="plain">Your browser. It asks for a page, waits, and shows whatever comes back.</p>
+    <div class="notes">
+      <div class="note"><h4>FROM THE ARTICLE</h4>
+        “Then it sends an HTTP request over the TCP connection to the server and waits for the server
+        to send an HTTP response back. And when your browser receives the response it displays it, in
+        this case it displays <b>Hello, World!</b>”</div>
+    </div>
+  </div>
+
   <div class="piece" id="pSrv">
     <p class="phead">
       <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
@@ -270,49 +286,52 @@ const head = (x, y, dir) => 'M'+(x-9*dir)+' '+(y-6)+'L'+(x-dir)+' '+y+'L'+(x-9*d
 
 /* ---------- marks you can click ---------- */
 const VB = 620;
-function makeHit(g, name, cx, cy, r){
-  const h = el('circle', {cx, cy, r, fill:'transparent', 'data-mark':name}, g);
-  h.style.cursor = 'pointer';
-  h.addEventListener('click', ev => { ev.stopPropagation(); openPop(name, cx); });
-  return h;
-}
-const PIECE = {tcp:'pTcp', req:'pReq', srv:'pSrv', res:'pRes'};
+const PIECE = {you:'pYou', tcp:'pTcp', req:'pReq', srv:'pSrv', res:'pRes'};
 
-/* a faint ring on every clickable mark, but only while stopped */
-function syncRings(){
-  const svg = $('#svg');
-  const old = svg.querySelector('#rings');
-  if (old) old.remove();
-  if (!paused) return;
-  const g = el('g', {id:'rings', 'pointer-events':'none'}, svg);
-  svg.querySelectorAll('[data-mark]').forEach(m => {
-    const on = m.getAttribute('data-mark') === openMark;
-    const a = {fill:'none', stroke: on ? C.accent : C.sub,
-      'stroke-width': on ? 1.8 : 1.4, opacity: on ? .85 : .34};
-    if (m.tagName === 'circle')
-      el('circle', Object.assign({cx:m.getAttribute('cx'), cy:m.getAttribute('cy'),
-        r:m.getAttribute('r')}, a), g);
-    else
-      el('rect', Object.assign({x:m.getAttribute('x'), y:m.getAttribute('y'),
-        width:m.getAttribute('width'), height:m.getAttribute('height'), rx:16}, a), g);
-  });
+/* The word is the door. Captions are clicked; marks are never buttons.
+   See docs/VISUAL-LANGUAGE.md section 5. */
+function door(g, name){
+  const t = g.querySelector('text');
+  t.classList.add('lbl');
+  /* a label that IS the datum keeps its data colour; the underline makes it a door.
+     A structural caption carries no data, so it takes the accent. */
+  if (t.getAttribute('fill') === C.sub) t.setAttribute('fill', C.accent);
+  const col = t.getAttribute('fill');
+  const x = +t.getAttribute('x'), y = +t.getAttribute('y'), w = t.textContent.length * 3.6 + 8;
+  el('line', {class:'lbl-u', x1:x-w, y1:y+4, x2:x+w, y2:y+4, stroke:col,
+    'stroke-width':1, 'stroke-dasharray':'2 2', opacity:.7}, g);
+  g.classList.add('door');
+  g.setAttribute('tabindex', '0');
+  g.setAttribute('role', 'button');
+  g.setAttribute('aria-label', TITLES[name]);
+  const go = ev => { ev.stopPropagation(); openPop(name, +t.getAttribute('x')); };
+  g.addEventListener('click', go);
+  g.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') go(ev); });
+  return g;
 }
+function slideDoor(g, x){
+  const t = g.querySelector('text'), u = g.querySelector('.lbl-u');
+  t.setAttribute('x', x);
+  if (u){ const w = t.textContent.length * 3.6 + 8;
+    u.setAttribute('x1', x-w); u.setAttribute('x2', x+w); }
+}
+const TITLES = {you:'you', tcp:'the connection', req:'the request', srv:'the server', res:'the response'};
+
 function updateChrome(){
-  const btn = $('#pause');
-  btn.setAttribute('aria-pressed', String(paused));
+  $('#pause').setAttribute('aria-pressed', String(paused));
   $('#pauseWord').textContent = paused ? 'Play' : 'Pause';
   $('#pauseGlyph').textContent = paused ? '▶' : '❙❙';
-  syncRings();
 }
+
+/* opening a door stops time; closing it resumes the same instant */
 function openPop(name, svgX){
   if (openMark === name) return closePop();
   if (openMark) putBack();
-  paused = true;
-  openMark = name;
+  paused = true; openMark = name;
   updateChrome();
   $('#popBody').appendChild($('#' + PIECE[name]));
   $('#pop').hidden = false;
-  $('#caret').style.left = Math.max(14, Math.min(94, svgX / VB * 100)) + '%';
+  $('#caret').style.left = Math.max(14, Math.min(94, (svgX ?? 310) / VB * 100)) + '%';
   $('#phase').innerHTML = '<i>stopped — close this to carry on</i>';
   $('#popClose').focus();
 }
@@ -325,14 +344,12 @@ function closePop(){
 }
 function setPaused(v){
   if (openMark) return closePop();
-  paused = v;
-  updateChrome();
+  paused = v; updateChrome();
   $('#phase').innerHTML = paused
-    ? '<i>stopped — click any ringed mark to see what it is</i>' : lastSaid;
+    ? '<i>stopped — click any underlined word to see what it names</i>' : lastSaid;
 }
 let lastSaid = '';
 const say = t => { lastSaid = t; if (!openMark) $('#phase').innerHTML = t; };
-
 /* ---------- the drawing ---------- */
 const G = {L:112, R:508, Y:84, RAD:42};
 async function play(){
@@ -347,16 +364,13 @@ async function play(){
     'stroke-linecap':'round'}, svg);
   el('circle', {cx:G.L, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
   const srv = el('circle', {cx:G.R, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
-  label(svg, G.L, G.Y+G.RAD+26, 'you'); label(svg, G.R, G.Y+G.RAD+26, 'the server');
+  const youG = el('g', {}, svg); label(youG, G.L, G.Y+G.RAD+26, 'you'); door(youG, 'you');
+  const srvG = el('g', {}, svg); label(srvG, G.R, G.Y+G.RAD+26, 'the server'); door(srvG, 'srv');
+  const tcpG = el('g', {}, svg); label(tcpG, (x0+x1)/2, G.Y+30, 'the connection'); door(tcpG, 'tcp');
   const held = el('circle', {cx:G.L, cy:G.Y, r:0, fill:col, 'fill-opacity':.22, stroke:col, 'stroke-width':2}, svg);
-  const ansT = label(svg, G.L, G.Y+G.RAD+48, '', Object.assign({fill:col, opacity:0}, MONO));
+  const ansG = el('g', {}, svg);
+  const ansT = label(ansG, G.L, G.Y+G.RAD+52, '', Object.assign({fill:col, opacity:0}, MONO));
 
-  /* always-present marks */
-  const hitLine = el('rect', {x:x0, y:G.Y-16, width:x1-x0, height:32, fill:'transparent',
-    'data-mark':'tcp'}, svg);
-  hitLine.style.cursor = 'pointer';
-  hitLine.addEventListener('click', ev => { ev.stopPropagation(); openPop('tcp', (x0+x1)/2); });
-  makeHit(svg, 'srv', G.R, G.Y, G.RAD + 6);
 
   say('nothing between them yet'); await wait(300);
   say('a <b>line</b> opens between you and the server');
@@ -365,20 +379,17 @@ async function play(){
 
   const dg = el('g', {}, svg);
   const d = el('circle', {cx:x0, cy:G.Y, r:8, fill:C.accent}, dg);
-  const g = label(svg, x0, G.Y-22, sel, Object.assign({fill:C.accent}, MONO));
+  const reqG = el('g', {}, svg);
+  const g = label(reqG, x0, G.Y-22, sel, Object.assign({fill:C.accent}, MONO));
+  door(reqG, 'req');
   const a = el('path', {d:'', stroke:C.accent, 'stroke-width':2.5, fill:'none',
     'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
-  const hitReq = el('circle', {cx:x0, cy:G.Y, r:22, fill:'transparent', 'data-mark':'req'}, svg);
-  hitReq.style.cursor = 'pointer';
-  hitReq.addEventListener('click', ev => { ev.stopPropagation();
-    openPop('req', +hitReq.getAttribute('cx')); });
-  if (paused) syncRings();
-  say('a <b>dot</b> carries the page name across — or stop it and click anything');
+  say('a <b>dot</b> carries the page name across');
   await tween(1100, t => { const x = x0+(x1-x0)*t;
-    d.setAttribute('cx',x); g.setAttribute('x',x); hitReq.setAttribute('cx',x);
+    d.setAttribute('cx',x); slideDoor(reqG, x);
     a.setAttribute('d', head(x+20, G.Y, 1)); }, my);
   if (token !== my) return;
-  dg.remove(); g.remove(); a.remove(); hitReq.remove();
+  dg.remove(); reqG.remove(); a.remove();
 
   /* the server works - a ring closes around it, at a constant rate */
   const CIRC = 2 * Math.PI * (G.RAD + 9);
@@ -402,28 +413,24 @@ async function play(){
       'stroke-linecap':'round'}, bg);
   }
   bg.setAttribute('transform', 'translate('+x1+','+G.Y+')');
-  const g2 = label(svg, x1, G.Y-22, body, Object.assign({fill:col}, MONO));
+  const resG = el('g', {}, svg);
+  const g2 = label(resG, x1, G.Y-22, body, Object.assign({fill:col}, MONO));
+  door(resG, 'res');
   const a2 = el('path', {d:'', stroke:col, 'stroke-width':2.5, fill:'none',
     'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
-  const hitRes = el('circle', {cx:x1, cy:G.Y, r:22, fill:'transparent', 'data-mark':'res'}, svg);
-  hitRes.style.cursor = 'pointer';
-  hitRes.addEventListener('click', ev => { ev.stopPropagation();
-    openPop('res', +hitRes.getAttribute('cx')); });
-  if (paused) syncRings();
   say(ok ? 'a <b>dot</b> brings the page back' : 'a <b>crossed circle</b> comes back — no such page');
   await tween(1100, t => { const x = x1-(x1-x0)*t;
     bg.setAttribute('transform', 'translate('+x+','+G.Y+')');
-    g2.setAttribute('x', x); hitRes.setAttribute('cx', x);
+    slideDoor(resG, x);
     a2.setAttribute('d', head(x-20, G.Y, -1)); }, my);
   if (token !== my) return;
-  bg.remove(); g2.remove(); a2.remove();
+  bg.remove(); resG.remove(); a2.remove();
   ansT.textContent = body;
   await tween(330, t => { held.setAttribute('r', 22*t); ansT.setAttribute('opacity', t); }, my);
   if (!ok){ held.setAttribute('fill-opacity', 0);
     el('path', {d:'M'+(G.L-8)+' '+(G.Y-8)+'L'+(G.L+8)+' '+(G.Y+8)+'M'+(G.L+8)+' '+(G.Y-8)+'L'+(G.L-8)+' '+(G.Y+8),
       stroke:col, 'stroke-width':2, 'stroke-linecap':'round'}, svg); }
-  /* the response mark stays reachable once it has landed */
-  hitRes.setAttribute('cx', G.L);
+  door(ansG, 'res');
   say(ok ? 'you have the page' : 'there was no page by that name');
 }
 
