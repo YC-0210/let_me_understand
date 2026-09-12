@@ -26,9 +26,7 @@ python3 -c "import json;d=json.load(open('pages.json'));open('ask.html','w').wri
 
 ## Still open
 
-| File | The question |
-|---|---|
-| `part1/anim.html` | Four motions for the drawing — there-and-back, time running down, dragging the dot, the server opening. Undecided. |
+Nothing.
 
 ## Settled and deleted
 
@@ -40,3 +38,11 @@ python3 -c "import json;d=json.load(open('pages.json'));open('ask.html','w').wri
 | `step.html` | How to move between rungs. Side-by-side won, then rung 1 was dropped entirely. |
 | `symbols.html` | Whether to use symbols at all. Yes — "the dot travels" became the drawing. |
 | `afford.html` | How to signal a mark is clickable. **The word is the door.** |
+| `anim.html` | Four motions for the drawing. **Straight there and back** — the only one that shows the whole exchange without the reader doing anything first. Dragging the dot is more faithful to Victor but opens as a static picture that means nothing until it is discovered, and Pause plus the doors already give control of time. "The server opens" is a second explanation (*why*, not *what*) and carries the lookup-table Departure. |
+
+### Carried forward from `anim.html`
+
+One idea from the time-runs-down motion is worth taking without taking the motion:
+**leave the journey on screen when the run finishes.** Today it ends with only the answer
+held, and both strokes are gone — so the reader cannot see the whole exchange at once,
+which is the thing the project keeps saying matters. Not built.
