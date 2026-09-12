@@ -23,7 +23,7 @@
 *{box-sizing:border-box}
 body{margin:0; background:var(--paper); color:var(--ink); font-size:15px; line-height:1.55;
   font-family:"Source Sans 3",system-ui,-apple-system,sans-serif}
-.wrap{max-width:920px; margin:0 auto; padding:0 20px}
+.wrap{max-width:660px; margin:0 auto; padding:0 20px}
 code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
 h1{font-size:26px; font-weight:700; margin:0; letter-spacing:-.015em; line-height:1.15}
 .lede{color:var(--ink2); margin:8px 0 0; max-width:54ch}
@@ -110,52 +110,25 @@ header{padding-block:32px 4px}
 .note a{color:var(--more); font-weight:600}
 .note code{font-size:12px; background:var(--card); border:1px solid var(--line); border-radius:4px; padding:0 4px}
 
-.rhead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:0 0 3px}
-.rn{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.1em;
-  text-transform:uppercase; color:var(--muted); border:1px solid var(--line2); border-radius:5px; padding:2px 6px}
-.rt{font-size:17px; font-weight:700; margin:0; letter-spacing:-.01em}
-
-/* ---- stage: rung 0 beside rung 1 ---- */
-.stage{display:grid; grid-template-columns:minmax(0,1fr) 254px; gap:20px; align-items:start; margin-top:20px}
-.side{position:sticky; top:14px}
-.list{border:1px solid var(--line2); border-radius:9px; overflow:hidden; background:var(--card); box-shadow:var(--sh)}
-.list button{all:unset; display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; width:100%;
-  box-sizing:border-box; padding:8px 11px; cursor:pointer; border-bottom:1px solid var(--line)}
-.list button:last-child{border-bottom:0}
-.list button:hover{background:var(--sunk)}
-.list button[aria-current=true]{background:var(--ask-w); box-shadow:inset 3px 0 0 var(--ask)}
-.list button:focus-visible{outline:2px solid var(--ask); outline-offset:-2px}
-.list .lp{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink2)}
-.list button[aria-current=true] .lp{color:var(--ask); font-weight:600}
-.list .lr{font-size:11px; color:var(--ans); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:104px}
-.list .lr.miss{color:var(--warn)}
-.sidecap{font-size:11.5px; color:var(--muted); margin:8px 2px 0; min-height:32px}
-.sidecap b{color:var(--ask)}
-
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-@media (max-width:820px){
-  .stage{grid-template-columns:1fr}
-  .side{position:static}
 }
 </style>
 
 <div class="wrap">
 <header>
-  <h1>Ask For Any Page</h1>
-  <p class="lede">You type an address, a page comes back. Click the page name and ask for something else.</p>
+  <h1>Have you ever wondered how a website works underneath?</h1>
+  <p class="lede">You type an address, a page comes back. That is the part everyone has seen.
+  Click the page name and ask for something else.</p>
 </header>
 
-<div class="stage">
- <div>
-  <div class="rhead" style="margin-bottom:10px"><span class="rn">Rung 0</span>
-    <h2 class="rt">One name, one page</h2></div>
+<div style="margin-top:20px">
   <div class="browser">
     <div class="chrome"><div class="lights"><i></i><i></i><i></i></div>
       <div class="urlbar"><span class="dim">http://localhost:8888</span><button class="pathbtn"></button></div>
     </div>
   </div>
-  <p class="nudge">↑ click the page name, or use the list &rarr;</p>
+  <p class="nudge">↑ click the page name to ask for a different one</p>
 
   <div class="fold">
     <span class="foldline"><i></i></span>
@@ -279,14 +252,6 @@ header{padding-block:32px 4px}
     <div class="page"><b id="shown"></b></div>
   </div>
   <p class="cap" id="resultCap"></p>
- </div>
-
- <aside class="side">
-  <div class="rhead" style="margin-bottom:10px"><span class="rn">Rung 1</span>
-    <h2 class="rt" style="font-size:15px">All six</h2></div>
-  <div class="list" id="list"></div>
-  <p class="sidecap" id="sidecap"></p>
- </aside>
 </div>
 
 <p class="foot">Every reply here really came back: each page name was sent over a real connection to a real
@@ -308,7 +273,7 @@ let sel = '/hello';
 const runOf = p => RUNS.find(r => r.path === p);
 const bodyOf = r => r.split('\n\n').slice(1).join('\n\n').trim();
 
-function render(p, previewing){
+function render(p){
   const shown = p || sel;
   const r = runOf(shown);
   const [ver, code, ...rest] = r.response.split('\n')[0].split(' ');
@@ -329,27 +294,6 @@ function render(p, previewing){
     ? 'There is no page by that name, and the server said so.'
     : 'The page name decided what came back.';
 
-  $$('#list button').forEach(b => b.setAttribute('aria-current', String(b.dataset.p === shown)));
-  $('#sidecap').innerHTML = previewing
-    ? 'Trying <b>' + esc(shown) + '</b> — click to keep it.'
-    : 'Hover any of them to try it here without leaving this one.';
-}
-
-function buildList(){
-  $('#list').innerHTML = SIX.map(p => {
-    const r = runOf(p), miss = statusOf(r) !== '200';
-    return '<button type="button" data-p="' + esc(p) + '" aria-current="' + (p === sel) + '">' +
-      '<span class="lp">' + esc(p) + '</span>' +
-      '<span class="lr' + (miss ? ' miss' : '') + '">' + esc(bodyOf(r.response)) + '</span></button>';
-  }).join('');
-  $$('#list button').forEach(b => {
-    const p = b.dataset.p;
-    b.onmouseenter = () => render(p, p !== sel);
-    b.onfocus      = () => render(p, p !== sel);
-    b.onmouseleave = () => render();
-    b.onblur       = () => render();
-    b.onclick      = () => { sel = p; render(); };
-  });
 }
 
 const fb = $('#foldbtn');
@@ -367,6 +311,5 @@ $$('.pathbtn').forEach(pb => pb.onclick = () => {
   render();
 });
 
-buildList();
 render();
 </script>
