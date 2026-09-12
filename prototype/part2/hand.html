@@ -11,7 +11,7 @@
   --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-tert:#62666d;
   --accent:#5e6ad2; --accent-hover:#828fff; --accent-focus:#5e69d1;
   --ok:#27a644; --no:#d95448;
-  --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px;
+  --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-pill:9999px;
   --sp-xs:8px; --sp-sm:12px; --sp-md:16px; --sp-lg:24px; --sp-xl:32px; --sp-xxl:48px;
   --sans:"Inter",-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
@@ -39,8 +39,14 @@ header{padding-block:var(--sp-xxl) 0}
 .panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
 svg.draw{display:block; width:100%; height:auto}
 .steps{margin:var(--sp-md) 0 0}
-#scrub{width:100%; accent-color:var(--accent); cursor:pointer}
+/* the step control is drawn, not inherited - the host's native track is light */
+#scrub{width:100%; cursor:pointer; -webkit-appearance:none; appearance:none; background:transparent}
 #scrub:focus-visible{outline:2px solid var(--accent-focus); outline-offset:4px}
+#scrub::-webkit-slider-runnable-track{height:4px; border-radius:var(--r-pill); background:var(--hair-strong)}
+#scrub::-moz-range-track{height:4px; border-radius:var(--r-pill); background:var(--hair-strong)}
+#scrub::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:14px; height:14px;
+  margin-top:-5px; border-radius:50%; background:var(--accent); border:0}
+#scrub::-moz-range-thumb{width:14px; height:14px; border-radius:50%; background:var(--accent); border:0}
 .phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-xs) 2px 0;
   display:flex; gap:10px; align-items:baseline}
 .phase .n{font-family:var(--mono); font-size:12px; color:var(--ink-tert); flex:none}
@@ -71,7 +77,7 @@ svg.draw{display:block; width:100%; height:auto}
   <h1>How should the server hand <code>environ</code> to the application?</h1>
   <p class="lede">Between you and the server there is a real network connection. Between the
   server and the application there is not — they are the same running program, and the call is
-  an ordinary function call. Four ways to draw that. Same seven steps in each.</p>
+  an ordinary function call. Four ways to draw that. Same eight steps in each.</p>
 </header>
 
 <div class="tabs" role="tablist" id="tabs"></div>
@@ -79,7 +85,7 @@ svg.draw{display:block; width:100%; height:auto}
 <div class="panel">
   <svg id="svg" class="draw" viewBox="0 0 700 250" role="img" aria-label="Four ways to draw the server calling the application"></svg>
   <div class="steps">
-    <input type="range" id="scrub" min="0" max="6" step="1" value="0" aria-label="Step through the exchange">
+    <input type="range" id="scrub" min="0" max="7" step="1" value="0" aria-label="Step through the exchange">
     <p class="phase" id="phase"></p>
   </div>
   <div class="ctl">
@@ -110,15 +116,21 @@ function el(t, a, p){ const e = document.createElementNS(NS, t);
 function txt(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anchor':'middle',
   fill:C.sub, 'font-size':12.5, 'font-family':SANS}, o||{}), p); e.textContent = s; return e; }
 
+/* Work steps and travel steps alternate. Every place that works gets a ring;
+   every ring leaves a held disc behind; every hand-off is a disc on a line. */
+const WORK = [2, 4, 6];
 const STEPS = [
-  ['Nothing yet',                        0],
-  ['Your request arrives',            1000],
-  ['The server builds <b>environ</b>',  700],
-  ['The server calls the application', 1000],
-  ['The application works',            1300],
-  ['The application answers',          1000],
-  ['The server replies to you',        1000],
+  ['Nothing yet',                            0],
+  ['Your request arrives',                1000],
+  ['The server builds <b>environ</b>',     800],
+  ['The server calls the application',    1000],
+  ['The application works',               1300],
+  ['The application answers',             1000],
+  ['The server builds the response',       800],
+  ['The server replies to you',           1000],
 ];
+/* section 3: travel eases, work is linear. Without this they read as the same motion. */
+const ease = f => f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2)/2;
 
 /* ---- the four candidates ------------------------------------------------ */
 const VARIANTS = [
@@ -170,7 +182,10 @@ function draw(){
   [...svg.children].forEach(c => { if (c.style.display !== 'none') c.remove(); });
   const v = VARIANTS[vi].id, G = geom(v);
   svg.setAttribute('viewBox', G.vb);
-  const at = i => step === i ? sub : (step > i ? 1 : 0);
+  const at  = i => step === i ? sub : (step > i ? 1 : 0);          /* linear - work */
+  const atE = i => step === i ? ease(sub) : (step > i ? 1 : 0);     /* eased  - travel */
+  /* the result of a piece of work appears as that work finishes */
+  const done = i => step === i ? Math.max(0, (sub - .55)/.45) : (step > i ? 1 : 0);
   const [n0, n1] = gapL(G.you, G.srv);                       /* the real network gap */
 
   /* ---- the network channel: opens at step 1, stays open ---- */
@@ -206,10 +221,10 @@ function draw(){
     P_CALL = arc(i0, i1, G.srv.y, v === 'C' ? -26 : -30);
     P_RET  = arc(i1, i0, G.srv.y, v === 'C' ?  26 :  30);
   }
-  trace(P_IN, at(1), C.accent);
-  if (P_CALL) trace(P_CALL, at(3), C.accent);
-  if (P_RET)  trace(P_RET,  at(5), C.ok);
-  trace(P_BACK, at(6), C.ok);
+  trace(P_IN, atE(1), C.accent);
+  if (P_CALL) trace(P_CALL, atE(3), C.accent);
+  if (P_RET)  trace(P_RET,  atE(5), C.ok);
+  trace(P_BACK, atE(7), C.ok);
 
   /* ---- the places ---- */
   const circle = (p, stroke) => el('circle', {cx:p.x, cy:p.y, r:p.r, fill:'none',
@@ -218,39 +233,43 @@ function draw(){
   circle(G.srv, C.sub);
   if (G.app) circle(G.app, C.sub);
 
-  /* ---- held disc: environ at rest inside the server (step 2 onward) ---- */
+  /* ---- which place is doing the work at each work step ---- */
+  const worker = {2: G.srv, 4: (G.app || G.srv), 6: G.srv};
+  const workCol = {2: C.accent, 4: C.accent, 6: C.ok};
+
+  /* ---- held disc: what a piece of work produced, at rest inside the place ---- */
   const held = (p, f, col) => { if (f <= 0) return;
     el('circle', {cx:p.x, cy:p.y, r:22*Math.min(1,f), fill:col, 'fill-opacity':.22,
       stroke:col, 'stroke-width':2}, svg); };
-  if (v === 'D'){
-    if (step === 2 || step === 3) held(G.srv, at(2), C.accent);
-    if (step === 5) held(G.srv, at(5), C.ok);
-  } else {
-    if (step === 2) held(G.srv, at(2), C.accent);
-  }
+  /* environ rests in the server from the moment it is built until it is handed over */
+  if (step === 2) held(G.srv, done(2), C.accent);
+  if (v === 'D' && step === 3) held(G.srv, 1, C.accent);
+  /* the body rests in whoever made it, until it moves on */
+  if (step === 4) held(worker[4], done(4), C.ok);
+  if (step === 6) held(G.srv, done(6), C.ok);
 
-  /* ---- ring: work taking time, around whatever is doing it ---- */
-  if (step === 4){
-    const p = G.app || G.srv, R = p.r + 9, CIRC = 2*Math.PI*R;
-    el('circle', {cx:p.x, cy:p.y, r:R, fill:'none', stroke:C.accent, 'stroke-width':2.5,
+  /* ---- ring: work taking time, around whatever is doing it. Linear - labour does not accelerate. ---- */
+  if (WORK.includes(step)){
+    const p = worker[step], R = p.r + 9, CIRC = 2*Math.PI*R;
+    el('circle', {cx:p.x, cy:p.y, r:R, fill:'none', stroke:workCol[step], 'stroke-width':2.5,
       'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC*(1-sub),
       transform:'rotate(-90 '+p.x+' '+p.y+')'}, svg);
   }
 
-  /* ---- discs, each only while travelling ---- */
+  /* ---- discs, each only while travelling. Eased - travel accelerates. ---- */
   const disc = (d, f, col) => { const q = pointOn(d, f);
     el('circle', {cx:q.x, cy:q.y, r:8, fill:col}, svg); };
-  if (step === 1) disc(P_IN, sub, C.accent);
-  if (step === 3 && P_CALL) disc(P_CALL, sub, C.accent);
-  if (step === 5 && P_RET)  disc(P_RET,  sub, C.ok);
-  if (step === 6) disc(P_BACK, sub, C.ok);
+  if (step === 1) disc(P_IN, ease(sub), C.accent);
+  if (step === 3 && P_CALL) disc(P_CALL, ease(sub), C.accent);
+  if (step === 5 && P_RET)  disc(P_RET,  ease(sub), C.ok);
+  if (step === 7) disc(P_BACK, ease(sub), C.ok);
 
   /* ---- names below marks, values above (section 4) ---- */
   txt(svg, G.you.x, G.you.y + G.you.r + 22, 'you');
   txt(svg, G.srv.x, G.srv.y + G.srv.r + (v === 'C' ? 44 : 22),
       v === 'C' ? 'the server, and Flask inside it' : 'the server');
   if (G.app) txt(svg, G.app.x, G.app.y + G.app.r + (v === 'C' ? 18 : 22), 'Flask');
-  if (v === 'D' && step >= 4) txt(svg, G.srv.x, G.srv.y - G.srv.r - 20, 'Flask',
+  if (v === 'D' && step >= 4) txt(svg, G.srv.x, G.srv.y - G.srv.r - 34, 'Flask',
       {fill:C.accent, 'font-family':MONO, 'font-size':12});
 
   /* channel names */
@@ -267,11 +286,11 @@ function draw(){
   if (at(5) > 0 && P_RET) txt(svg, v === 'C' ? G.srv.x : (i0+i1)/2,
       v === 'C' ? G.srv.y + G.srv.r + 20 : G.srv.y + 44, 'Hello world from Flask!',
       {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
-  if (at(6) > 0) txt(svg, (n0+n1)/2, G.you.y + 44, 'HTTP/1.1 200 OK', {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
-  if (v === 'D' && (step === 2 || step === 3)) txt(svg, G.srv.x, G.srv.y - G.srv.r - 20, 'environ',
+  if (at(7) > 0) txt(svg, (n0+n1)/2, G.you.y + 44, 'HTTP/1.1 200 OK', {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
+  if (v === 'D' && (step === 2 || step === 3)) txt(svg, G.srv.x, G.srv.y - G.srv.r - 34, 'environ',
       {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
 
-  $('#phase').innerHTML = '<span class="n">' + step + ' / 6</span>' + STEPS[step][0];
+  $('#phase').innerHTML = '<span class="n">' + step + ' / 7</span>' + STEPS[step][0];
   $('#scrub').value = step;
   $('#hint').textContent = VARIANTS[vi].hint;
 }
