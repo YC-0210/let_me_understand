@@ -123,7 +123,7 @@ header{padding-block:var(--sp-xxl) 0}
 </div>
 
 <div class="panel">
-  <svg id="svg" viewBox="0 0 620 194" role="img" aria-label="A dot carrying a page name between two circles"></svg>
+  <svg id="svg" viewBox="0 0 620 202" role="img" aria-label="A dot carrying a page name between two circles"></svg>
   <div class="pop" id="pop" hidden>
     <button class="close" id="popClose" aria-label="Close and carry on">✕</button>
     <span class="caret" id="caret"></span>
@@ -327,7 +327,7 @@ function closePop(){
 /* ---------- the drawing: a pure function of (step, t) ----------
    The independent variable is the STEP, not elapsed time. Every step is a state the
    article describes; t is progress into that step. See docs/VISUAL-LANGUAGE.md 3a. */
-const G = {L:112, R:508, Y:86, RAD:40};
+const G = {L:112, R:508, Y:92, RAD:40};
 const X0 = G.L + G.RAD + 8, X1 = G.R - G.RAD - 8;
 const P_OUT  = 'M'+X0+' '+G.Y+' C'+(X0+110)+' '+(G.Y-46)+' '+(X1-110)+' '+(G.Y-46)+' '+X1+' '+G.Y;
 const P_BACK = 'M'+X1+' '+G.Y+' C'+(X1-110)+' '+(G.Y+46)+' '+(X0+110)+' '+(G.Y+46)+' '+X0+' '+G.Y;
@@ -414,11 +414,11 @@ function draw(){
     label(g, x, y, txt, fill ? {fill} : {});
     door(g, name);
   };
-  cap(G.L, G.Y+G.RAD+26, 'you', 'you');
-  cap(G.R, G.Y+G.RAD+26, 'the server', 'srv');
-  if (step >= 1) cap((X0+X1)/2, G.Y+G.RAD+48, 'the connection', 'tcp');
-  if (at(2) > 0) cap((X0+X1)/2, G.Y-26, sel, 'req', C.accent);
-  if (at(4) > 0) cap((X0+X1)/2, G.Y+32, body, 'res', col);
+  cap(G.L, G.Y+G.RAD+30, 'you', 'you');
+  cap(G.R, G.Y+G.RAD+30, 'the server', 'srv');
+  if (step >= 1) cap((X0+X1)/2, G.Y+G.RAD+52, 'the connection', 'tcp');
+  if (at(2) > 0) cap((X0+X1)/2, G.Y-48, sel, 'req', C.accent);        /* above the upper arc */
+  if (at(4) > 0) cap((X0+X1)/2, G.Y+54, body, 'res', col);            /* below the lower arc */
 
   $('#scrub').value = step;
   $('#phase').innerHTML = '<span class="n">' + step + ' / 6</span>' + STEPS[step][0];

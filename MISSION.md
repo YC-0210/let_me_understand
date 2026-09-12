@@ -63,6 +63,14 @@ Five, and they decide arguments rather than describe them.
   deeper rather than closing the tab.
 - It works on a second article I did not design it around.
 
+## Who does what
+
+- **Claude writes the code.** This is the deliberate opposite of the parent project's
+  learn-by-building constraint, decided once the visual language had taken shape.
+- **The user supplies the judgement**: what helps a person learn and what gets in the
+  way. Every design decision in `docs/VISUAL-LANGUAGE.md` came from that judgement being
+  applied to something built and rejected.
+
 ## Out of scope
 
 - Text with no system in it. If there is nothing to vary, there is nothing to see.
