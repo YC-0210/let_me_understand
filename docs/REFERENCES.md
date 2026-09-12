@@ -36,6 +36,22 @@ Comics, not interactives — but the best example anywhere of explaining
 [HTTP](https://wizardzines.com/comics/http-apis/) to someone starting from nothing, on
 exactly this project's subject. _Take_: the voice and the question-shaped entry point.
 
+## Visual language
+
+**[Bertin, *Semiology of Graphics* (1967)](https://www3.cs.stonybrook.edu/~mueller/teaching/cse564/bertin.pdf)** ([short version](https://www.axismaps.com/guide/visual-variables))
+The seven visual variables — position, shape, orientation, colour, texture, value, size —
+and which kind of meaning each can carry. _Take_: the answer to “should this be a shape or
+a colour?”, which is the question [`VISUAL-LANGUAGE.md`](VISUAL-LANGUAGE.md) rests on.
+
+**[Isotype — Neurath and Arntz](https://en.wikipedia.org/wiki/Isotype_(picture_language))** ([Arntz archive](http://gerdarntz.org/content/gerd-arntz.html))
+A designed picture *language* with a grammar, not a set of icons; 4,000 symbols from one
+rule set. _Take_: a tiny vocabulary scales only if the rules are strict.
+
+**[Otl Aicher, Munich 1972](https://www.piktogramm.de/en/system)**
+Every figure from one grid, fixed angles, one stroke weight. Its own documentation calls
+the rules “comparable with the rules of grammar for a language”. _Take_: grammar before
+vocabulary, and geometry written down rather than eyeballed.
+
 ## Method
 
 - Bret Victor, [Up and Down the Ladder of Abstraction](https://worrydream.com/LadderOfAbstraction/) — rungs, stepping down, abstracting over a parameter.
