@@ -1,0 +1,1352 @@
+{
+ "switches": {
+  "fork": true,
+  "parent_closes": true,
+  "reap": "waitpid_nohang",
+  "eintr_safe": false
+ },
+ "events": [
+  {
+   "t": 0.3,
+   "kind": "listen",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 22.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 23.2,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1906
+  },
+  {
+   "t": 23.6,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 24.4,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 24.8,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1908
+  },
+  {
+   "t": 25.6,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 28.9,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 29.7,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1910
+  },
+  {
+   "t": 31.9,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 33.6,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 34.3,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1912
+  },
+  {
+   "t": 36.3,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 38.1,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 38.4,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1914
+  },
+  {
+   "t": 38.8,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 42.0,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 42.4,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1916
+  },
+  {
+   "t": 42.8,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 46.7,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 47.2,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1918
+  },
+  {
+   "t": 47.9,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 51.1,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 51.7,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1920
+  },
+  {
+   "t": 52.3,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 55.5,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 56.0,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1922
+  },
+  {
+   "t": 56.5,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 61.6,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 62.2,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1924
+  },
+  {
+   "t": 62.9,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 64.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 65.4,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1926
+  },
+  {
+   "t": 66.3,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 68.7,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 69.4,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1928
+  },
+  {
+   "t": 70.1,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 73.1,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 73.7,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1930
+  },
+  {
+   "t": 74.4,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 77.5,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 78.1,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1932
+  },
+  {
+   "t": 79.1,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 81.9,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 82.5,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1934
+  },
+  {
+   "t": 83.1,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 86.3,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 86.9,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1936
+  },
+  {
+   "t": 87.6,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 90.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 91.4,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1938
+  },
+  {
+   "t": 92.3,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 95.0,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 95.7,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1940
+  },
+  {
+   "t": 96.6,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 99.4,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 100.0,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1942
+  },
+  {
+   "t": 100.9,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 104.0,
+   "kind": "sigchld",
+   "fds": 6,
+   "zombies": 1
+  },
+  {
+   "t": 104.6,
+   "kind": "reap",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1906
+  },
+  {
+   "t": 105.0,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 105.7,
+   "kind": "sigchld",
+   "fds": 6,
+   "zombies": 1
+  },
+  {
+   "t": 106.4,
+   "kind": "reap",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1908
+  },
+  {
+   "t": 106.6,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1944
+  },
+  {
+   "t": 106.9,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 108.5,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 110.2,
+   "kind": "sigchld",
+   "fds": 7,
+   "zombies": 1
+  },
+  {
+   "t": 110.9,
+   "kind": "reap",
+   "fds": 7,
+   "zombies": 0,
+   "pid": 1910
+  },
+  {
+   "t": 109.3,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1946
+  },
+  {
+   "t": 111.5,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 112.9,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 113.7,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1948
+  },
+  {
+   "t": 114.9,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 115.2,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1912
+  },
+  {
+   "t": 114.8,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 117.2,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 117.8,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1950
+  },
+  {
+   "t": 118.6,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 119.2,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 119.4,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1914
+  },
+  {
+   "t": 121.5,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 122.0,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1952
+  },
+  {
+   "t": 122.9,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 123.3,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 123.6,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1916
+  },
+  {
+   "t": 126.1,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 126.8,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1954
+  },
+  {
+   "t": 127.9,
+   "kind": "sigchld",
+   "fds": 6,
+   "zombies": 1
+  },
+  {
+   "t": 128.3,
+   "kind": "reap",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1918
+  },
+  {
+   "t": 127.6,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 130.3,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 130.8,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1956
+  },
+  {
+   "t": 131.8,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 132.5,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 132.8,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1920
+  },
+  {
+   "t": 134.7,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 135.3,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1958
+  },
+  {
+   "t": 136.0,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 136.6,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 136.9,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1922
+  },
+  {
+   "t": 139.0,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 139.7,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1960
+  },
+  {
+   "t": 140.5,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 143.0,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 143.5,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1924
+  },
+  {
+   "t": 143.9,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 144.6,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1962
+  },
+  {
+   "t": 145.3,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 146.2,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 146.5,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1926
+  },
+  {
+   "t": 147.8,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 148.5,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1964
+  },
+  {
+   "t": 149.4,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 150.0,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 150.4,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1928
+  },
+  {
+   "t": 152.1,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 152.7,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1966
+  },
+  {
+   "t": 153.4,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 154.5,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 154.9,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1930
+  },
+  {
+   "t": 156.5,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 157.0,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1968
+  },
+  {
+   "t": 157.7,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 158.8,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 159.2,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1932
+  },
+  {
+   "t": 160.9,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 161.6,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1970
+  },
+  {
+   "t": 162.3,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 163.3,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 163.6,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1934
+  },
+  {
+   "t": 165.4,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 166.0,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1972
+  },
+  {
+   "t": 166.8,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 167.7,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 168.0,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1936
+  },
+  {
+   "t": 169.7,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 170.2,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1974
+  },
+  {
+   "t": 170.8,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 172.3,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 172.6,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1938
+  },
+  {
+   "t": 174.0,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 174.6,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1976
+  },
+  {
+   "t": 175.3,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 176.4,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 176.7,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1940
+  },
+  {
+   "t": 178.3,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 178.9,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1978
+  },
+  {
+   "t": 179.5,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 180.8,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 181.2,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1942
+  },
+  {
+   "t": 182.7,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 183.2,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1980
+  },
+  {
+   "t": 183.8,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 186.3,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 186.7,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1944
+  },
+  {
+   "t": 187.0,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 187.5,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1982
+  },
+  {
+   "t": 188.1,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 190.0,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 190.4,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1946
+  },
+  {
+   "t": 191.4,
+   "kind": "accept",
+   "fds": 6,
+   "zombies": 0,
+   "fd": 4
+  },
+  {
+   "t": 191.9,
+   "kind": "fork",
+   "fds": 6,
+   "zombies": 0,
+   "pid": 1984
+  },
+  {
+   "t": 192.7,
+   "kind": "parent_close",
+   "fds": 5,
+   "zombies": 0
+  },
+  {
+   "t": 194.5,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 194.7,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1948
+  },
+  {
+   "t": 198.4,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 198.7,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1950
+  },
+  {
+   "t": 202.6,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 202.9,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1952
+  },
+  {
+   "t": 207.5,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 207.8,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1954
+  },
+  {
+   "t": 211.5,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 211.7,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1956
+  },
+  {
+   "t": 216.1,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 216.4,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1958
+  },
+  {
+   "t": 220.5,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 220.8,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1960
+  },
+  {
+   "t": 225.4,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 225.6,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1962
+  },
+  {
+   "t": 229.3,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 229.5,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1964
+  },
+  {
+   "t": 233.4,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 233.6,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1966
+  },
+  {
+   "t": 237.8,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 238.0,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1968
+  },
+  {
+   "t": 242.4,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 242.6,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1970
+  },
+  {
+   "t": 246.8,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 246.9,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1972
+  },
+  {
+   "t": 250.8,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 251.0,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1974
+  },
+  {
+   "t": 255.5,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 255.6,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1976
+  },
+  {
+   "t": 259.6,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 259.8,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1978
+  },
+  {
+   "t": 264.0,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 264.1,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1980
+  },
+  {
+   "t": 268.1,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 268.3,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1982
+  },
+  {
+   "t": 272.7,
+   "kind": "sigchld",
+   "fds": 5,
+   "zombies": 1
+  },
+  {
+   "t": 272.8,
+   "kind": "reap",
+   "fds": 5,
+   "zombies": 0,
+   "pid": 1984
+  },
+  {
+   "t": 795.0,
+   "kind": "shutdown",
+   "fds": 5,
+   "zombies": 0
+  }
+ ],
+ "summary": {
+  "accepted": 40,
+  "peak_fds": 7,
+  "fd_limit": 32,
+  "peak_zombies": 1,
+  "errors": [],
+  "forks": 40,
+  "reaped": 40,
+  "wall_ms": 795.2
+ }
+}

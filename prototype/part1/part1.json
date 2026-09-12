@@ -1,0 +1,1265 @@
+{
+ "source": [
+  "import socket",
+  "",
+  "HOST, PORT = '', 8888",
+  "",
+  "listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)",
+  "listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)",
+  "listen_socket.bind((HOST, PORT))",
+  "listen_socket.listen(1)",
+  "print('Serving HTTP on port %s ...' % PORT)",
+  "while True:",
+  "    client_connection, client_address = listen_socket.accept()",
+  "    request = client_connection.recv(1024)",
+  "    print(request.decode())",
+  "",
+  "    http_response = b\"\"\"\\",
+  "HTTP/1.1 200 OK",
+  "",
+  "Hello, World!",
+  "\"\"\"",
+  "    client_connection.sendall(http_response)",
+  "    client_connection.close()",
+  ""
+ ],
+ "boot": [
+  {
+   "t": 8.0,
+   "line": 1,
+   "src": "import socket"
+  },
+  {
+   "t": 8.0,
+   "line": 3,
+   "src": "HOST, PORT = '', 8888"
+  },
+  {
+   "t": 8.0,
+   "line": 5,
+   "src": "listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)"
+  },
+  {
+   "t": 8.1,
+   "line": 6,
+   "src": "listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)",
+   "sock": {
+    "listen": {
+     "fd": 3,
+     "local": "0.0.0.0:0",
+     "peer": null
+    }
+   }
+  },
+  {
+   "t": 8.1,
+   "line": 7,
+   "src": "listen_socket.bind((HOST, PORT))",
+   "sock": {
+    "listen": {
+     "fd": 3,
+     "local": "0.0.0.0:0",
+     "peer": null
+    }
+   }
+  },
+  {
+   "t": 8.1,
+   "line": 8,
+   "src": "listen_socket.listen(1)",
+   "sock": {
+    "listen": {
+     "fd": 3,
+     "local": "0.0.0.0:8888",
+     "peer": null
+    }
+   }
+  },
+  {
+   "t": 8.2,
+   "line": 9,
+   "src": "print('Serving HTTP on port %s ...' % PORT)",
+   "sock": {
+    "listen": {
+     "fd": 3,
+     "local": "0.0.0.0:8888",
+     "peer": null
+    }
+   }
+  },
+  {
+   "t": 8.2,
+   "line": 10,
+   "src": "while True:",
+   "sock": {
+    "listen": {
+     "fd": 3,
+     "local": "0.0.0.0:8888",
+     "peer": null
+    }
+   }
+  }
+ ],
+ "runs": [
+  {
+   "key": "browser",
+   "title": "What a browser sends",
+   "request": "GET /hello HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: curl/8.4.0\r\nAccept: */*\r\n\r\n",
+   "request_bytes": 82,
+   "trace": [
+    {
+     "t": 8.2,
+     "line": 11,
+     "src": "    client_connection, client_address = listen_socket.accept()",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      }
+     }
+    },
+    {
+     "t": 923.7,
+     "line": 12,
+     "src": "    request = client_connection.recv(1024)",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35216"
+      }
+     },
+     "peer": "127.0.0.1:35216"
+    },
+    {
+     "t": 923.8,
+     "line": 13,
+     "src": "    print(request.decode())",
+     "request": "GET /hello HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: curl/8.4.0\r\nAccept: */*\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35216"
+      }
+     },
+     "peer": "127.0.0.1:35216"
+    },
+    {
+     "t": 923.8,
+     "line": 15,
+     "src": "    http_response = b\"\"\"\\",
+     "request": "GET /hello HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: curl/8.4.0\r\nAccept: */*\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35216"
+      }
+     },
+     "peer": "127.0.0.1:35216"
+    },
+    {
+     "t": 923.9,
+     "line": 20,
+     "src": "    client_connection.sendall(http_response)",
+     "request": "GET /hello HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: curl/8.4.0\r\nAccept: */*\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35216"
+      }
+     },
+     "peer": "127.0.0.1:35216"
+    },
+    {
+     "t": 923.9,
+     "line": 21,
+     "src": "    client_connection.close()",
+     "request": "GET /hello HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: curl/8.4.0\r\nAccept: */*\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35216"
+      }
+     },
+     "peer": "127.0.0.1:35216"
+    },
+    {
+     "t": 924.0,
+     "line": 10,
+     "src": "while True:",
+     "request": "GET /hello HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: curl/8.4.0\r\nAccept: */*\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35216"
+    }
+   ],
+   "sockets": [],
+   "response": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "response_bytes": 31,
+   "client_saw": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "request_seen": "GET /hello HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: curl/8.4.0\r\nAccept: */*\r\n\r\n"
+  },
+  {
+   "key": "telnet",
+   "title": "The bare minimum, typed by hand",
+   "request": "GET /hello HTTP/1.1\r\n\r\n",
+   "request_bytes": 23,
+   "trace": [
+    {
+     "t": 924.1,
+     "line": 11,
+     "src": "    client_connection, client_address = listen_socket.accept()",
+     "request": "GET /hello HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: curl/8.4.0\r\nAccept: */*\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35216"
+    },
+    {
+     "t": 1044.9,
+     "line": 12,
+     "src": "    request = client_connection.recv(1024)",
+     "request": "GET /hello HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: curl/8.4.0\r\nAccept: */*\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35224"
+      }
+     },
+     "peer": "127.0.0.1:35224"
+    },
+    {
+     "t": 1044.9,
+     "line": 13,
+     "src": "    print(request.decode())",
+     "request": "GET /hello HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35224"
+      }
+     },
+     "peer": "127.0.0.1:35224"
+    },
+    {
+     "t": 1045.0,
+     "line": 15,
+     "src": "    http_response = b\"\"\"\\",
+     "request": "GET /hello HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35224"
+      }
+     },
+     "peer": "127.0.0.1:35224"
+    },
+    {
+     "t": 1045.0,
+     "line": 20,
+     "src": "    client_connection.sendall(http_response)",
+     "request": "GET /hello HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35224"
+      }
+     },
+     "peer": "127.0.0.1:35224"
+    },
+    {
+     "t": 1045.1,
+     "line": 21,
+     "src": "    client_connection.close()",
+     "request": "GET /hello HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35224"
+      }
+     },
+     "peer": "127.0.0.1:35224"
+    },
+    {
+     "t": 1045.1,
+     "line": 10,
+     "src": "while True:",
+     "request": "GET /hello HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35224"
+    }
+   ],
+   "sockets": [],
+   "response": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "response_bytes": 31,
+   "client_saw": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "request_seen": "GET /hello HTTP/1.1\r\n\r\n"
+  },
+  {
+   "key": "otherpath",
+   "title": "A path the server was never told about",
+   "request": "GET /this/does/not/exist HTTP/1.1\r\n\r\n",
+   "request_bytes": 37,
+   "trace": [
+    {
+     "t": 1045.2,
+     "line": 11,
+     "src": "    client_connection, client_address = listen_socket.accept()",
+     "request": "GET /hello HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35224"
+    },
+    {
+     "t": 1166.0,
+     "line": 12,
+     "src": "    request = client_connection.recv(1024)",
+     "request": "GET /hello HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35232"
+      }
+     },
+     "peer": "127.0.0.1:35232"
+    },
+    {
+     "t": 1166.1,
+     "line": 13,
+     "src": "    print(request.decode())",
+     "request": "GET /this/does/not/exist HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35232"
+      }
+     },
+     "peer": "127.0.0.1:35232"
+    },
+    {
+     "t": 1166.1,
+     "line": 15,
+     "src": "    http_response = b\"\"\"\\",
+     "request": "GET /this/does/not/exist HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35232"
+      }
+     },
+     "peer": "127.0.0.1:35232"
+    },
+    {
+     "t": 1166.1,
+     "line": 20,
+     "src": "    client_connection.sendall(http_response)",
+     "request": "GET /this/does/not/exist HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35232"
+      }
+     },
+     "peer": "127.0.0.1:35232"
+    },
+    {
+     "t": 1166.2,
+     "line": 21,
+     "src": "    client_connection.close()",
+     "request": "GET /this/does/not/exist HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35232"
+      }
+     },
+     "peer": "127.0.0.1:35232"
+    },
+    {
+     "t": 1166.2,
+     "line": 10,
+     "src": "while True:",
+     "request": "GET /this/does/not/exist HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35232"
+    }
+   ],
+   "sockets": [],
+   "response": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "response_bytes": 31,
+   "client_saw": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "request_seen": "GET /this/does/not/exist HTTP/1.1\r\n\r\n"
+  },
+  {
+   "key": "post",
+   "title": "A POST with a body",
+   "request": "POST /hello HTTP/1.1\r\nContent-Length: 11\r\n\r\nhello=world",
+   "request_bytes": 55,
+   "trace": [
+    {
+     "t": 1166.2,
+     "line": 11,
+     "src": "    client_connection, client_address = listen_socket.accept()",
+     "request": "GET /this/does/not/exist HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35232"
+    },
+    {
+     "t": 1287.2,
+     "line": 12,
+     "src": "    request = client_connection.recv(1024)",
+     "request": "GET /this/does/not/exist HTTP/1.1\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35236"
+      }
+     },
+     "peer": "127.0.0.1:35236"
+    },
+    {
+     "t": 1287.2,
+     "line": 13,
+     "src": "    print(request.decode())",
+     "request": "POST /hello HTTP/1.1\r\nContent-Length: 11\r\n\r\nhello=world",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35236"
+      }
+     },
+     "peer": "127.0.0.1:35236"
+    },
+    {
+     "t": 1287.3,
+     "line": 15,
+     "src": "    http_response = b\"\"\"\\",
+     "request": "POST /hello HTTP/1.1\r\nContent-Length: 11\r\n\r\nhello=world",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35236"
+      }
+     },
+     "peer": "127.0.0.1:35236"
+    },
+    {
+     "t": 1287.3,
+     "line": 20,
+     "src": "    client_connection.sendall(http_response)",
+     "request": "POST /hello HTTP/1.1\r\nContent-Length: 11\r\n\r\nhello=world",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35236"
+      }
+     },
+     "peer": "127.0.0.1:35236"
+    },
+    {
+     "t": 1287.4,
+     "line": 21,
+     "src": "    client_connection.close()",
+     "request": "POST /hello HTTP/1.1\r\nContent-Length: 11\r\n\r\nhello=world",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35236"
+      }
+     },
+     "peer": "127.0.0.1:35236"
+    },
+    {
+     "t": 1287.4,
+     "line": 10,
+     "src": "while True:",
+     "request": "POST /hello HTTP/1.1\r\nContent-Length: 11\r\n\r\nhello=world",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35236"
+    }
+   ],
+   "sockets": [],
+   "response": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "response_bytes": 31,
+   "client_saw": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "request_seen": "POST /hello HTTP/1.1\r\nContent-Length: 11\r\n\r\nhello=world"
+  },
+  {
+   "key": "garbage",
+   "title": "Not HTTP at all",
+   "request": "i am not a http request\r\n\r\n",
+   "request_bytes": 27,
+   "trace": [
+    {
+     "t": 1287.4,
+     "line": 11,
+     "src": "    client_connection, client_address = listen_socket.accept()",
+     "request": "POST /hello HTTP/1.1\r\nContent-Length: 11\r\n\r\nhello=world",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35236"
+    },
+    {
+     "t": 1408.3,
+     "line": 12,
+     "src": "    request = client_connection.recv(1024)",
+     "request": "POST /hello HTTP/1.1\r\nContent-Length: 11\r\n\r\nhello=world",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35244"
+      }
+     },
+     "peer": "127.0.0.1:35244"
+    },
+    {
+     "t": 1408.4,
+     "line": 13,
+     "src": "    print(request.decode())",
+     "request": "i am not a http request\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35244"
+      }
+     },
+     "peer": "127.0.0.1:35244"
+    },
+    {
+     "t": 1408.4,
+     "line": 15,
+     "src": "    http_response = b\"\"\"\\",
+     "request": "i am not a http request\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35244"
+      }
+     },
+     "peer": "127.0.0.1:35244"
+    },
+    {
+     "t": 1408.4,
+     "line": 20,
+     "src": "    client_connection.sendall(http_response)",
+     "request": "i am not a http request\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35244"
+      }
+     },
+     "peer": "127.0.0.1:35244"
+    },
+    {
+     "t": 1408.5,
+     "line": 21,
+     "src": "    client_connection.close()",
+     "request": "i am not a http request\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35244"
+      }
+     },
+     "peer": "127.0.0.1:35244"
+    },
+    {
+     "t": 1408.5,
+     "line": 10,
+     "src": "while True:",
+     "request": "i am not a http request\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35244"
+    }
+   ],
+   "sockets": [],
+   "response": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "response_bytes": 31,
+   "client_saw": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "request_seen": "i am not a http request\r\n\r\n"
+  },
+  {
+   "key": "partial",
+   "title": "Cut off mid-word, then hung up",
+   "request": "GET /hel",
+   "request_bytes": 8,
+   "trace": [
+    {
+     "t": 1408.5,
+     "line": 11,
+     "src": "    client_connection, client_address = listen_socket.accept()",
+     "request": "i am not a http request\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35244"
+    },
+    {
+     "t": 1529.5,
+     "line": 12,
+     "src": "    request = client_connection.recv(1024)",
+     "request": "i am not a http request\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35254"
+      }
+     },
+     "peer": "127.0.0.1:35254"
+    },
+    {
+     "t": 1529.6,
+     "line": 13,
+     "src": "    print(request.decode())",
+     "request": "GET /hel",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35254"
+      }
+     },
+     "peer": "127.0.0.1:35254"
+    },
+    {
+     "t": 1529.6,
+     "line": 15,
+     "src": "    http_response = b\"\"\"\\",
+     "request": "GET /hel",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35254"
+      }
+     },
+     "peer": "127.0.0.1:35254"
+    },
+    {
+     "t": 1529.6,
+     "line": 20,
+     "src": "    client_connection.sendall(http_response)",
+     "request": "GET /hel",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35254"
+      }
+     },
+     "peer": "127.0.0.1:35254"
+    },
+    {
+     "t": 1529.8,
+     "line": 21,
+     "src": "    client_connection.close()",
+     "request": "GET /hel",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35254"
+      }
+     },
+     "peer": "127.0.0.1:35254"
+    },
+    {
+     "t": 1529.9,
+     "line": 10,
+     "src": "while True:",
+     "request": "GET /hel",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35254"
+    }
+   ],
+   "sockets": [],
+   "response": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "response_bytes": 31,
+   "client_saw": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "request_seen": "GET /hel"
+  },
+  {
+   "key": "empty",
+   "title": "Connected and said nothing",
+   "request": "",
+   "request_bytes": 0,
+   "trace": [
+    {
+     "t": 1530.0,
+     "line": 11,
+     "src": "    client_connection, client_address = listen_socket.accept()",
+     "request": "GET /hel",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35254"
+    },
+    {
+     "t": 1650.7,
+     "line": 12,
+     "src": "    request = client_connection.recv(1024)",
+     "request": "GET /hel",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35264"
+      }
+     },
+     "peer": "127.0.0.1:35264"
+    },
+    {
+     "t": 1650.9,
+     "line": 13,
+     "src": "    print(request.decode())",
+     "request": "",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35264"
+      }
+     },
+     "peer": "127.0.0.1:35264"
+    },
+    {
+     "t": 1651.0,
+     "line": 15,
+     "src": "    http_response = b\"\"\"\\",
+     "request": "",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35264"
+      }
+     },
+     "peer": "127.0.0.1:35264"
+    },
+    {
+     "t": 1651.0,
+     "line": 20,
+     "src": "    client_connection.sendall(http_response)",
+     "request": "",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35264"
+      }
+     },
+     "peer": "127.0.0.1:35264"
+    },
+    {
+     "t": 1651.1,
+     "line": 21,
+     "src": "    client_connection.close()",
+     "request": "",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35264"
+      }
+     },
+     "peer": "127.0.0.1:35264"
+    },
+    {
+     "t": 1651.2,
+     "line": 10,
+     "src": "while True:",
+     "request": "",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35264"
+    }
+   ],
+   "sockets": [],
+   "response": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "response_bytes": 31,
+   "client_saw": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "request_seen": ""
+  },
+  {
+   "key": "oldhttp",
+   "title": "A version from 1991",
+   "request": "GET /hello HTTP/0.9\r\n\r\n",
+   "request_bytes": 23,
+   "trace": [
+    {
+     "t": 1651.3,
+     "line": 11,
+     "src": "    client_connection, client_address = listen_socket.accept()",
+     "request": "",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35264"
+    },
+    {
+     "t": 1772.8,
+     "line": 12,
+     "src": "    request = client_connection.recv(1024)",
+     "request": "",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35270"
+      }
+     },
+     "peer": "127.0.0.1:35270"
+    },
+    {
+     "t": 1772.9,
+     "line": 13,
+     "src": "    print(request.decode())",
+     "request": "GET /hello HTTP/0.9\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35270"
+      }
+     },
+     "peer": "127.0.0.1:35270"
+    },
+    {
+     "t": 1772.9,
+     "line": 15,
+     "src": "    http_response = b\"\"\"\\",
+     "request": "GET /hello HTTP/0.9\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35270"
+      }
+     },
+     "peer": "127.0.0.1:35270"
+    },
+    {
+     "t": 1772.9,
+     "line": 20,
+     "src": "    client_connection.sendall(http_response)",
+     "request": "GET /hello HTTP/0.9\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35270"
+      }
+     },
+     "peer": "127.0.0.1:35270"
+    },
+    {
+     "t": 1773.0,
+     "line": 21,
+     "src": "    client_connection.close()",
+     "request": "GET /hello HTTP/0.9\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": 4,
+       "local": "127.0.0.1:8888",
+       "peer": "127.0.0.1:35270"
+      }
+     },
+     "peer": "127.0.0.1:35270"
+    },
+    {
+     "t": 1773.0,
+     "line": 10,
+     "src": "while True:",
+     "request": "GET /hello HTTP/0.9\r\n\r\n",
+     "sock": {
+      "listen": {
+       "fd": 3,
+       "local": "0.0.0.0:8888",
+       "peer": null
+      },
+      "conn": {
+       "fd": -1,
+       "local": null,
+       "peer": null
+      }
+     },
+     "peer": "127.0.0.1:35270"
+    }
+   ],
+   "sockets": [],
+   "response": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "response_bytes": 31,
+   "client_saw": "HTTP/1.1 200 OK\n\nHello, World!\n",
+   "request_seen": "GET /hello HTTP/0.9\r\n\r\n"
+  }
+ ]
+}

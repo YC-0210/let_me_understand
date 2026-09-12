@@ -1,0 +1,364 @@
+<title>Three Ways In</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --canvas:#010102; --s1:#0f1011; --s2:#141516; --s3:#18191a;
+  --hair:#23252a; --hair-strong:#34343a;
+  --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-tert:#62666d;
+  --accent:#5e6ad2; --accent-hover:#828fff; --accent-focus:#5e69d1; --ok:#27a644; --no:#d95448;
+  --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px;
+  --sp-xs:8px; --sp-sm:12px; --sp-md:16px; --sp-lg:24px; --sp-xl:32px; --sp-xxl:48px;
+  --sans:"Inter",-apple-system,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--sans); font-size:16px;
+  line-height:1.5; letter-spacing:-.05px; -webkit-font-smoothing:antialiased; padding-block:0 150px}
+.wrap{max-width:700px; margin:0 auto; padding:0 var(--sp-lg)}
+code{font-family:var(--mono); font-size:13px}
+h1{font-size:30px; font-weight:600; line-height:1.14; letter-spacing:-.9px; margin:0}
+.lede{color:var(--ink-muted); font-size:17px; margin:12px 0 0; max-width:54ch}
+header{padding-block:var(--sp-xxl) var(--sp-lg); border-bottom:1px solid var(--hair); margin-bottom:var(--sp-xl)}
+.vt{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:0 0 4px}
+.vtag{font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.4px; color:var(--ink-subtle);
+  border:1px solid var(--hair-strong); border-radius:var(--r-xs); padding:2px 7px}
+.vn{font-size:20px; font-weight:600; letter-spacing:-.3px; margin:0}
+.vd{color:var(--ink-muted); font-size:14px; margin:4px 0 var(--sp-md); max-width:62ch}
+.verdict{color:var(--ink-tert); font-size:13px; margin:var(--sp-sm) 2px 0}
+
+.ctl{display:flex; align-items:center; gap:var(--sp-sm); flex-wrap:wrap; margin:0 0 var(--sp-md)}
+.eyebrow{font-size:13px; font-weight:500; letter-spacing:.4px; color:var(--ink-subtle)}
+.pn{font-family:var(--mono); font-size:14px; font-weight:500; cursor:pointer; color:var(--accent);
+  background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-md); padding:8px 14px}
+.pn:hover{border-color:var(--hair-strong); color:var(--accent-hover)}
+.btn{font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; color:var(--ink);
+  background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-md); padding:8px 14px;
+  display:inline-flex; align-items:center; gap:8px}
+.btn:hover{border-color:var(--hair-strong)}
+.btn:focus-visible,.pn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.btn[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
+.last{margin-left:auto}
+
+.panel{position:relative; background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl);
+  padding:var(--sp-lg)}
+.panel > svg{display:block; width:100%; height:auto}
+.phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-sm) 2px 0}
+.phase b{color:var(--ink); font-weight:500}
+.pop{margin-top:var(--sp-lg); position:relative; background:var(--s2); border:1px solid var(--hair-strong);
+  border-radius:var(--r-lg); padding:var(--sp-md) var(--sp-lg)}
+.pop h4{margin:0 0 6px; font-size:15px; font-weight:500}
+.pop p{margin:0; font-size:14px; color:var(--ink-muted)}
+.pop .close{position:absolute; top:8px; right:8px; width:26px; height:26px; border-radius:var(--r-sm);
+  background:transparent; border:1px solid transparent; color:var(--ink-subtle); cursor:pointer; font-size:15px}
+.pop .close:hover{background:var(--s3); border-color:var(--hair); color:var(--ink)}
+.caret{position:absolute; top:-7px; width:12px; height:12px; background:var(--s2);
+  border-left:1px solid var(--hair-strong); border-top:1px solid var(--hair-strong);
+  transform:rotate(45deg); transition:left .18s ease}
+
+/* A - the words are the doors */
+.hot{cursor:pointer}
+.hot:hover .lbl{fill:var(--accent-hover)}
+
+/* B - a key under the drawing */
+.key{display:flex; flex-wrap:wrap; gap:var(--sp-xs); margin-top:var(--sp-md);
+  padding-top:var(--sp-md); border-top:1px solid var(--hair)}
+.keyb{display:inline-flex; align-items:center; gap:8px; font-family:var(--sans); font-size:13px;
+  color:var(--ink-muted); background:var(--canvas); border:1px solid var(--hair);
+  border-radius:var(--r-md); padding:6px 12px; cursor:pointer}
+.keyb:hover{border-color:var(--hair-strong); color:var(--ink)}
+.keyb[aria-pressed=true]{border-color:var(--accent); color:var(--ink); background:var(--s2)}
+.keyb:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.keyb svg{display:block; flex:none}
+
+.bar{position:fixed; left:50%; transform:translateX(-50%); bottom:20px; z-index:50; display:flex; gap:3px;
+  background:var(--s1); border:1px solid var(--hair-strong); border-radius:var(--r-lg); padding:4px;
+  max-width:calc(100vw - 24px); overflow-x:auto}
+.bar button{font-family:var(--sans); font-size:13px; font-weight:500; border:0; border-radius:var(--r-md);
+  padding:8px 13px; background:transparent; color:var(--ink-subtle); cursor:pointer; white-space:nowrap}
+.bar button[aria-pressed=true]{background:var(--ink); color:var(--canvas)}
+.bar button:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Three Ways In</h1>
+  <p class="lede">Same drawing, same marks. Only the signal that you can click them changes. Stop the
+  animation, or don't — each of these should work either way.</p>
+</header>
+
+<div class="vt"><span class="vtag" id="tag"></span><h2 class="vn" id="vname"></h2></div>
+<p class="vd" id="vdesc"></p>
+
+<div class="ctl">
+  <span class="eyebrow">ASKING FOR</span>
+  <button class="pn" id="pn"></button>
+  <button class="btn last" id="pause" aria-pressed="false"><span id="pg">❙❙</span><span id="pw">Pause</span></button>
+  <button class="btn" id="replay">Replay</button>
+</div>
+
+<div class="panel">
+  <svg id="svg" viewBox="0 0 620 210" role="img" aria-label="A dot travelling between two circles"></svg>
+  <div class="key" id="key" hidden></div>
+  <div class="pop" id="pop" hidden>
+    <button class="close" id="popClose" aria-label="Close">✕</button>
+    <span class="caret" id="caret"></span>
+    <h4 id="popTitle"></h4><p id="popText"></p>
+  </div>
+</div>
+<p class="phase" id="phase"></p>
+<p class="verdict" id="verdict"></p>
+</div>
+
+<div class="bar" role="group" aria-label="Choose an affordance">
+  <button data-nav="A" aria-pressed="true">A · the words</button>
+  <button data-nav="B" aria-pressed="false">B · a key</button>
+  <button data-nav="C" aria-pressed="false">C · numbers</button>
+</div>
+
+<script>
+const D = /*__DATA__*/ null;
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const NAMES = ['/hello','/goodbye','/greeting','/about','/cats','/index.html'];
+const C = {accent:'#5e6ad2', hover:'#828fff', ok:'#27a644', no:'#d95448',
+           ink:'#f7f8f8', sub:'#8a8f98', tert:'#62666d', hair:'#34343a'};
+const runOf = p => D.runs.find(r => r.path === p);
+const st = p => runOf(p).response.split('\n')[0].split(' ');
+const bodyOf = p => runOf(p).response.split('\n\n').slice(1).join('\n\n').trim();
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const TEXT = {
+  tcp:['The line — a TCP connection', 'It opens before anything is sent, and both dots travel along it. The article says only that the browser “needs to establish a TCP connection with the Web server”.'],
+  req:['The dot going out — the HTTP request', 'Three parts: the method GET, the path you asked for, and the protocol version HTTP/1.1.'],
+  srv:['The circle on the right — the web server', 'A program waiting on port 8888. It reads the request, prints it to its own terminal, and sends a response back down the same line.'],
+  res:['The dot coming back — the HTTP response', 'A status line, then a required empty line, then the body — the text the page shows you.']
+};
+const MODES = {
+  A:['A', 'The words are the doors',
+     'No marks are added to the drawing at all. The captions that were already there — “you”, “the server”, the page name riding the dot — become links: accent-coloured, dotted underline, standard web behaviour that needs no explaining.',
+     'Cheapest in ink. Relies on a reader noticing coloured text, and the line has no caption of its own, so one had to be invented.'],
+  B:['B', 'A key under the drawing',
+     'The drawing stays untouched. Beneath it sits a key to the four marks. Hovering an entry lights its mark in the drawing; clicking opens it.',
+     'The only option that teaches the symbol alphabet as a side effect. Costs a row of permanent furniture under every drawing.'],
+  C:['C', 'Numbered call-outs',
+     'Each mark carries a small numbered badge, the way a labelled diagram in a textbook does. Numbers say “these parts are annotated” without saying anything else.',
+     'Least ambiguous and the most conventional. Adds four marks to a drawing whose whole point was having only four.']
+};
+let sel = '/hello', mode = 'A', token = 0, paused = false, openMark = null;
+
+const NS = 'http://www.w3.org/2000/svg';
+function el(t, a, p){ const e = document.createElementNS(NS, t);
+  for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+function text(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anchor':'middle',
+  fill:C.sub, 'font-size':13, 'font-family':'Inter, sans-serif'}, o||{}), p); e.textContent = s; return e; }
+const MONO = {'font-family':'JetBrains Mono, monospace', 'font-size':13};
+const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
+const linear = t => t;
+function tween(ms, step, my, eas){
+  return new Promise(res => {
+    if (REDUCED){ step(1); return res(); }
+    let last = performance.now(), acc = 0; const f2 = eas || ease;
+    (function f(now){ if (token !== my) return res();
+      const dt = now - last; last = now; if (!paused) acc += dt;
+      const t = Math.min(1, acc/ms); step(f2(t));
+      t < 1 ? requestAnimationFrame(f) : res(); })(last);
+  });
+}
+const wait = ms => tween(ms, () => {}, token, linear);
+const arrow = (x, y, d) => 'M'+(x-9*d)+' '+(y-6)+'L'+(x-d)+' '+y+'L'+(x-9*d)+' '+(y+6);
+
+/* ---------- affordances ---------- */
+let anchors = {};           /* name -> current x in viewBox units */
+function register(name, x){ anchors[name] = x; }
+
+function wordLink(g, name){
+  g.classList.add('hot');
+  g.setAttribute('data-mark', name);
+  const t = g.querySelector('text') || g;
+  t.classList.add('lbl');
+  if (mode === 'A'){
+    t.setAttribute('fill', C.accent);
+    const bb = {x: +t.getAttribute('x'), y: +t.getAttribute('y')};
+    el('line', {x1:bb.x-24, y1:bb.y+4, x2:bb.x+24, y2:bb.y+4, stroke:C.accent,
+      'stroke-width':1, 'stroke-dasharray':'2 2', opacity:.75, class:'lbl-u'}, g);
+  }
+  g.addEventListener('click', ev => { ev.stopPropagation(); openPop(name); });
+  g.style.cursor = 'pointer';
+}
+function badge(svg, name, cx, cy){
+  if (mode !== 'C') return;
+  const n = {tcp:1, req:2, srv:3, res:4}[name];
+  const g = el('g', {'data-mark':name}, svg);
+  g.style.cursor = 'pointer';
+  el('circle', {cx, cy, r:10, fill:C.canvas || '#010102', stroke:C.accent, 'stroke-width':1.5}, g);
+  const t = el('text', {x:cx, y:cy+4, 'text-anchor':'middle', fill:C.accent, 'font-size':11,
+    'font-weight':600, 'font-family':'Inter, sans-serif'}, g); t.textContent = n;
+  g.addEventListener('click', ev => { ev.stopPropagation(); openPop(name); });
+  return g;
+}
+function buildKey(){
+  const k = $('#key');
+  k.hidden = mode !== 'B';
+  if (mode !== 'B') return;
+  const gl = {
+    tcp:'<svg width="20" height="12" viewBox="0 0 20 12"><line x1="1" y1="6" x2="19" y2="6" stroke="#34343a" stroke-width="2.5" stroke-linecap="round"/></svg>',
+    req:'<svg width="20" height="12" viewBox="0 0 20 12"><circle cx="6" cy="6" r="5" fill="#5e6ad2"/><path d="M13 3l4 3-4 3" stroke="#5e6ad2" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    srv:'<svg width="20" height="12" viewBox="0 0 20 12"><circle cx="10" cy="6" r="5" fill="none" stroke="#8a8f98" stroke-width="2"/></svg>',
+    res:'<svg width="20" height="12" viewBox="0 0 20 12"><circle cx="14" cy="6" r="5" fill="#27a644"/><path d="M7 3L3 6l4 3" stroke="#27a644" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
+  const short = {tcp:'the line', req:'the request', srv:'the server', res:'the answer'};
+  k.innerHTML = Object.keys(short).map(n =>
+    '<button class="keyb" data-key="'+n+'" aria-pressed="false">'+gl[n]+short[n]+'</button>').join('');
+  k.querySelectorAll('.keyb').forEach(b => {
+    b.onclick = ev => { ev.stopPropagation(); openPop(b.dataset.key); };
+    b.onmouseenter = () => highlight(b.dataset.key, true);
+    b.onmouseleave = () => highlight(b.dataset.key, false);
+  });
+}
+function highlight(name, on){
+  const svg = $('#svg');
+  const old = svg.querySelector('#hl'); if (old) old.remove();
+  if (!on || anchors[name] === undefined) return;
+  const g = el('g', {id:'hl', 'pointer-events':'none'}, svg);
+  const y = name === 'tcp' ? 84 : 84;
+  if (name === 'tcp') el('line', {x1:162, y1:y, x2:458, y2:y, stroke:C.hover, 'stroke-width':6,
+    opacity:.3, 'stroke-linecap':'round'}, g);
+  else el('circle', {cx:anchors[name], cy:y, r:name === 'srv' ? 50 : 20, fill:'none',
+    stroke:C.hover, 'stroke-width':6, opacity:.28}, g);
+}
+
+/* ---------- popover ---------- */
+function openPop(name){
+  if (openMark === name) return closePop();
+  openMark = name; paused = true; chrome();
+  $('#popTitle').textContent = TEXT[name][0];
+  $('#popText').textContent = TEXT[name][1];
+  $('#pop').hidden = false;
+  $('#caret').style.left = Math.max(14, Math.min(94, (anchors[name] ?? 310) / 620 * 100)) + '%';
+  $('#phase').innerHTML = '<i>stopped</i>';
+  if (mode === 'B') $$('.keyb').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.key === name)));
+}
+function closePop(){
+  openMark = null; paused = false; chrome();
+  $('#pop').hidden = true; $('#phase').innerHTML = said;
+  $$('.keyb').forEach(b => b.setAttribute('aria-pressed','false'));
+  const hl = $('#svg').querySelector('#hl'); if (hl) hl.remove();
+}
+function chrome(){
+  $('#pause').setAttribute('aria-pressed', String(paused));
+  $('#pw').textContent = paused ? 'Play' : 'Pause';
+  $('#pg').textContent = paused ? '▶' : '❙❙';
+}
+let said = '';
+const say = t => { said = t; if (!openMark) $('#phase').innerHTML = t; };
+
+/* ---------- the drawing ---------- */
+const G = {L:112, R:508, Y:84, RAD:42};
+async function play(){
+  const my = ++token, svg = $('#svg');
+  closePop(); paused = false; chrome(); anchors = {};
+  svg.innerHTML = '';
+  const [, code] = st(sel), ok = code === '200', body = bodyOf(sel), col = ok ? C.ok : C.no;
+  const x0 = G.L + G.RAD + 8, x1 = G.R - G.RAD - 8;
+
+  const wire = el('line', {x1:x0, y1:G.Y, x2:x0, y2:G.Y, stroke:C.hair, 'stroke-width':2,
+    'stroke-linecap':'round'}, svg);
+  el('circle', {cx:G.L, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
+  const srv = el('circle', {cx:G.R, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
+  register('tcp', (x0+x1)/2); register('srv', G.R);
+
+  const youG = el('g', {}, svg); text(youG, G.L, G.Y+G.RAD+26, 'you');
+  const srvG = el('g', {}, svg); text(srvG, G.R, G.Y+G.RAD+26, 'the server');
+  wordLink(srvG, 'srv');
+  const lineG = el('g', {}, svg);
+  if (mode === 'A'){ text(lineG, (x0+x1)/2, G.Y+34, 'the connection'); wordLink(lineG, 'tcp'); }
+  badge(svg, 'tcp', (x0+x1)/2, G.Y+22);
+  badge(svg, 'srv', G.R + 34, G.Y - 34);
+
+  const held = el('circle', {cx:G.L, cy:G.Y, r:0, fill:col, 'fill-opacity':.22, stroke:col, 'stroke-width':2}, svg);
+  const ansG = el('g', {}, svg);
+  const ansT = text(ansG, G.L, G.Y+G.RAD+48, '', Object.assign({fill:col, opacity:0}, MONO));
+
+  say('nothing between them yet'); await wait(300);
+  say('a <b>line</b> opens'); await tween(450, t => wire.setAttribute('x2', x0+(x1-x0)*t), my);
+  if (token !== my) return;
+
+  const dot = el('circle', {cx:x0, cy:G.Y, r:8, fill:C.accent}, svg);
+  const tagG = el('g', {}, svg);
+  const tagT = text(tagG, x0, G.Y-22, sel, Object.assign({fill:C.accent}, MONO));
+  wordLink(tagG, 'req');
+  const ar = el('path', {d:'', stroke:C.accent, 'stroke-width':2.5, fill:'none',
+    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
+  const bq = badge(svg, 'req', x0, G.Y+24);
+  say('a <b>dot</b> carries the page name across');
+  await tween(1100, t => { const x = x0+(x1-x0)*t;
+    dot.setAttribute('cx',x); tagT.setAttribute('x',x); register('req', x);
+    const u = tagG.querySelector('.lbl-u');
+    if (u){ u.setAttribute('x1', x-24); u.setAttribute('x2', x+24); }
+    if (bq) bq.setAttribute('transform', 'translate('+(x-x0)+',0)');
+    ar.setAttribute('d', arrow(x+20, G.Y, 1)); }, my);
+  if (token !== my) return;
+  dot.remove(); tagG.remove(); ar.remove(); if (bq) bq.remove();
+
+  const CIRC = 2*Math.PI*(G.RAD+9);
+  const prog = el('circle', {cx:G.R, cy:G.Y, r:G.RAD+9, fill:'none', stroke:C.accent, 'stroke-width':2.5,
+    'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC,
+    transform:'rotate(-90 '+G.R+' '+G.Y+')'}, svg);
+  say('the server is working on it');
+  await tween(1500, t => prog.setAttribute('stroke-dashoffset', CIRC*(1-t)), my, linear);
+  if (token !== my) return;
+  prog.remove(); srv.setAttribute('stroke', col);
+
+  const bg = el('g', {transform:'translate('+x1+','+G.Y+')'}, svg);
+  if (ok) el('circle', {cx:0, cy:0, r:8, fill:col}, bg);
+  else { el('circle', {cx:0, cy:0, r:9, fill:'none', stroke:col, 'stroke-width':2}, bg);
+    el('path', {d:'M-4.5 -4.5L4.5 4.5M4.5 -4.5L-4.5 4.5', stroke:col, 'stroke-width':2,
+      'stroke-linecap':'round'}, bg); }
+  const rG = el('g', {}, svg);
+  const rT = text(rG, x1, G.Y-22, body, Object.assign({fill:col}, MONO));
+  wordLink(rG, 'res');
+  const ar2 = el('path', {d:'', stroke:col, 'stroke-width':2.5, fill:'none',
+    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
+  const rq = badge(svg, 'res', x1, G.Y+24);
+  say(ok ? 'a <b>dot</b> brings the page back' : 'a <b>crossed circle</b> comes back');
+  await tween(1100, t => { const x = x1-(x1-x0)*t;
+    bg.setAttribute('transform','translate('+x+','+G.Y+')'); rT.setAttribute('x',x); register('res', x);
+    const u = rG.querySelector('.lbl-u');
+    if (u){ u.setAttribute('x1', x-30); u.setAttribute('x2', x+30); }
+    if (rq) rq.setAttribute('transform','translate('+(x-x1)+',0)');
+    ar2.setAttribute('d', arrow(x-20, G.Y, -1)); }, my);
+  if (token !== my) return;
+  bg.remove(); ar2.remove(); rG.remove(); if (rq) rq.remove();
+  ansT.textContent = body;
+  await tween(330, t => { held.setAttribute('r', 22*t); ansT.setAttribute('opacity', t); }, my);
+  register('res', G.L);
+  wordLink(ansG, 'res');
+  badge(svg, 'res', G.L, G.Y + G.RAD + 68);
+  say(ok ? 'you have the page' : 'there was no page by that name');
+}
+
+/* ---------- wiring ---------- */
+function setMode(m){
+  mode = m;
+  const [tag, name, desc, verdict] = MODES[m];
+  $('#tag').textContent = tag; $('#vname').textContent = name;
+  $('#vdesc').textContent = desc; $('#verdict').textContent = verdict;
+  $$('[data-nav]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.nav === m)));
+  const u = new URL(location); u.searchParams.set('m', m); history.replaceState({}, '', u);
+  buildKey(); refresh();
+}
+function refresh(){ $('#pn').textContent = sel; play(); }
+$('#pn').onclick = () => { sel = NAMES[(NAMES.indexOf(sel)+1)%NAMES.length]; refresh(); };
+$('#replay').onclick = () => refresh();
+$('#popClose').onclick = () => closePop();
+$('#pause').onclick = () => { if (openMark) return closePop();
+  paused = !paused; chrome(); $('#phase').innerHTML = paused ? '<i>stopped</i>' : said; };
+addEventListener('keydown', e => { if (e.key === 'Escape' && openMark) closePop(); });
+$$('[data-nav]').forEach(b => b.onclick = () => setMode(b.dataset.nav));
+const m0 = new URL(location).searchParams.get('m');
+setMode(['A','B','C'].includes(m0) ? m0 : 'A');
+</script>

@@ -1,0 +1,311 @@
+<title>Circle, Line, Dot</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#FBFBFA; --card:#FFFFFF; --ink:#191A18; --ink2:#45473F; --muted:#8A8B82;
+  --line:#DFE0DB; --line2:#C3C5BD;
+  --ask:#1668B8; --ans:#00907A; --warn:#C0392B;
+  --sh:0 1px 2px rgba(25,26,24,.05),0 8px 22px rgba(25,26,24,.06);
+}
+:root:not([data-theme="light"]){@media (prefers-color-scheme:dark){
+  --paper:#0E100F; --card:#171A18; --ink:#E8EAE5; --ink2:#BCC0B8; --muted:#7E8279;
+  --line:#2A2E2B; --line2:#454B46; --ask:#4A90D9; --ans:#0FA98C; --warn:#DD6353;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 8px 22px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#0E100F; --card:#171A18; --ink:#E8EAE5; --ink2:#BCC0B8; --muted:#7E8279;
+  --line:#2A2E2B; --line2:#454B46; --ask:#4A90D9; --ans:#0FA98C; --warn:#DD6353;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 8px 22px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink); font-size:15px; line-height:1.55;
+  font-family:"Source Sans 3",system-ui,-apple-system,sans-serif; padding-block:0 96px}
+.wrap{max-width:720px; margin:0 auto; padding:0 20px}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+h1{font-size:25px; font-weight:700; margin:0; letter-spacing:-.015em; line-height:1.2}
+.lede{color:var(--ink2); margin:8px 0 0; max-width:56ch}
+header{padding-block:30px 6px; border-bottom:1px solid var(--line); margin-bottom:24px}
+.vtitle{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:0 0 3px}
+.vtag{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted); border:1px solid var(--line2); border-radius:5px; padding:2px 6px}
+.vname{font-size:19px; font-weight:700; margin:0}
+.vdesc{color:var(--ink2); margin:2px 0 14px; font-size:13.5px; max-width:60ch}
+
+.stagebox{background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:var(--sh);
+  padding:8px 10px 12px}
+svg{display:block; width:100%; height:auto}
+.legend{display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 4px 0}
+.pn{font:inherit; font-family:"IBM Plex Mono",monospace; font-size:13.5px; font-weight:600; cursor:pointer;
+  color:var(--ask); background:none; border:0; border-bottom:2px dotted var(--ask); border-radius:3px; padding:1px 4px}
+.pn:hover{background:rgba(22,104,184,.10)}
+.pn:focus-visible{outline:2px solid var(--ask); outline-offset:2px}
+.pn::after{content:"↻"; font-size:10px; opacity:.55; margin-left:5px}
+.replay{font:inherit; font-size:12.5px; font-weight:600; cursor:pointer; color:var(--ink2); background:none;
+  border:1px solid var(--line2); border-radius:999px; padding:4px 12px; margin-left:auto}
+.replay:hover{border-color:var(--ink2)}
+.replay:focus-visible{outline:2px solid var(--ask); outline-offset:2px}
+.phase{font-size:13px; color:var(--muted); min-height:20px; padding:6px 4px 0}
+.phase b{color:var(--ink)}
+
+.bar{position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:50; display:flex; gap:4px;
+  background:var(--card); border:1px solid var(--line2); border-radius:12px; padding:4px; box-shadow:var(--sh)}
+.bar button{font:inherit; font-size:13px; font-weight:500; border:0; border-radius:9px; padding:8px 15px;
+  background:transparent; color:var(--ink2); cursor:pointer; white-space:nowrap}
+.bar button[aria-pressed=true]{background:var(--ink); color:var(--card)}
+.bar button:focus-visible{outline:2px solid var(--ask); outline-offset:2px}
+[hidden]{display:none!important}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Circle, Line, Dot</h1>
+  <p class="lede">The same exchange drawn with four marks and nothing else: a <b>circle</b> for each side,
+  a <b>line</b> for the connection, a <b>dot</b> for the message, an <b>arrow</b> for its direction.</p>
+</header>
+
+<section id="vA">
+  <div class="vtitle"><span class="vtag">A</span><h2 class="vname">The dot travels</h2></div>
+  <p class="vdesc">Two circles. A line appears between them, then a dot carries your page name across
+  and a second dot brings the answer back.</p>
+  <div class="stagebox">
+    <svg id="svgA" viewBox="0 0 620 200" role="img" aria-label="A dot travelling between two circles"></svg>
+    <p class="phase" id="phA"></p>
+    <div class="legend">
+      <span style="font-size:13px;color:var(--muted)">asking for</span>
+      <button class="pn" id="pnA"></button>
+      <button class="replay" id="rpA">replay</button>
+    </div>
+  </div>
+</section>
+
+<section id="vB" hidden>
+  <div class="vtitle"><span class="vtag">B</span><h2 class="vname">The dot is picked out</h2></div>
+  <p class="vdesc">The server circle holds three small circles — the pages it has. Your arrow points at
+  one of them. If it hits, that circle comes back to you. If it misses, nothing comes back but a cross.</p>
+  <div class="stagebox">
+    <svg id="svgB" viewBox="0 0 620 250" role="img" aria-label="An arrow selecting one of three circles"></svg>
+    <p class="phase" id="phB"></p>
+    <div class="legend">
+      <span style="font-size:13px;color:var(--muted)">asking for</span>
+      <button class="pn" id="pnB"></button>
+      <button class="replay" id="rpB">replay</button>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="bar" role="group" aria-label="Choose a drawing">
+  <button id="nA" type="button" aria-pressed="true">A · the dot travels</button>
+  <button id="nB" type="button" aria-pressed="false">B · picked out</button>
+</div>
+
+<script>
+const D = /*__DATA__*/ null;
+const $ = s => document.querySelector(s);
+const NAMES = ['/hello','/goodbye','/greeting','/about','/cats','/index.html'];
+const KNOWN = ['/hello','/goodbye','/greeting'];
+const runOf = p => D.runs.find(r => r.path === p);
+const bodyOf = p => runOf(p).response.split('\n\n').slice(1).join('\n\n').trim();
+const okOf = p => runOf(p).response.split('\n')[0].split(' ')[1] === '200';
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let sel = '/hello', tokenA = 0, tokenB = 0;
+
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+function tween(ms, step, token, tokenOf){
+  return new Promise(res => {
+    if (REDUCED){ step(1); return res(); }
+    const t0 = performance.now();
+    (function frame(now){
+      if (tokenOf() !== token) return res();
+      const t = Math.min(1, (now - t0) / ms);
+      step(ease(t));
+      t < 1 ? requestAnimationFrame(frame) : res();
+    })(t0);
+  });
+}
+const wait = ms => new Promise(r => setTimeout(r, REDUCED ? 0 : ms));
+
+/* ==================== A · the dot travels ==================== */
+const AX = {lx:110, rx:510, y:82, R:40};
+async function playA(){
+  const tok = ++tokenA, svg = $('#svgA');
+  svg.innerHTML = '';
+  const ok = okOf(sel), ansCol = ok ? 'var(--ans)' : 'var(--warn)';
+
+  const wire = el('line', {x1:AX.lx+AX.R, y1:AX.y, x2:AX.lx+AX.R, y2:AX.y,
+    stroke:'var(--line2)', 'stroke-width':2, 'stroke-linecap':'round'}, svg);
+  el('circle', {cx:AX.lx, cy:AX.y, r:AX.R, fill:'none', stroke:'var(--ink2)', 'stroke-width':2.5}, svg);
+  const srv = el('circle', {cx:AX.rx, cy:AX.y, r:AX.R, fill:'none', stroke:'var(--ink2)', 'stroke-width':2.5}, svg);
+  el('text', {x:AX.lx, y:AX.y+AX.R+24, 'text-anchor':'middle', fill:'var(--muted)',
+    'font-size':13, 'font-family':'Source Sans 3, sans-serif'}, svg).textContent = 'you';
+  el('text', {x:AX.rx, y:AX.y+AX.R+24, 'text-anchor':'middle', fill:'var(--muted)',
+    'font-size':13, 'font-family':'Source Sans 3, sans-serif'}, svg).textContent = 'the server';
+  const held = el('circle', {cx:AX.lx, cy:AX.y, r:0, fill:ansCol, 'fill-opacity':.2,
+    stroke:ansCol, 'stroke-width':2.5}, svg);
+  const answer = el('text', {x:AX.lx, y:AX.y+AX.R+46, 'text-anchor':'middle', fill:ansCol, 'font-size':13,
+    'font-family':'IBM Plex Mono, monospace', opacity:0}, svg);
+
+  const x0 = AX.lx + AX.R + 6, x1 = AX.rx - AX.R - 6;
+  const say = t => $('#phA').innerHTML = t;
+
+  say('nothing between them yet');
+  await wait(350);
+  say('a <b>line</b> — the connection opens');
+  await tween(480, t => wire.setAttribute('x2', x0 + (x1 - x0) * t), tok, () => tokenA);
+  if (tokenA !== tok) return;
+
+  const dot = el('circle', {cx:x0, cy:AX.y, r:9, fill:'var(--ask)'}, svg);
+  const tag = el('text', {x:x0, y:AX.y-20, 'text-anchor':'middle', fill:'var(--ask)', 'font-size':12.5,
+    'font-family':'IBM Plex Mono, monospace'}, svg);
+  tag.textContent = sel;
+  const arrow = el('path', {d:'', stroke:'var(--ask)', 'stroke-width':2.5, fill:'none',
+    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
+  say('a <b>dot</b> carries your page name across');
+  await tween(950, t => {
+    const x = x0 + (x1 - x0) * t;
+    dot.setAttribute('cx', x); tag.setAttribute('x', x);
+    arrow.setAttribute('d', 'M'+(x+11)+' '+(AX.y-6)+'L'+(x+19)+' '+AX.y+'L'+(x+11)+' '+(AX.y+6));
+  }, tok, () => tokenA);
+  if (tokenA !== tok) return;
+  dot.remove(); tag.remove(); arrow.remove();
+
+  say('the server reads it');
+  const ring = el('circle', {cx:AX.rx, cy:AX.y, r:AX.R, fill:'none', stroke:ansCol, 'stroke-width':3}, svg);
+  await tween(520, t => { ring.setAttribute('r', AX.R + 16*Math.sin(Math.PI*t));
+    ring.setAttribute('opacity', 1 - t); }, tok, () => tokenA);
+  ring.remove();
+  if (tokenA !== tok) return;
+  srv.setAttribute('stroke', ansCol);
+
+  const d2 = el('circle', {cx:x1, cy:AX.y, r:9, fill:ansCol}, svg);
+  const t2 = el('text', {x:x1, y:AX.y-20, 'text-anchor':'middle', fill:ansCol, 'font-size':12.5,
+    'font-family':'IBM Plex Mono, monospace'}, svg);
+  t2.textContent = bodyOf(sel);
+  const a2 = el('path', {d:'', stroke:ansCol, 'stroke-width':2.5, fill:'none',
+    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
+  say(ok ? 'a <b>dot</b> brings the page back' : 'a <b>dot</b> comes back, but not a page');
+  await tween(950, t => {
+    const x = x1 - (x1 - x0) * t;
+    d2.setAttribute('cx', x); t2.setAttribute('x', x);
+    a2.setAttribute('d', 'M'+(x-11)+' '+(AX.y-6)+'L'+(x-19)+' '+AX.y+'L'+(x-11)+' '+(AX.y+6));
+  }, tok, () => tokenA);
+  if (tokenA !== tok) return;
+  d2.remove(); t2.remove(); a2.remove();
+  answer.textContent = bodyOf(sel);
+  await tween(340, t => { held.setAttribute('r', 22*t); answer.setAttribute('opacity', t); },
+    tok, () => tokenA);
+  say(ok ? 'you have the page' : 'there was no such page');
+}
+
+/* ==================== B · the dot is picked out ==================== */
+const BX = {lx:96, cx:452, cy:120, R:86, y:120};
+async function playB(){
+  const tok = ++tokenB, svg = $('#svgB');
+  svg.innerHTML = '';
+  const ok = okOf(sel), ansCol = ok ? 'var(--ans)' : 'var(--warn)';
+
+  el('circle', {cx:BX.lx, cy:BX.y, r:38, fill:'none', stroke:'var(--ink2)', 'stroke-width':2.5}, svg);
+  el('text', {x:BX.lx, y:BX.y+62, 'text-anchor':'middle', fill:'var(--muted)', 'font-size':13,
+    'font-family':'Source Sans 3, sans-serif'}, svg).textContent = 'you';
+  el('circle', {cx:BX.cx, cy:BX.cy, r:BX.R, fill:'none', stroke:'var(--line2)', 'stroke-width':2,
+    'stroke-dasharray':'5 5'}, svg);
+  el('text', {x:BX.cx, y:BX.cy+BX.R+24, 'text-anchor':'middle', fill:'var(--muted)', 'font-size':13,
+    'font-family':'Source Sans 3, sans-serif'}, svg).textContent = 'the server';
+
+  const slots = KNOWN.map((p,i) => {
+    const a = -Math.PI/2 + i * (2*Math.PI/3), r = 44;
+    const cx = BX.cx + r*Math.cos(a), cy = BX.cy + r*Math.sin(a);
+    const c = el('circle', {cx, cy, r:20, fill:'none', stroke:'var(--ans)', 'stroke-width':2.5}, svg);
+    const t = el('text', {x:cx, y:cy+29, 'text-anchor':'middle', fill:'var(--muted)', 'font-size':10.5,
+      'font-family':'IBM Plex Mono, monospace'}, svg);
+    t.textContent = p;
+    return {p, cx, cy, c, t};
+  });
+
+  const hit = slots.find(s => s.p === sel);
+  const say = t => $('#phB').innerHTML = t;
+  const x0 = BX.lx + 44, tx = hit ? hit.cx - 24 : BX.cx - BX.R - 8;
+
+  say('the server holds three pages');
+  await wait(420);
+  if (tokenB !== tok) return;
+
+  const shaft = el('line', {x1:x0, y1:BX.y, x2:x0, y2:BX.y, stroke:'var(--ask)', 'stroke-width':2.5,
+    'stroke-linecap':'round'}, svg);
+  const head = el('path', {d:'', stroke:'var(--ask)', 'stroke-width':2.5, fill:'none',
+    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
+  const tag = el('text', {x:x0, y:BX.y-18, 'text-anchor':'middle', fill:'var(--ask)', 'font-size':12.5,
+    'font-family':'IBM Plex Mono, monospace'}, svg);
+  tag.textContent = sel;
+  say('your <b>arrow</b> points at a name');
+  await tween(880, t => {
+    const x = x0 + (tx - x0) * t, ty = BX.y + (( hit ? hit.cy : BX.cy) - BX.y) * t;
+    shaft.setAttribute('x2', x); shaft.setAttribute('y2', ty);
+    head.setAttribute('d', 'M'+(x-9)+' '+(ty-7)+'L'+(x+2)+' '+ty+'L'+(x-9)+' '+(ty+7));
+    tag.setAttribute('x', (x0+x)/2); tag.setAttribute('y', (BX.y+ty)/2 - 14);
+  }, tok, () => tokenB);
+  if (tokenB !== tok) return;
+
+  if (hit){
+    say('it lands on one — that circle comes back');
+    hit.c.setAttribute('fill', 'var(--ans)'); hit.c.setAttribute('fill-opacity', .18);
+    await tween(380, t => hit.c.setAttribute('r', 20 + 5*Math.sin(Math.PI*t)), tok, () => tokenB);
+    const moving = el('circle', {cx:hit.cx, cy:hit.cy, r:20, fill:'var(--ans)', 'fill-opacity':.18,
+      stroke:'var(--ans)', 'stroke-width':2.5}, svg);
+    const mt = el('text', {x:hit.cx, y:hit.cy+4, 'text-anchor':'middle', fill:'var(--ans)', 'font-size':11,
+      'font-family':'IBM Plex Mono, monospace'}, svg);
+    mt.textContent = bodyOf(sel).split(',')[0];
+    shaft.remove(); head.remove(); tag.remove();
+    await tween(900, t => {
+      const x = hit.cx + (BX.lx - hit.cx) * t, y = hit.cy + (BX.y - hit.cy) * t;
+      moving.setAttribute('cx', x); moving.setAttribute('cy', y);
+      mt.setAttribute('x', x); mt.setAttribute('y', y+4);
+    }, tok, () => tokenB);
+    if (tokenB !== tok) return;
+    say('you have the page');
+  } else {
+    say('it lands on nothing — no circle by that name');
+    const g = el('g', {stroke:'var(--warn)', 'stroke-width':3, 'stroke-linecap':'round'}, svg);
+    const X = BX.cx - BX.R - 26;
+    el('line', {x1:X-10, y1:BX.y-10, x2:X+10, y2:BX.y+10}, g);
+    el('line', {x1:X+10, y1:BX.y-10, x2:X-10, y2:BX.y+10}, g);
+    await tween(320, t => g.setAttribute('opacity', t), tok, () => tokenB);
+    shaft.remove(); head.remove(); tag.remove();
+    const back = el('g', {stroke:'var(--warn)', 'stroke-width':3, 'stroke-linecap':'round'}, svg);
+    el('line', {x1:-10, y1:-10, x2:10, y2:10}, back);
+    el('line', {x1:10, y1:-10, x2:-10, y2:10}, back);
+    await tween(760, t => back.setAttribute('transform',
+      'translate(' + (X + (BX.lx - X) * t) + ',' + BX.y + ')'), tok, () => tokenB);
+    if (tokenB !== tok) return;
+    say('a cross comes back instead of a page');
+  }
+}
+
+/* ==================== wiring ==================== */
+function cycle(){ sel = NAMES[(NAMES.indexOf(sel) + 1) % NAMES.length]; refresh(); }
+function refresh(){
+  $('#pnA').textContent = sel; $('#pnB').textContent = sel;
+  if (!$('#vA').hidden) playA();
+  if (!$('#vB').hidden) playB();
+}
+$('#pnA').onclick = cycle; $('#pnB').onclick = cycle;
+$('#rpA').onclick = () => playA(); $('#rpB').onclick = () => playB();
+
+function show(v){
+  ['A','B'].forEach(x => { $('#v'+x).hidden = x !== v; $('#n'+x).setAttribute('aria-pressed', String(x===v)); });
+  const u = new URL(location); u.searchParams.set('v', v); history.replaceState({}, '', u);
+  refresh();
+}
+['A','B'].forEach(x => $('#n'+x).onclick = () => show(x));
+const v0 = (new URL(location).searchParams.get('v') || 'A').toUpperCase();
+$('#pnA').textContent = sel; $('#pnB').textContent = sel;
+show(['A','B'].includes(v0) ? v0 : 'A');
+</script>
