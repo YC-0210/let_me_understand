@@ -48,7 +48,12 @@ header{padding-block:var(--sp-xxl) 0}
 #svg .door:hover .lbl,#svg .door:hover .lbl-u{opacity:.72}
 #svg .door:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
 .mark{display:block; flex:none}
-.phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-sm) 2px 0}
+.steps{margin:var(--sp-md) 0 0}
+#scrub{width:100%; accent-color:var(--accent); cursor:pointer}
+#scrub:focus-visible{outline:2px solid var(--accent-focus); outline-offset:4px}
+.phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-xs) 2px 0;
+  display:flex; gap:10px; align-items:baseline}
+.phase .n{font-family:var(--mono); font-size:12px; color:var(--ink-tert); flex:none}
 .phase b{color:var(--ink); font-weight:500}
 .phase i{font-style:normal; color:var(--ink-tert)}
 
@@ -114,19 +119,21 @@ header{padding-block:var(--sp-xxl) 0}
   <span class="eyebrow">ASKING FOR</span>
   <button class="pn" id="pn"></button>
   <button class="btn last" id="pause" aria-pressed="false">
-    <span id="pauseGlyph">❙❙</span> <span id="pauseWord">Pause</span></button>
-  <button class="btn" id="replay">Replay</button>
+    <span id="pauseGlyph">▶</span> <span id="pauseWord">Play</span></button>
 </div>
 
 <div class="panel">
-  <svg id="svg" viewBox="0 0 620 200" role="img" aria-label="A dot carrying a page name between two circles"></svg>
+  <svg id="svg" viewBox="0 0 620 194" role="img" aria-label="A dot carrying a page name between two circles"></svg>
   <div class="pop" id="pop" hidden>
     <button class="close" id="popClose" aria-label="Close and carry on">✕</button>
     <span class="caret" id="caret"></span>
     <div id="popBody"></div>
   </div>
 </div>
-<p class="phase" id="phase"></p>
+<div class="steps">
+  <input type="range" id="scrub" min="0" max="6" step="1" value="0" aria-label="Step through the exchange">
+  <p class="phase" id="phase"></p>
+</div>
 
 <div id="library" hidden>
   <div class="piece" id="pTcp">
@@ -253,7 +260,7 @@ const runOf = p => D.runs.find(r => r.path === p);
 const st = p => runOf(p).response.split('\n')[0].split(' ');
 const bodyOf = p => runOf(p).response.split('\n\n').slice(1).join('\n\n').trim();
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let sel = '/hello', token = 0, paused = false, openMark = null;
+let sel = '/hello', openMark = null;
 
 const NS = 'http://www.w3.org/2000/svg';
 function el(t, a, p){ const e = document.createElementNS(NS, t);
@@ -262,27 +269,6 @@ function label(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-a
   fill:C.sub, 'font-size':13, 'font-family':'Inter, system-ui, sans-serif'}, o||{}), p);
   e.textContent = s; return e; }
 const MONO = {'font-family':'JetBrains Mono, monospace', 'font-size':13};
-const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
-const linear = t => t;
-
-/* pause-aware tween: elapsed time only accumulates while running */
-function tween(ms, step, my, easing){
-  return new Promise(res => {
-    if (REDUCED){ step(1); return res(); }
-    let last = performance.now(), acc = 0;
-    const f2 = easing || ease;
-    (function frame(now){
-      if (token !== my) return res();
-      const dt = now - last; last = now;
-      if (!paused) acc += dt;
-      const t = Math.min(1, acc / ms);
-      step(f2(t));
-      t < 1 ? requestAnimationFrame(frame) : res();
-    })(last);
-  });
-}
-const wait = ms => tween(ms, () => {}, token, linear);
-const head = (x, y, dir) => 'M'+(x-9*dir)+' '+(y-6)+'L'+(x-dir)+' '+y+'L'+(x-9*dir)+' '+(y+6);
 
 /* ---------- marks you can click ---------- */
 const VB = 620;
@@ -318,122 +304,150 @@ function slideDoor(g, x){
 const TITLES = {you:'you', tcp:'the connection', req:'the request', srv:'the server', res:'the response'};
 
 function updateChrome(){
-  $('#pause').setAttribute('aria-pressed', String(paused));
-  $('#pauseWord').textContent = paused ? 'Play' : 'Pause';
-  $('#pauseGlyph').textContent = paused ? '▶' : '❙❙';
+  $('#pause').setAttribute('aria-pressed', String(playing));
+  $('#pauseWord').textContent = playing ? 'Pause' : 'Play';
+  $('#pauseGlyph').textContent = playing ? '❙❙' : '▶';
 }
 
 /* opening a door stops time; closing it resumes the same instant */
 function openPop(name, svgX){
   if (openMark === name) return closePop();
   if (openMark) putBack();
-  paused = true; openMark = name;
-  updateChrome();
+  stopPlay(); openMark = name;
   $('#popBody').appendChild($('#' + PIECE[name]));
   $('#pop').hidden = false;
   $('#caret').style.left = Math.max(14, Math.min(94, (svgX ?? 310) / VB * 100)) + '%';
-  $('#phase').innerHTML = '<i>stopped — close this to carry on</i>';
   $('#popClose').focus();
 }
 function putBack(){ if (openMark) $('#library').appendChild($('#' + PIECE[openMark])); }
 function closePop(){
-  putBack(); openMark = null; paused = false;
+  putBack(); openMark = null;
   $('#pop').hidden = true;
-  updateChrome();
-  $('#phase').innerHTML = lastSaid;
 }
-function setPaused(v){
-  if (openMark) return closePop();
-  paused = v; updateChrome();
-  $('#phase').innerHTML = paused
-    ? '<i>stopped — click any underlined word to see what it names</i>' : lastSaid;
+/* ---------- the drawing: a pure function of (step, t) ----------
+   The independent variable is the STEP, not elapsed time. Every step is a state the
+   article describes; t is progress into that step. See docs/VISUAL-LANGUAGE.md 3a. */
+const G = {L:112, R:508, Y:86, RAD:40};
+const X0 = G.L + G.RAD + 8, X1 = G.R - G.RAD - 8;
+const P_OUT  = 'M'+X0+' '+G.Y+' C'+(X0+110)+' '+(G.Y-46)+' '+(X1-110)+' '+(G.Y-46)+' '+X1+' '+G.Y;
+const P_BACK = 'M'+X1+' '+G.Y+' C'+(X1-110)+' '+(G.Y+46)+' '+(X0+110)+' '+(G.Y+46)+' '+X0+' '+G.Y;
+
+const STEPS = [
+  ['Nothing yet',                  0],
+  ['The connection opens',       450],
+  ['The request goes across',   1100],
+  ['The server works',          1500],
+  ['The response comes back',   1100],
+  ['Your browser shows it',      360],
+  ['The connection closes',      520],
+];
+let step = 0, sub = 1, playing = false, rafId = 0;
+
+const measure = (() => {                       /* one off-screen path for arc geometry */
+  const m = el('path', {}, $('#svg'));
+  m.style.display = 'none';
+  return d => { m.setAttribute('d', d); return m; };
+})();
+function pointOn(d, f){
+  const m = measure(d); return m.getPointAtLength(Math.max(.001, f) * m.getTotalLength());
 }
-let lastSaid = '';
-const say = t => { lastSaid = t; if (!openMark) $('#phase').innerHTML = t; };
-/* ---------- the drawing ---------- */
-const G = {L:112, R:508, Y:84, RAD:42};
-async function play(){
-  const my = ++token, svg = $('#svg');
-  closePop(); paused = false; updateChrome();
-  svg.innerHTML = '';
+function partial(d, f){
+  const m = measure(d), L = m.getTotalLength();
+  return {len:L, dash: (f*L) + ' ' + L};
+}
+
+function draw(){
+  const svg = $('#svg');
+  [...svg.children].forEach(c => { if (c.style.display !== 'none') c.remove(); });
   const [, code] = st(sel), ok = code === '200', body = bodyOf(sel);
   const col = ok ? C.ok : C.no;
-  const x0 = G.L + G.RAD + 8, x1 = G.R - G.RAD - 8;
+  const at = i => step === i ? sub : (step > i ? 1 : 0);   /* progress through step i */
 
-  const wire = el('line', {x1:x0, y1:G.Y, x2:x0, y2:G.Y, stroke:C.hair, 'stroke-width':2,
-    'stroke-linecap':'round'}, svg);
+  /* the channel: opens at step 1, retracts at step 6 */
+  const open = at(1) - (step === 6 ? sub : (step > 6 ? 1 : 0));
+  if (open > 0) el('line', {x1:X0, y1:G.Y, x2:X0 + (X1-X0)*open, y2:G.Y,
+    stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
+
+  /* traces: history, left by whatever travelled. ADR 0003. */
+  const trace = (d, f, c) => { if (f <= 0) return;
+    const {len, dash} = partial(d, f);
+    el('path', {d, fill:'none', stroke:c, 'stroke-width':1.5, 'stroke-dasharray':dash,
+      opacity:.45}, svg); };
+  trace(P_OUT,  at(2), C.accent);
+  trace(P_BACK, at(4), col);
+
+  /* the two places */
   el('circle', {cx:G.L, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
-  const srv = el('circle', {cx:G.R, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
-  const youG = el('g', {}, svg); label(youG, G.L, G.Y+G.RAD+26, 'you'); door(youG, 'you');
-  const srvG = el('g', {}, svg); label(srvG, G.R, G.Y+G.RAD+26, 'the server'); door(srvG, 'srv');
-  const tcpG = el('g', {}, svg); label(tcpG, (x0+x1)/2, G.Y+30, 'the connection'); door(tcpG, 'tcp');
-  const held = el('circle', {cx:G.L, cy:G.Y, r:0, fill:col, 'fill-opacity':.22, stroke:col, 'stroke-width':2}, svg);
-  const ansG = el('g', {}, svg);
-  const ansT = label(ansG, G.L, G.Y+G.RAD+52, '', Object.assign({fill:col, opacity:0}, MONO));
+  el('circle', {cx:G.R, cy:G.Y, r:G.RAD, fill:'none',
+    stroke: step >= 4 ? col : C.sub, 'stroke-width':2}, svg);
 
-
-  say('nothing between them yet'); await wait(300);
-  say('a <b>line</b> opens between you and the server');
-  await tween(450, t => wire.setAttribute('x2', x0 + (x1-x0)*t), my);
-  if (token !== my) return;
-
-  const dg = el('g', {}, svg);
-  const d = el('circle', {cx:x0, cy:G.Y, r:8, fill:C.accent}, dg);
-  const reqG = el('g', {}, svg);
-  const g = label(reqG, x0, G.Y-22, sel, Object.assign({fill:C.accent}, MONO));
-  door(reqG, 'req');
-  const a = el('path', {d:'', stroke:C.accent, 'stroke-width':2.5, fill:'none',
-    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
-  say('a <b>dot</b> carries the page name across');
-  await tween(1100, t => { const x = x0+(x1-x0)*t;
-    d.setAttribute('cx',x); slideDoor(reqG, x);
-    a.setAttribute('d', head(x+20, G.Y, 1)); }, my);
-  if (token !== my) return;
-  dg.remove(); reqG.remove(); a.remove();
-
-  /* the server works - a ring closes around it, at a constant rate */
-  const CIRC = 2 * Math.PI * (G.RAD + 9);
-  const prog = el('circle', {cx:G.R, cy:G.Y, r:G.RAD+9, fill:'none', stroke:C.accent, 'stroke-width':2.5,
-    'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC,
-    transform:'rotate(-90 '+G.R+' '+G.Y+')'}, svg);
-  say('the server is working on it');
-  await tween(1500, t => prog.setAttribute('stroke-dashoffset', CIRC * (1 - t)), my, linear);
-  if (token !== my) return;
-  await tween(320, t => { prog.setAttribute('opacity', 1-t);
-    prog.setAttribute('r', G.RAD + 9 + 10*t); }, my);
-  prog.remove();
-  if (token !== my) return;
-  srv.setAttribute('stroke', col);
-
-  const bg = el('g', {}, svg);
-  if (ok){ el('circle', {cx:0, cy:0, r:8, fill:col}, bg); }
-  else {
-    el('circle', {cx:0, cy:0, r:9, fill:'none', stroke:col, 'stroke-width':2}, bg);
-    el('path', {d:'M-4.5 -4.5L4.5 4.5M4.5 -4.5L-4.5 4.5', stroke:col, 'stroke-width':2,
-      'stroke-linecap':'round'}, bg);
+  /* a thing at rest inside a place */
+  if (at(5) > 0){
+    el('circle', {cx:G.L, cy:G.Y, r:22*at(5), fill:col, 'fill-opacity':.22,
+      stroke:col, 'stroke-width':2}, svg);
+    if (!ok) el('path', {d:'M'+(G.L-8)+' '+(G.Y-8)+'L'+(G.L+8)+' '+(G.Y+8)+
+      'M'+(G.L+8)+' '+(G.Y-8)+'L'+(G.L-8)+' '+(G.Y+8), stroke:col, 'stroke-width':2,
+      'stroke-linecap':'round', opacity:at(5)}, svg);
   }
-  bg.setAttribute('transform', 'translate('+x1+','+G.Y+')');
-  const resG = el('g', {}, svg);
-  const g2 = label(resG, x1, G.Y-22, body, Object.assign({fill:col}, MONO));
-  door(resG, 'res');
-  const a2 = el('path', {d:'', stroke:col, 'stroke-width':2.5, fill:'none',
-    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
-  say(ok ? 'a <b>dot</b> brings the page back' : 'a <b>crossed circle</b> comes back — no such page');
-  await tween(1100, t => { const x = x1-(x1-x0)*t;
-    bg.setAttribute('transform', 'translate('+x+','+G.Y+')');
-    slideDoor(resG, x);
-    a2.setAttribute('d', head(x-20, G.Y, -1)); }, my);
-  if (token !== my) return;
-  bg.remove(); resG.remove(); a2.remove();
-  ansT.textContent = body;
-  await tween(330, t => { held.setAttribute('r', 22*t); ansT.setAttribute('opacity', t); }, my);
-  if (!ok){ held.setAttribute('fill-opacity', 0);
-    el('path', {d:'M'+(G.L-8)+' '+(G.Y-8)+'L'+(G.L+8)+' '+(G.Y+8)+'M'+(G.L+8)+' '+(G.Y-8)+'L'+(G.L-8)+' '+(G.Y+8),
-      stroke:col, 'stroke-width':2, 'stroke-linecap':'round'}, svg); }
-  door(ansG, 'res');
-  say(ok ? 'you have the page' : 'there was no page by that name');
+
+  /* the server working */
+  if (step === 3){
+    const R = G.RAD + 9, CIRC = 2*Math.PI*R;
+    el('circle', {cx:G.R, cy:G.Y, r:R, fill:'none', stroke:C.accent, 'stroke-width':2.5,
+      'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC*(1-sub),
+      transform:'rotate(-90 '+G.R+' '+G.Y+')'}, svg);
+  }
+
+  /* the messages, each only while travelling */
+  if (step === 2){ const q = pointOn(P_OUT, sub);
+    el('circle', {cx:q.x, cy:q.y, r:8, fill:C.accent}, svg); }
+  if (step === 4){ const q = pointOn(P_BACK, sub);
+    if (ok) el('circle', {cx:q.x, cy:q.y, r:8, fill:col}, svg);
+    else { const g = el('g', {transform:'translate('+q.x+','+q.y+')'}, svg);
+      el('circle', {cx:0, cy:0, r:9, fill:'none', stroke:col, 'stroke-width':2}, g);
+      el('path', {d:'M-4.5 -4.5L4.5 4.5M4.5 -4.5L-4.5 4.5', stroke:col, 'stroke-width':2,
+        'stroke-linecap':'round'}, g); } }
+
+  /* the words are the doors */
+  const cap = (x, y, txt, name, fill) => {
+    const g = el('g', {}, svg);
+    label(g, x, y, txt, fill ? {fill} : {});
+    door(g, name);
+  };
+  cap(G.L, G.Y+G.RAD+26, 'you', 'you');
+  cap(G.R, G.Y+G.RAD+26, 'the server', 'srv');
+  if (step >= 1) cap((X0+X1)/2, G.Y+G.RAD+48, 'the connection', 'tcp');
+  if (at(2) > 0) cap((X0+X1)/2, G.Y-26, sel, 'req', C.accent);
+  if (at(4) > 0) cap((X0+X1)/2, G.Y+32, body, 'res', col);
+
+  $('#scrub').value = step;
+  $('#phase').innerHTML = '<span class="n">' + step + ' / 6</span>' + STEPS[step][0];
 }
 
+/* play walks the same steps; it is a convenience, not the only way through */
+function stopPlay(){ playing = false; cancelAnimationFrame(rafId); updateChrome(); }
+function play(){
+  if (openMark) closePop();
+  if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
+  if (step >= STEPS.length - 1){ step = 0; sub = 1; }
+  playing = true; updateChrome();
+  let last = performance.now();
+  (function frame(now){
+    if (!playing) return;
+    const dt = now - last; last = now;
+    const dur = STEPS[Math.min(step + 1, STEPS.length - 1)][1] || 1;
+    sub += dt / dur;
+    if (sub >= 1){
+      if (step >= STEPS.length - 1){ step = STEPS.length - 1; sub = 1; draw(); return stopPlay(); }
+      step++; sub = 0;
+    }
+    draw();
+    rafId = requestAnimationFrame(frame);
+  })(last);
+}
+function goTo(i){ stopPlay(); if (openMark) closePop(); step = i; sub = 1; draw(); }
+
+/* the popover panels follow the chosen page name */
 function sync(){
   const [, code, ...rest] = st(sel), miss = code !== '200';
   $('#pn').textContent = sel;
@@ -450,14 +464,14 @@ function sync(){
       '<path d="M11 3L6 7l5 4" stroke="'+C.no+'" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
     : '<circle cx="19" cy="7" r="5.5" fill="'+C.ok+'"/>' +
       '<path d="M11 3L6 7l5 4" stroke="'+C.ok+'" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
-  play();
 }
 
-$('#pn').onclick = () => { sel = NAMES[(NAMES.indexOf(sel)+1) % NAMES.length]; sync(); };
-$('#replay').onclick = () => play();
+$('#pn').onclick = () => { sel = NAMES[(NAMES.indexOf(sel)+1) % NAMES.length];
+  sync(); stopPlay(); step = 0; sub = 1; draw(); play(); };
+$('#scrub').oninput = e => goTo(+e.target.value);
 $('#popClose').onclick = () => closePop();
-$('#pause').onclick = () => setPaused(!paused);
-$('#svg').addEventListener('click', () => setPaused(!paused));
+$('#pause').onclick = () => playing ? stopPlay() : play();
 addEventListener('keydown', e => { if (e.key === 'Escape' && openMark) closePop(); });
-sync();
+sync(); step = 0; sub = 1; draw();
+if (REDUCED){ step = STEPS.length - 1; draw(); } else play();
 </script>
