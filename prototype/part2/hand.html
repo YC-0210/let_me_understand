@@ -1,0 +1,319 @@
+<title>How does the server hand environ to the application?</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --canvas:#010102; --s1:#0f1011; --s2:#141516; --s3:#18191a;
+  --hair:#23252a; --hair-strong:#34343a;
+  --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-tert:#62666d;
+  --accent:#5e6ad2; --accent-hover:#828fff; --accent-focus:#5e69d1;
+  --ok:#27a644; --no:#d95448;
+  --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px;
+  --sp-xs:8px; --sp-sm:12px; --sp-md:16px; --sp-lg:24px; --sp-xl:32px; --sp-xxl:48px;
+  --sans:"Inter",-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.5; letter-spacing:-.05px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:760px; margin:0 auto; padding:0 var(--sp-lg)}
+code{font-family:var(--mono); font-size:13px}
+h1{font-size:30px; font-weight:600; line-height:1.14; letter-spacing:-.8px; margin:0}
+.lede{color:var(--ink-muted); font-size:17px; margin:14px 0 0; max-width:56ch}
+header{padding-block:var(--sp-xxl) 0}
+.eyebrow{font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
+
+.tabs{display:flex; gap:var(--sp-xs); flex-wrap:wrap; margin:var(--sp-xl) 0 var(--sp-md)}
+.tab{font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; text-align:left;
+  color:var(--ink-subtle); background:var(--s1); border:1px solid var(--hair);
+  border-radius:var(--r-md); padding:9px 14px}
+.tab:hover{border-color:var(--hair-strong); color:var(--ink)}
+.tab:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.tab[aria-selected=true]{border-color:var(--accent); color:var(--ink); background:var(--s2)}
+.tab b{font-family:var(--mono); font-size:12px; font-weight:500; color:var(--ink-tert); margin-right:8px}
+.tab[aria-selected=true] b{color:var(--accent)}
+
+.panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
+svg.draw{display:block; width:100%; height:auto}
+.steps{margin:var(--sp-md) 0 0}
+#scrub{width:100%; accent-color:var(--accent); cursor:pointer}
+#scrub:focus-visible{outline:2px solid var(--accent-focus); outline-offset:4px}
+.phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-xs) 2px 0;
+  display:flex; gap:10px; align-items:baseline}
+.phase .n{font-family:var(--mono); font-size:12px; color:var(--ink-tert); flex:none}
+.phase b{color:var(--ink); font-weight:500}
+.ctl{display:flex; align-items:center; gap:var(--sp-sm); margin:var(--sp-md) 0 0}
+.btn{font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; color:var(--ink);
+  background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-md); padding:8px 14px}
+.btn:hover{border-color:var(--hair-strong)}
+.btn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.btn[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
+
+.verdict{margin:var(--sp-lg) 0 0; border:1px solid var(--hair); border-radius:var(--r-lg); overflow:hidden}
+.verdict .row{padding:var(--sp-md); font-size:14px; line-height:1.5; color:var(--ink-muted); background:var(--canvas)}
+.verdict .row + .row{border-top:1px solid var(--hair)}
+.verdict h4{margin:0 0 6px; font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
+.verdict b{color:var(--ink); font-weight:500}
+.verdict code{background:var(--s2); border:1px solid var(--hair); border-radius:4px; padding:1px 5px}
+.cost{background:var(--s1); border-left:2px solid var(--hair-strong)}
+.foot{padding-block:var(--sp-xl) 64px; color:var(--ink-tert); font-size:12px; line-height:1.5}
+.foot b{color:var(--ink-subtle); font-weight:500}
+[hidden]{display:none!important}
+@media (max-width:560px){ h1{font-size:25px} .lede{font-size:16px} }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">PROTOTYPE · PART 2 · ONE QUESTION</span>
+  <h1>How should the server hand <code>environ</code> to the application?</h1>
+  <p class="lede">Between you and the server there is a real network connection. Between the
+  server and the application there is not — they are the same running program, and the call is
+  an ordinary function call. Four ways to draw that. Same seven steps in each.</p>
+</header>
+
+<div class="tabs" role="tablist" id="tabs"></div>
+
+<div class="panel">
+  <svg id="svg" class="draw" viewBox="0 0 700 250" role="img" aria-label="Four ways to draw the server calling the application"></svg>
+  <div class="steps">
+    <input type="range" id="scrub" min="0" max="6" step="1" value="0" aria-label="Step through the exchange">
+    <p class="phase" id="phase"></p>
+  </div>
+  <div class="ctl">
+    <button class="btn" id="play" aria-pressed="false">▶ Play</button>
+    <span class="eyebrow" id="hint"></span>
+  </div>
+</div>
+
+<div class="verdict" id="verdict"></div>
+
+<p class="foot">Throwaway. Nothing here is captured — the bodies read
+<b>Hello world from Flask!</b> because that is what the article's <code>flaskapp.py</code> returns,
+but no server has been run yet. This page decides one thing only: the mark between the server and
+the application. <b>Delete it once that is settled.</b></p>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const C = {accent:'#5e6ad2', ok:'#27a644', ink:'#f7f8f8', sub:'#8a8f98',
+           tert:'#62666d', hair:'#34343a'};
+const MONO = 'JetBrains Mono, ui-monospace, monospace';
+const SANS = 'Inter, system-ui, sans-serif';
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function el(t, a, p){ const e = document.createElementNS(NS, t);
+  for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+function txt(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anchor':'middle',
+  fill:C.sub, 'font-size':12.5, 'font-family':SANS}, o||{}), p); e.textContent = s; return e; }
+
+const STEPS = [
+  ['Nothing yet',                        0],
+  ['Your request arrives',            1000],
+  ['The server builds <b>environ</b>',  700],
+  ['The server calls the application', 1000],
+  ['The application works',            1300],
+  ['The application answers',          1000],
+  ['The server replies to you',        1000],
+];
+
+/* ---- the four candidates ------------------------------------------------ */
+const VARIANTS = [
+  {id:'A', tab:'The same line',
+   hint:'one mark, used twice',
+   claim:'The line already in the language, used again between server and application.',
+   cost:'Says the application is somewhere else. A reader who finished part 1 learned that a line is a socket that opens and closes. It is not one here.',
+   spec:'Nothing new. No ADR.'},
+  {id:'B', tab:'A second kind of line',
+   hint:'new mark: a rail',
+   claim:'Two thin parallel strokes — a rail — meaning a call inside one program. Kept apart from the plain line and from the dashed trace.',
+   cost:'An eighth mark, forever, on every future page. And the reader has to be told what it means; they cannot guess it.',
+   spec:'Needs an ADR. Adds a mark to a closed system.'},
+  {id:'C', tab:'The application inside the server',
+   hint:'no second channel at all',
+   claim:'One program is one place. The application is a circle drawn inside the server, so nothing crosses a gap — environ moves inward.',
+   cost:'Breaks §4: places no longer sit on one horizontal axis. The server is drawn much larger than you, which in Bertin’s terms says the server is bigger — a thing we are not claiming. And there is no room inside the circle for the value that comes back, so it has to sit outside, away from the arc carrying it.',
+   spec:'Needs an ADR for the layout rule, but adds no mark.'},
+  {id:'D', tab:'No third place',
+   hint:'the application is work, not a place',
+   claim:'The application is not a place at all — it is what the server does. It appears as the ring, named.',
+   cost:'Hides the point of the article. If the application is only a ring, nothing shows that it is a separate, swappable program, and swapping Flask for Django changes only a word.',
+   spec:'Nothing new. No ADR.'},
+];
+let vi = 0, step = 0, sub = 1, playing = false, rafId = 0;
+
+/* geometry per variant */
+function geom(v){
+  if (v === 'C') return {vb:'0 0 600 292', you:{x:110,y:118,r:38},
+                         srv:{x:420,y:118,r:104}, app:{x:466,y:118,r:30}};
+  if (v === 'D') return {vb:'0 0 700 215', you:{x:140,y:118,r:38},
+                         srv:{x:560,y:118,r:38}, app:null};
+  return {vb:'0 0 700 215', you:{x:80,y:118,r:38},
+          srv:{x:350,y:118,r:38}, app:{x:620,y:118,r:38}};
+}
+const gapL = (a,b) => [a.x + a.r + 9, b.x - b.r - 9];
+
+const measure = (() => { const m = el('path', {}, $('#svg')); m.style.display='none'; return d => {
+  m.setAttribute('d', d); return m; }; })();
+function pointOn(d, f){ const m = measure(d); return m.getPointAtLength(Math.max(.001,f)*m.getTotalLength()); }
+function partial(d, f){ const m = measure(d), L = m.getTotalLength(); return {dash:(f*L)+' '+L}; }
+
+function arc(x0, x1, y, lift){
+  return 'M'+x0+' '+y+' C'+(x0+(x1-x0)*.32)+' '+(y+lift)+' '+(x1-(x1-x0)*.32)+' '+(y+lift)+' '+x1+' '+y;
+}
+
+function draw(){
+  const svg = $('#svg');
+  [...svg.children].forEach(c => { if (c.style.display !== 'none') c.remove(); });
+  const v = VARIANTS[vi].id, G = geom(v);
+  svg.setAttribute('viewBox', G.vb);
+  const at = i => step === i ? sub : (step > i ? 1 : 0);
+  const [n0, n1] = gapL(G.you, G.srv);                       /* the real network gap */
+
+  /* ---- the network channel: opens at step 1, stays open ---- */
+  if (at(1) > 0) el('line', {x1:n0, y1:G.you.y, x2:n0 + (n1-n0)*Math.min(1,at(1)*1.6),
+    y2:G.you.y, stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
+
+  /* ---- the second channel, drawn four different ways ---- */
+  let i0 = 0, i1 = 0;
+  if (v === 'A' || v === 'B'){
+    [i0, i1] = gapL(G.srv, G.app);
+    if (v === 'A'){
+      el('line', {x1:i0, y1:G.srv.y, x2:i1, y2:G.srv.y, stroke:C.hair,
+        'stroke-width':2, 'stroke-linecap':'round'}, svg);
+    } else {
+      /* the rail: two thin parallel strokes, far enough apart to be a different mark */
+      [-4.5, 4.5].forEach(dy => el('line', {x1:i0, y1:G.srv.y+dy, x2:i1, y2:G.srv.y+dy,
+        stroke:C.hair, 'stroke-width':1.5, 'stroke-linecap':'round'}, svg));
+    }
+  } else if (v === 'C'){
+    i0 = G.srv.x - G.srv.r + 30; i1 = G.app.x - G.app.r - 9;
+    el('line', {x1:i0, y1:G.srv.y, x2:i1, y2:G.srv.y, stroke:C.hair,
+      'stroke-width':2, 'stroke-linecap':'round'}, svg);
+  }
+
+  /* ---- traces: history, ADR 0003 ---- */
+  const trace = (d, f, c) => { if (f <= 0) return;
+    el('path', Object.assign({d, fill:'none', stroke:c, 'stroke-width':1.5, opacity:.45,
+      'stroke-linecap':'round'}, {'stroke-dasharray':partial(d,f).dash}), svg); };
+  const P_IN   = arc(n0, n1, G.you.y, -34);
+  const P_BACK = arc(n1, n0, G.you.y,  34);
+  let P_CALL = null, P_RET = null;
+  if (v !== 'D'){
+    P_CALL = arc(i0, i1, G.srv.y, v === 'C' ? -26 : -30);
+    P_RET  = arc(i1, i0, G.srv.y, v === 'C' ?  26 :  30);
+  }
+  trace(P_IN, at(1), C.accent);
+  if (P_CALL) trace(P_CALL, at(3), C.accent);
+  if (P_RET)  trace(P_RET,  at(5), C.ok);
+  trace(P_BACK, at(6), C.ok);
+
+  /* ---- the places ---- */
+  const circle = (p, stroke) => el('circle', {cx:p.x, cy:p.y, r:p.r, fill:'none',
+    stroke, 'stroke-width':2}, svg);
+  circle(G.you, C.sub);
+  circle(G.srv, C.sub);
+  if (G.app) circle(G.app, C.sub);
+
+  /* ---- held disc: environ at rest inside the server (step 2 onward) ---- */
+  const held = (p, f, col) => { if (f <= 0) return;
+    el('circle', {cx:p.x, cy:p.y, r:22*Math.min(1,f), fill:col, 'fill-opacity':.22,
+      stroke:col, 'stroke-width':2}, svg); };
+  if (v === 'D'){
+    if (step === 2 || step === 3) held(G.srv, at(2), C.accent);
+    if (step === 5) held(G.srv, at(5), C.ok);
+  } else {
+    if (step === 2) held(G.srv, at(2), C.accent);
+  }
+
+  /* ---- ring: work taking time, around whatever is doing it ---- */
+  if (step === 4){
+    const p = G.app || G.srv, R = p.r + 9, CIRC = 2*Math.PI*R;
+    el('circle', {cx:p.x, cy:p.y, r:R, fill:'none', stroke:C.accent, 'stroke-width':2.5,
+      'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC*(1-sub),
+      transform:'rotate(-90 '+p.x+' '+p.y+')'}, svg);
+  }
+
+  /* ---- discs, each only while travelling ---- */
+  const disc = (d, f, col) => { const q = pointOn(d, f);
+    el('circle', {cx:q.x, cy:q.y, r:8, fill:col}, svg); };
+  if (step === 1) disc(P_IN, sub, C.accent);
+  if (step === 3 && P_CALL) disc(P_CALL, sub, C.accent);
+  if (step === 5 && P_RET)  disc(P_RET,  sub, C.ok);
+  if (step === 6) disc(P_BACK, sub, C.ok);
+
+  /* ---- names below marks, values above (section 4) ---- */
+  txt(svg, G.you.x, G.you.y + G.you.r + 22, 'you');
+  txt(svg, G.srv.x, G.srv.y + G.srv.r + (v === 'C' ? 44 : 22),
+      v === 'C' ? 'the server, and Flask inside it' : 'the server');
+  if (G.app) txt(svg, G.app.x, G.app.y + G.app.r + (v === 'C' ? 18 : 22), 'Flask');
+  if (v === 'D' && step >= 4) txt(svg, G.srv.x, G.srv.y - G.srv.r - 20, 'Flask',
+      {fill:C.accent, 'font-family':MONO, 'font-size':12});
+
+  /* channel names */
+  const NAMEY = G.you.y + G.you.r + 40;
+  if (at(1) > 0) txt(svg, (n0+n1)/2, NAMEY, 'a network connection', {'font-size':11.5, fill:C.tert});
+  if (v === 'A' || v === 'B') txt(svg, (i0+i1)/2, NAMEY, 'a function call', {'font-size':11.5, fill:C.tert});
+  if (v === 'C') txt(svg, (i0+i1)/2, G.srv.y + 32, 'a function call', {'font-size':11.5, fill:C.tert});
+
+  /* values ride above the mark carrying them */
+  if (at(1) > 0) txt(svg, (n0+n1)/2, G.you.y - 46, 'GET /hello', {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
+  if (at(3) > 0 && P_CALL) txt(svg, (i0+i1)/2, G.srv.y - (v === 'C' ? 44 : 42), 'environ',
+      {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
+  /* in C the body will not fit inside the circle, so it sits below it - see the cost note */
+  if (at(5) > 0 && P_RET) txt(svg, v === 'C' ? G.srv.x : (i0+i1)/2,
+      v === 'C' ? G.srv.y + G.srv.r + 20 : G.srv.y + 44, 'Hello world from Flask!',
+      {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
+  if (at(6) > 0) txt(svg, (n0+n1)/2, G.you.y + 44, 'HTTP/1.1 200 OK', {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
+  if (v === 'D' && (step === 2 || step === 3)) txt(svg, G.srv.x, G.srv.y - G.srv.r - 20, 'environ',
+      {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
+
+  $('#phase').innerHTML = '<span class="n">' + step + ' / 6</span>' + STEPS[step][0];
+  $('#scrub').value = step;
+  $('#hint').textContent = VARIANTS[vi].hint;
+}
+
+/* ---- time ---- */
+function stopPlay(){ playing = false; cancelAnimationFrame(rafId);
+  $('#play').setAttribute('aria-pressed','false'); $('#play').textContent = '▶ Play'; }
+function play(){
+  if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
+  if (step >= STEPS.length - 1){ step = 0; sub = 1; }
+  playing = true; $('#play').setAttribute('aria-pressed','true'); $('#play').textContent = '❚❚ Pause';
+  let t0 = performance.now();
+  const tick = now => {
+    if (!playing) return;
+    const dur = STEPS[Math.min(step + 1, STEPS.length - 1)][1] || 1;
+    sub = Math.min(1, (now - t0) / dur);
+    if (sub >= 1){
+      if (step >= STEPS.length - 1){ sub = 1; draw(); return stopPlay(); }
+      step++; sub = 0; t0 = now;
+    }
+    draw(); rafId = requestAnimationFrame(tick);
+  };
+  step = 0; sub = 0; rafId = requestAnimationFrame(tick);
+}
+
+/* ---- tabs ---- */
+VARIANTS.forEach((v, i) => {
+  const b = document.createElement('button');
+  b.className = 'tab'; b.setAttribute('role','tab'); b.setAttribute('aria-selected', i === 0);
+  b.innerHTML = '<b>' + v.id + '</b>' + v.tab;
+  b.onclick = () => { vi = i;
+    [...$('#tabs').children].forEach((c, j) => c.setAttribute('aria-selected', j === i));
+    renderVerdict(); stopPlay(); play(); };
+  $('#tabs').appendChild(b);
+});
+function renderVerdict(){
+  const v = VARIANTS[vi];
+  $('#verdict').innerHTML =
+    '<div class="row"><h4>WHAT IT SAYS</h4>' + v.claim + '</div>' +
+    '<div class="row cost"><h4>WHAT IT COSTS</h4>' + v.cost + '</div>' +
+    '<div class="row"><h4>WHAT IT DOES TO THE SPEC</h4>' + v.spec + '</div>';
+}
+$('#scrub').addEventListener('input', e => { stopPlay(); step = +e.target.value; sub = 1; draw(); });
+$('#play').addEventListener('click', () => playing ? stopPlay() : play());
+
+renderVerdict();
+if (REDUCED){ step = STEPS.length - 1; draw(); } else play();
+</script>
