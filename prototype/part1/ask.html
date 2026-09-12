@@ -36,6 +36,10 @@ header{padding-block:var(--sp-xxl) 0}
 .btn:hover{border-color:var(--hair-strong)}
 .btn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
 .ctl .btn.last{margin-left:auto}
+#pause{display:inline-flex; align-items:center; gap:8px}
+#pauseGlyph{font-size:10px; color:var(--ink-subtle); letter-spacing:1px}
+#pause[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
+#pause[aria-pressed=true] #pauseGlyph{color:var(--accent)}
 
 /* the drawing panel */
 .panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
@@ -107,7 +111,9 @@ header{padding-block:var(--sp-xxl) 0}
 <div class="ctl">
   <span class="eyebrow">ASKING FOR</span>
   <button class="pn" id="pn"></button>
-  <button class="btn last" id="replay">Replay</button>
+  <button class="btn last" id="pause" aria-pressed="false">
+    <span id="pauseGlyph">❙❙</span> <span id="pauseWord">Pause</span></button>
+  <button class="btn" id="replay">Replay</button>
 </div>
 
 <div class="panel">
@@ -271,22 +277,58 @@ function makeHit(g, name, cx, cy, r){
   return h;
 }
 const PIECE = {tcp:'pTcp', req:'pReq', srv:'pSrv', res:'pRes'};
+
+/* a faint ring on every clickable mark, but only while stopped */
+function syncRings(){
+  const svg = $('#svg');
+  const old = svg.querySelector('#rings');
+  if (old) old.remove();
+  if (!paused) return;
+  const g = el('g', {id:'rings', 'pointer-events':'none'}, svg);
+  svg.querySelectorAll('[data-mark]').forEach(m => {
+    const on = m.getAttribute('data-mark') === openMark;
+    const a = {fill:'none', stroke: on ? C.accent : C.sub,
+      'stroke-width': on ? 1.8 : 1.4, opacity: on ? .85 : .34};
+    if (m.tagName === 'circle')
+      el('circle', Object.assign({cx:m.getAttribute('cx'), cy:m.getAttribute('cy'),
+        r:m.getAttribute('r')}, a), g);
+    else
+      el('rect', Object.assign({x:m.getAttribute('x'), y:m.getAttribute('y'),
+        width:m.getAttribute('width'), height:m.getAttribute('height'), rx:16}, a), g);
+  });
+}
+function updateChrome(){
+  const btn = $('#pause');
+  btn.setAttribute('aria-pressed', String(paused));
+  $('#pauseWord').textContent = paused ? 'Play' : 'Pause';
+  $('#pauseGlyph').textContent = paused ? '▶' : '❙❙';
+  syncRings();
+}
 function openPop(name, svgX){
   if (openMark === name) return closePop();
   if (openMark) putBack();
   paused = true;
   openMark = name;
+  updateChrome();
   $('#popBody').appendChild($('#' + PIECE[name]));
   $('#pop').hidden = false;
   $('#caret').style.left = Math.max(14, Math.min(94, svgX / VB * 100)) + '%';
-  $('#phase').innerHTML = '<i>paused — close this to carry on</i>';
+  $('#phase').innerHTML = '<i>stopped — close this to carry on</i>';
   $('#popClose').focus();
 }
 function putBack(){ if (openMark) $('#library').appendChild($('#' + PIECE[openMark])); }
 function closePop(){
   putBack(); openMark = null; paused = false;
   $('#pop').hidden = true;
+  updateChrome();
   $('#phase').innerHTML = lastSaid;
+}
+function setPaused(v){
+  if (openMark) return closePop();
+  paused = v;
+  updateChrome();
+  $('#phase').innerHTML = paused
+    ? '<i>stopped — click any ringed mark to see what it is</i>' : lastSaid;
 }
 let lastSaid = '';
 const say = t => { lastSaid = t; if (!openMark) $('#phase').innerHTML = t; };
@@ -295,7 +337,7 @@ const say = t => { lastSaid = t; if (!openMark) $('#phase').innerHTML = t; };
 const G = {L:112, R:508, Y:84, RAD:42};
 async function play(){
   const my = ++token, svg = $('#svg');
-  closePop();
+  closePop(); paused = false; updateChrome();
   svg.innerHTML = '';
   const [, code] = st(sel), ok = code === '200', body = bodyOf(sel);
   const col = ok ? C.ok : C.no;
@@ -330,7 +372,8 @@ async function play(){
   hitReq.style.cursor = 'pointer';
   hitReq.addEventListener('click', ev => { ev.stopPropagation();
     openPop('req', +hitReq.getAttribute('cx')); });
-  say('a <b>dot</b> carries the page name across — click it to stop and look');
+  if (paused) syncRings();
+  say('a <b>dot</b> carries the page name across — or stop it and click anything');
   await tween(1100, t => { const x = x0+(x1-x0)*t;
     d.setAttribute('cx',x); g.setAttribute('x',x); hitReq.setAttribute('cx',x);
     a.setAttribute('d', head(x+20, G.Y, 1)); }, my);
@@ -366,6 +409,7 @@ async function play(){
   hitRes.style.cursor = 'pointer';
   hitRes.addEventListener('click', ev => { ev.stopPropagation();
     openPop('res', +hitRes.getAttribute('cx')); });
+  if (paused) syncRings();
   say(ok ? 'a <b>dot</b> brings the page back' : 'a <b>crossed circle</b> comes back — no such page');
   await tween(1100, t => { const x = x1-(x1-x0)*t;
     bg.setAttribute('transform', 'translate('+x+','+G.Y+')');
@@ -405,11 +449,8 @@ function sync(){
 $('#pn').onclick = () => { sel = NAMES[(NAMES.indexOf(sel)+1) % NAMES.length]; sync(); };
 $('#replay').onclick = () => play();
 $('#popClose').onclick = () => closePop();
-$('#svg').addEventListener('click', () => {
-  if (openMark) return closePop();
-  paused = !paused;
-  $('#phase').innerHTML = paused ? '<i>paused — click a circle, the line or a dot to look at it</i>' : lastSaid;
-});
+$('#pause').onclick = () => setPaused(!paused);
+$('#svg').addEventListener('click', () => setPaused(!paused));
 addEventListener('keydown', e => { if (e.key === 'Escape' && openMark) closePop(); });
 sync();
 </script>
