@@ -39,29 +39,30 @@ header{padding-block:var(--sp-xxl) 0}
 
 /* the drawing panel */
 .panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
-.panel svg{display:block; width:100%; height:auto}
+#svg{display:block; width:100%; height:auto; cursor:pointer}
+#svg [data-mark]{cursor:pointer}
+.mark{display:block; flex:none}
 .phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-sm) 2px 0}
 .phase b{color:var(--ink); font-weight:500}
+.phase i{font-style:normal; color:var(--ink-tert)}
 
-/* fold */
-.fold{padding:var(--sp-lg) 0 0}
-.foldbtn{display:inline-flex; align-items:center; gap:8px}
-.foldbtn .chev{transition:transform .15s; font-size:12px; color:var(--ink-subtle)}
-.foldbtn[aria-expanded=true] .chev{transform:rotate(180deg)}
-
-/* symbol sections */
-.piece{padding:var(--sp-lg) 0; border-bottom:1px solid var(--hair)}
+/* the popover that opens from a mark */
+.panel{position:relative}
+.caret{position:absolute; top:-7px; width:12px; height:12px; background:var(--s2);
+  border-left:1px solid var(--hair-strong); border-top:1px solid var(--hair-strong);
+  transform:rotate(45deg); transition:left .18s ease}
+.pop{margin-top:var(--sp-lg); position:relative; background:var(--s2); border:1px solid var(--hair-strong);
+  border-radius:var(--r-lg); padding:var(--sp-lg)}
+.pop .close{position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:var(--r-sm);
+  background:transparent; border:1px solid transparent; color:var(--ink-subtle); cursor:pointer;
+  font-size:16px; line-height:1; font-family:var(--sans)}
+.pop .close:hover{background:var(--s3); border-color:var(--hair); color:var(--ink)}
+.pop .close:focus-visible{outline:2px solid var(--accent-focus); outline-offset:1px}
+.piece{padding:0}
 .phead{display:flex; align-items:center; gap:var(--sp-sm); margin:0 0 var(--sp-sm)}
-.mark{flex:none}
 .pname{font-size:16px; font-weight:500; letter-spacing:-.2px}
 .phead .sp{flex:1}
-.dots{font-family:var(--sans); cursor:pointer; flex:none; width:30px; height:26px; border-radius:var(--r-sm);
-  text-align:center; line-height:22px; font-size:15px; letter-spacing:1px; color:var(--ink-subtle);
-  background:transparent; border:1px solid transparent; padding:0}
-.dots:hover{background:var(--s2); border-color:var(--hair); color:var(--ink-muted)}
-.dots[aria-expanded=true]{background:var(--s2); border-color:var(--hair-strong); color:var(--ink)}
-.dots:focus-visible{outline:2px solid var(--accent-focus); outline-offset:1px}
-.plain{font-size:14px; color:var(--ink-subtle); margin:0; padding-left:36px}
+.plain{font-size:14px; color:var(--ink-muted); margin:0; padding-left:36px}
 
 .anat{display:flex; flex-wrap:wrap; gap:2px 20px; padding-left:36px}
 .part{display:flex; flex-direction:column; align-items:flex-start; min-width:0}
@@ -80,15 +81,15 @@ header{padding-block:var(--sp-xxl) 0}
 
 /* notes - distinguished by surface lift and eyebrow, not by a second accent */
 .notes{margin:var(--sp-md) 0 0 36px; border:1px solid var(--hair); border-radius:var(--r-lg); overflow:hidden}
-.note{padding:var(--sp-md); font-size:14px; line-height:1.5; color:var(--ink-muted); background:var(--s1)}
+.note{padding:var(--sp-md); font-size:14px; line-height:1.5; color:var(--ink-muted); background:var(--canvas)}
 .note + .note{border-top:1px solid var(--hair)}
-.note.beyond{background:var(--s2); border-left:2px solid var(--hair-strong)}
+.note.beyond{background:var(--s1); border-left:2px solid var(--hair-strong)}
 .note h4{margin:0 0 8px; font-size:13px; font-weight:500; letter-spacing:.4px; color:var(--ink-subtle)}
 .note p{margin:0 0 8px} .note p:last-child{margin-bottom:0}
 .note b{color:var(--ink); font-weight:500}
 .note a{color:var(--accent); font-weight:500}
 .note a:hover{color:var(--accent-hover)}
-.note code{background:var(--s3); border:1px solid var(--hair); border-radius:var(--r-xs); padding:1px 5px}
+.note code{background:var(--s2); border:1px solid var(--hair); border-radius:var(--r-xs); padding:1px 5px}
 .foot{padding-block:var(--sp-xl) 64px; color:var(--ink-tert); font-size:12px; line-height:1.4}
 .foot b{color:var(--ink-subtle); font-weight:500}
 [hidden]{display:none!important}
@@ -111,23 +112,22 @@ header{padding-block:var(--sp-xxl) 0}
 
 <div class="panel">
   <svg id="svg" viewBox="0 0 620 200" role="img" aria-label="A dot carrying a page name between two circles"></svg>
+  <div class="pop" id="pop" hidden>
+    <button class="close" id="popClose" aria-label="Close and carry on">✕</button>
+    <span class="caret" id="caret"></span>
+    <div id="popBody"></div>
+  </div>
 </div>
 <p class="phase" id="phase"></p>
 
-<div class="fold">
-  <button class="btn foldbtn" id="foldbtn" aria-expanded="false" aria-controls="middle">
-    <span class="chev">⌄</span> What the line and the dots are</button>
-</div>
-
-<div id="middle" hidden>
-  <div class="piece">
+<div id="library" hidden>
+  <div class="piece" id="pTcp">
     <p class="phead">
       <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
         <line x1="2" y1="7" x2="24" y2="7" stroke="#34343a" stroke-width="2.5" stroke-linecap="round"/></svg>
-      <span class="pname">The line — a TCP connection</span><span class="sp"></span>
-      <button class="dots" data-pop="nTcp" aria-expanded="false" aria-label="More about the line">···</button></p>
+      <span class="pname">The line — a TCP connection</span></p>
     <p class="plain">It opens before anything is sent, and both dots travel along it.</p>
-    <div class="notes" id="nTcp" hidden>
+    <div class="notes" id="nTcp">
       <div class="note"><h4>FROM THE ARTICLE</h4>
         “Before your browser can send a HTTP request though, it first needs to establish a TCP connection
         with the Web server.” <b>— all it says.</b></div>
@@ -142,20 +142,19 @@ header{padding-block:var(--sp-xxl) 0}
     </div>
   </div>
 
-  <div class="piece">
+  <div class="piece" id="pReq">
     <p class="phead">
       <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
         <circle cx="7" cy="7" r="5.5" fill="#5e6ad2"/>
         <path d="M15 3l5 4-5 4" stroke="#5e6ad2" stroke-width="2.2" fill="none"
               stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="pname">The dot going out — the HTTP request</span><span class="sp"></span>
-      <button class="dots" data-pop="nReq" aria-expanded="false" aria-label="More about the request">···</button></p>
+      <span class="pname">The dot going out — the HTTP request</span></p>
     <div class="anat">
       <span class="part"><span class="tok">GET</span><i class="tick"></i><em>method</em></span>
       <span class="part is-path"><span class="tok" id="reqPath"></span><i class="tick"></i><em>path</em></span>
       <span class="part"><span class="tok">HTTP/1.1</span><i class="tick"></i><em>version</em></span>
     </div>
-    <div class="notes" id="nReq" hidden>
+    <div class="notes" id="nReq">
       <div class="note"><h4>FROM THE ARTICLE</h4>
         “The HTTP request consists of the line indicating the HTTP method (<b>GET</b>, because we are asking
         our server to return us something), the path <b>/hello</b> that indicates a “page” on the server we
@@ -169,14 +168,13 @@ header{padding-block:var(--sp-xxl) 0}
     </div>
   </div>
 
-  <div class="piece">
+  <div class="piece" id="pRes">
     <p class="phead">
       <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true" id="markRes">
         <circle cx="19" cy="7" r="5.5" fill="#27a644"/>
         <path d="M11 3L6 7l5 4" stroke="#27a644" stroke-width="2.2" fill="none"
               stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="pname">The dot coming back — the HTTP response</span><span class="sp"></span>
-      <button class="dots" data-pop="nRes" aria-expanded="false" aria-label="More about the response">···</button></p>
+      <span class="pname">The dot coming back — the HTTP response</span></p>
     <div class="rows">
       <div class="rw"><div class="anat" style="padding:0">
         <span class="part"><span class="tok">HTTP/1.1</span><i class="tick"></i><em>version</em></span>
@@ -186,7 +184,7 @@ header{padding-block:var(--sp-xxl) 0}
       <div class="rw"><div class="dotline"></div><span class="lab">empty line, required</span></div>
       <div class="rw"><div class="txt" id="rBody"></div><span class="lab">body</span></div>
     </div>
-    <div class="notes" id="nRes" hidden>
+    <div class="notes" id="nRes">
       <div class="note"><h4>FROM THE ARTICLE</h4>
         “The response consists of a status line <b>HTTP/1.1 200 OK</b>, followed by a required empty line,
         and then the HTTP response body.”</div>
@@ -196,6 +194,23 @@ header{padding-block:var(--sp-xxl) 0}
         <p>You have produced two of them. RFC 9110 says <code>200</code> means the request succeeded and a
         representation of the resource is included; <code>404</code> means the server “cannot find a current
         representation for the target resource”.</p></div>
+    </div>
+  </div>
+  <div class="piece" id="pSrv">
+    <p class="phead">
+      <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
+        <circle cx="13" cy="7" r="5.5" fill="none" stroke="#8a8f98" stroke-width="2"/></svg>
+      <span class="pname">The circle on the right — the web server</span></p>
+    <p class="plain">A program waiting on port 8888. It reads the request, prints it to its own terminal,
+    and sends a response back down the same line.</p>
+    <div class="notes">
+      <div class="note beyond"><h4>BEYOND THE ARTICLE — THIS SERVER WAS CHANGED</h4>
+        <p>The article's own <code>webserver1.py</code> answers <b>“Hello, World!” to everything</b>. Its
+        reply is a fixed string in the code and the path is never looked at — checked by really sending it
+        24 different page names, which produced one reply, byte for byte, every time.</p>
+        <p>The server here has <b>one line added</b>: it looks up the path before answering, so the page
+        name can decide something. That is what a path is for — MDN calls it “the path to the resource on
+        the Web server”, and RFC 9110 says “the target of an HTTP request is called a resource”.</p></div>
     </div>
   </div>
 </div>
@@ -216,7 +231,7 @@ const runOf = p => D.runs.find(r => r.path === p);
 const st = p => runOf(p).response.split('\n')[0].split(' ');
 const bodyOf = p => runOf(p).response.split('\n\n').slice(1).join('\n\n').trim();
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let sel = '/hello', token = 0;
+let sel = '/hello', token = 0, paused = false, openMark = null;
 
 const NS = 'http://www.w3.org/2000/svg';
 function el(t, a, p){ const e = document.createElementNS(NS, t);
@@ -226,23 +241,63 @@ function label(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-a
   e.textContent = s; return e; }
 const MONO = {'font-family':'JetBrains Mono, monospace', 'font-size':13};
 const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
+const linear = t => t;
+
+/* pause-aware tween: elapsed time only accumulates while running */
 function tween(ms, step, my, easing){
   return new Promise(res => {
     if (REDUCED){ step(1); return res(); }
-    const t0 = performance.now(), f2 = easing || ease;
-    (function f(now){ if (token !== my) return res();
-      const t = Math.min(1, (now - t0)/ms); step(f2(t));
-      t < 1 ? requestAnimationFrame(f) : res(); })(t0);
+    let last = performance.now(), acc = 0;
+    const f2 = easing || ease;
+    (function frame(now){
+      if (token !== my) return res();
+      const dt = now - last; last = now;
+      if (!paused) acc += dt;
+      const t = Math.min(1, acc / ms);
+      step(f2(t));
+      t < 1 ? requestAnimationFrame(frame) : res();
+    })(last);
   });
 }
-const wait = ms => new Promise(r => setTimeout(r, REDUCED ? 0 : ms));
+const wait = ms => tween(ms, () => {}, token, linear);
 const head = (x, y, dir) => 'M'+(x-9*dir)+' '+(y-6)+'L'+(x-dir)+' '+y+'L'+(x-9*dir)+' '+(y+6);
 
+/* ---------- marks you can click ---------- */
+const VB = 620;
+function makeHit(g, name, cx, cy, r){
+  const h = el('circle', {cx, cy, r, fill:'transparent', 'data-mark':name}, g);
+  h.style.cursor = 'pointer';
+  h.addEventListener('click', ev => { ev.stopPropagation(); openPop(name, cx); });
+  return h;
+}
+const PIECE = {tcp:'pTcp', req:'pReq', srv:'pSrv', res:'pRes'};
+function openPop(name, svgX){
+  if (openMark === name) return closePop();
+  if (openMark) putBack();
+  paused = true;
+  openMark = name;
+  $('#popBody').appendChild($('#' + PIECE[name]));
+  $('#pop').hidden = false;
+  $('#caret').style.left = Math.max(14, Math.min(94, svgX / VB * 100)) + '%';
+  $('#phase').innerHTML = '<i>paused — close this to carry on</i>';
+  $('#popClose').focus();
+}
+function putBack(){ if (openMark) $('#library').appendChild($('#' + PIECE[openMark])); }
+function closePop(){
+  putBack(); openMark = null; paused = false;
+  $('#pop').hidden = true;
+  $('#phase').innerHTML = lastSaid;
+}
+let lastSaid = '';
+const say = t => { lastSaid = t; if (!openMark) $('#phase').innerHTML = t; };
+
+/* ---------- the drawing ---------- */
 const G = {L:112, R:508, Y:84, RAD:42};
 async function play(){
-  const my = ++token, svg = $('#svg'), say = t => $('#phase').innerHTML = t;
+  const my = ++token, svg = $('#svg');
+  closePop();
   svg.innerHTML = '';
-  const [, code, ...rest] = st(sel), ok = code === '200', body = bodyOf(sel);
+  const [, code] = st(sel), ok = code === '200', body = bodyOf(sel);
   const col = ok ? C.ok : C.no;
   const x0 = G.L + G.RAD + 8, x1 = G.R - G.RAD - 8;
 
@@ -254,64 +309,77 @@ async function play(){
   const held = el('circle', {cx:G.L, cy:G.Y, r:0, fill:col, 'fill-opacity':.22, stroke:col, 'stroke-width':2}, svg);
   const ansT = label(svg, G.L, G.Y+G.RAD+48, '', Object.assign({fill:col, opacity:0}, MONO));
 
+  /* always-present marks */
+  const hitLine = el('rect', {x:x0, y:G.Y-16, width:x1-x0, height:32, fill:'transparent',
+    'data-mark':'tcp'}, svg);
+  hitLine.style.cursor = 'pointer';
+  hitLine.addEventListener('click', ev => { ev.stopPropagation(); openPop('tcp', (x0+x1)/2); });
+  makeHit(svg, 'srv', G.R, G.Y, G.RAD + 6);
+
   say('nothing between them yet'); await wait(300);
   say('a <b>line</b> opens between you and the server');
   await tween(450, t => wire.setAttribute('x2', x0 + (x1-x0)*t), my);
   if (token !== my) return;
 
-  const d = el('circle', {cx:x0, cy:G.Y, r:8, fill:C.accent}, svg);
+  const dg = el('g', {}, svg);
+  const d = el('circle', {cx:x0, cy:G.Y, r:8, fill:C.accent}, dg);
   const g = label(svg, x0, G.Y-22, sel, Object.assign({fill:C.accent}, MONO));
   const a = el('path', {d:'', stroke:C.accent, 'stroke-width':2.5, fill:'none',
     'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
-  say('a <b>dot</b> carries the page name across');
-  await tween(900, t => { const x = x0+(x1-x0)*t; d.setAttribute('cx',x); g.setAttribute('x',x);
+  const hitReq = el('circle', {cx:x0, cy:G.Y, r:22, fill:'transparent', 'data-mark':'req'}, svg);
+  hitReq.style.cursor = 'pointer';
+  hitReq.addEventListener('click', ev => { ev.stopPropagation();
+    openPop('req', +hitReq.getAttribute('cx')); });
+  say('a <b>dot</b> carries the page name across — click it to stop and look');
+  await tween(1100, t => { const x = x0+(x1-x0)*t;
+    d.setAttribute('cx',x); g.setAttribute('x',x); hitReq.setAttribute('cx',x);
     a.setAttribute('d', head(x+20, G.Y, 1)); }, my);
   if (token !== my) return;
-  d.remove(); g.remove(); a.remove();
+  dg.remove(); g.remove(); a.remove(); hitReq.remove();
 
-  /* ---- the server works. A ring closes around it while it does. ---- */
+  /* the server works - a ring closes around it, at a constant rate */
   const CIRC = 2 * Math.PI * (G.RAD + 9);
   const prog = el('circle', {cx:G.R, cy:G.Y, r:G.RAD+9, fill:'none', stroke:C.accent, 'stroke-width':2.5,
     'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC,
     transform:'rotate(-90 '+G.R+' '+G.Y+')'}, svg);
-  const work = label(svg, G.R, G.Y+4, '', Object.assign({fill:C.sub, 'font-size':11}, MONO));
   say('the server is working on it');
-  await tween(1500, t => {
-    prog.setAttribute('stroke-dashoffset', CIRC * (1 - t));
-    work.textContent = Math.round(t*100) + '%';
-  }, my, t => t);
+  await tween(1500, t => prog.setAttribute('stroke-dashoffset', CIRC * (1 - t)), my, linear);
   if (token !== my) return;
-  work.remove();
   await tween(320, t => { prog.setAttribute('opacity', 1-t);
     prog.setAttribute('r', G.RAD + 9 + 10*t); }, my);
   prog.remove();
   if (token !== my) return;
   srv.setAttribute('stroke', col);
 
-  const d2 = ok
-    ? el('circle', {cx:x1, cy:G.Y, r:8, fill:col}, svg)
-    : el('g', {}, svg);
-  if (!ok){
-    el('circle', {cx:0, cy:0, r:9, fill:'none', stroke:col, 'stroke-width':2}, d2);
+  const bg = el('g', {}, svg);
+  if (ok){ el('circle', {cx:0, cy:0, r:8, fill:col}, bg); }
+  else {
+    el('circle', {cx:0, cy:0, r:9, fill:'none', stroke:col, 'stroke-width':2}, bg);
     el('path', {d:'M-4.5 -4.5L4.5 4.5M4.5 -4.5L-4.5 4.5', stroke:col, 'stroke-width':2,
-      'stroke-linecap':'round'}, d2);
-    d2.setAttribute('transform', 'translate('+x1+','+G.Y+')');
+      'stroke-linecap':'round'}, bg);
   }
+  bg.setAttribute('transform', 'translate('+x1+','+G.Y+')');
   const g2 = label(svg, x1, G.Y-22, body, Object.assign({fill:col}, MONO));
   const a2 = el('path', {d:'', stroke:col, 'stroke-width':2.5, fill:'none',
     'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
+  const hitRes = el('circle', {cx:x1, cy:G.Y, r:22, fill:'transparent', 'data-mark':'res'}, svg);
+  hitRes.style.cursor = 'pointer';
+  hitRes.addEventListener('click', ev => { ev.stopPropagation();
+    openPop('res', +hitRes.getAttribute('cx')); });
   say(ok ? 'a <b>dot</b> brings the page back' : 'a <b>crossed circle</b> comes back — no such page');
-  await tween(900, t => { const x = x1-(x1-x0)*t;
-    ok ? d2.setAttribute('cx', x) : d2.setAttribute('transform', 'translate('+x+','+G.Y+')');
-    g2.setAttribute('x', x);
+  await tween(1100, t => { const x = x1-(x1-x0)*t;
+    bg.setAttribute('transform', 'translate('+x+','+G.Y+')');
+    g2.setAttribute('x', x); hitRes.setAttribute('cx', x);
     a2.setAttribute('d', head(x-20, G.Y, -1)); }, my);
   if (token !== my) return;
-  d2.remove(); g2.remove(); a2.remove();
+  bg.remove(); g2.remove(); a2.remove();
   ansT.textContent = body;
   await tween(330, t => { held.setAttribute('r', 22*t); ansT.setAttribute('opacity', t); }, my);
   if (!ok){ held.setAttribute('fill-opacity', 0);
     el('path', {d:'M'+(G.L-8)+' '+(G.Y-8)+'L'+(G.L+8)+' '+(G.Y+8)+'M'+(G.L+8)+' '+(G.Y-8)+'L'+(G.L-8)+' '+(G.Y+8),
       stroke:col, 'stroke-width':2, 'stroke-linecap':'round'}, svg); }
+  /* the response mark stays reachable once it has landed */
+  hitRes.setAttribute('cx', G.L);
   say(ok ? 'you have the page' : 'there was no page by that name');
 }
 
@@ -336,13 +404,12 @@ function sync(){
 
 $('#pn').onclick = () => { sel = NAMES[(NAMES.indexOf(sel)+1) % NAMES.length]; sync(); };
 $('#replay').onclick = () => play();
-const fb = $('#foldbtn');
-fb.onclick = () => { const o = fb.getAttribute('aria-expanded') === 'true';
-  fb.setAttribute('aria-expanded', String(!o)); $('#middle').hidden = o; };
-$$('.dots[data-pop]').forEach(b => b.onclick = () => {
-  const o = b.getAttribute('aria-expanded') === 'true';
-  b.setAttribute('aria-expanded', String(!o));
-  document.getElementById(b.dataset.pop).hidden = o;
+$('#popClose').onclick = () => closePop();
+$('#svg').addEventListener('click', () => {
+  if (openMark) return closePop();
+  paused = !paused;
+  $('#phase').innerHTML = paused ? '<i>paused — click a circle, the line or a dot to look at it</i>' : lastSaid;
 });
+addEventListener('keydown', e => { if (e.key === 'Escape' && openMark) closePop(); });
 sync();
 </script>
