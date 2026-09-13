@@ -309,12 +309,6 @@ function draw(){
      hands them over while the application is STILL RUNNING, and the server keeps them
      until it constructs the response. This is the one thing in part 2 that is genuinely
      at rest inside a place for a duration the reader cannot otherwise see. */
-  if (step >= 7 && step <= 9){
-    const f = step === 7 ? (sub >= 1 ? 1 : 0) : 1;
-    if (f) el('circle', {cx:G.srv.x, cy:G.srv.y, r:20, fill:col, 'fill-opacity':.22,
-      stroke:col, 'stroke-width':2}, svg);
-  }
-
   /* Work, past and present. A place's jobs divide its ring into consecutive arcs: each
      job starts where the last one stopped, finished arcs stay at 38%, the one in progress
      sweeps at full strength. ADR 0004. Linear - labour does not accelerate. Always the
@@ -355,10 +349,6 @@ function draw(){
     const w = JOBS.srv.includes(step) ? G.srv : G.app;
     cap(svg, w.x, w.y - w.r - 17, JOBNAME[step], 'work' + step, {'font-size':11.5});
   }
-  /* the held disc's caption: the article's own name for what is parked there */
-  if (step >= 7 && step <= 9 && !(step === 7 && sub < 1))
-    cap(svg, G.srv.x, G.srv.y - G.srv.r - (JOBNAME[step] ? 37 : 17), 'headers_set', 'held',
-      {'font-size':11.5, 'font-family':MONO, fill:col});
 
   const NAMEY = 226;
   if (at(1) > 0) cap(svg, (i0+i1)/2, NAMEY, 'application(environ, start_response)', 'call',
@@ -520,12 +510,16 @@ const DOORS = {
     '<code>Host</code> header and the rest — the article\'s server never looks at. Only two of ' +
     'the three reach <code>environ</code>, as <code>REQUEST_METHOD</code> and ' +
     '<code>PATH_INFO</code>.</p>'],
-  sr: () => ['what ' + shortApp[app] + ' passed to start_response',
+  sr: () => ['headers_set: what ' + shortApp[app] + ' passed to start_response',
     '<pre>start_response(\n  ' + JSON.stringify(run().status) + ',\n  [\n' +
     run().appHeaders.map(h => '    (' + JSON.stringify(h[0]) + ', ' + JSON.stringify(h[1]) + '),')
       .join('\n') + '\n  ]\n)</pre>' +
-    '<p>Captured from the real call. The server stores these in <code>headers_set</code> and does ' +
-    'nothing with them until it builds the response.</p>'],
+    '<p>Captured from the real call, and handed over <b>while the application was still ' +
+    'running</b> — this is the callback, not the return value.</p>' +
+    '<pre>self.headers_set = [status, response_headers + server_headers]</pre>' +
+    '<p>The server parks them there and does nothing with them until ' + to(9) + '. It appends ' +
+    'two of its own on the way in: <code>Date</code> — hardcoded in the article to ' +
+    '<code>Mon, 15 Jul 2019 5:54:48 GMT</code> — and <code>Server</code>.</p>'],
   chunk: () => ['why the body had to be chunked',
     '<p>The bare application is the only one of the four that sets no ' +
     '<code>Content-Length</code>. Without it this server cannot say how long the body is, so it ' +
@@ -606,13 +600,6 @@ const DOORS = {
     '<p>Built from <b>both</b> routes back: the headers parked by <code>start_response</code> at ' +
     'step 7, and the body returned at step 8. <code>result</code> is iterable, not a string — ' +
     'which is why the loop is there.</p>'],
-  held: () => ['headers_set',
-    '<pre>self.headers_set = [status, response_headers + server_headers]</pre>' +
-    '<p>The status and headers the application handed over <b>while it was still running</b>, ' +
-    'parked in the server until ' + to(9) + '. This is the only thing in the whole exchange that sits ' +
-    'still for a while, which is why it is drawn as a resting disc rather than a moving one.</p>' +
-    '<p>The server appends two of its own here: <code>Date</code> — hardcoded in the article to ' +
-    '<code>Mon, 15 Jul 2019 5:54:48 GMT</code> — and <code>Server</code>.</p>'],
   request: () => ['the request',
     '<pre>GET /hello HTTP/1.1\nHost: localhost:8888\nConnection: close</pre>' +
     '<p>The same request in all twelve runs. The article\'s server reads only the first line; ' +
