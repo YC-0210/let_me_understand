@@ -37,6 +37,9 @@ header{padding-block:var(--sp-xxl) 0}
 
 .panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
 svg.draw{display:block; width:100%; height:auto}
+#svg .door-g{cursor:pointer}
+#svg .door-g:hover text{opacity:.72}
+#svg .door-g:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
 .steps{margin:var(--sp-md) 0 0}
 #scrub{width:100%; cursor:pointer; -webkit-appearance:none; appearance:none; background:transparent}
 #scrub:focus-visible{outline:2px solid var(--accent-focus); outline-offset:4px}
@@ -200,6 +203,24 @@ const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function el(t, a, p){ const e = document.createElementNS(NS, t);
   for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+/* Section 5: the mark is never the button - its caption is. A caption gets a dotted
+   underline and a click; a caption that IS the datum keeps its own colour, and the
+   underline alone carries the affordance (rule 2). */
+function cap(p, x, y, s, id, o){
+  const g = el('g', {class:'door-g', tabindex:'0', role:'button'}, p);
+  const t = txt(g, x, y, s, o);
+  if (!o || !o.fill || o.fill === C.sub || o.fill === C.tert) t.setAttribute('fill', C.accent);
+  const col = t.getAttribute('fill');
+  const w = (t.getComputedTextLength ? t.getComputedTextLength() : s.length * 6) / 2;
+  el('line', {x1:x - w, y1:y + 4, x2:x + w, y2:y + 4, stroke:col, 'stroke-width':1,
+    'stroke-dasharray':'2 2', opacity:.7}, g);
+  g.setAttribute('aria-label', DOORS[id] ? DOORS[id]()[0] : s);
+  const go = ev => { ev.stopPropagation(); showDoor(id); };
+  g.addEventListener('click', go);
+  g.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); go(ev); } });
+  return g;
+}
 function txt(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anchor':'middle',
   fill:C.sub, 'font-size':12.5, 'font-family':SANS}, o||{}), p); e.textContent = s; return e; }
 
@@ -320,20 +341,31 @@ function draw(){
 
   /* names below marks; values above the mark carrying them (section 4).
      The middle and right names are the two knobs. */
-  txt(svg, G.you.x, G.you.y + G.you.r + 21, 'you');
-  txt(svg, G.srv.x, G.srv.y + G.srv.r + 21, shortSrv[srv], {fill:C.ink});
-  txt(svg, G.app.x, G.app.y + G.app.r + 21, shortApp[app], {fill:C.ink});
+  cap(svg, G.you.x, G.you.y + G.you.r + 21, 'you', 'you');
+  cap(svg, G.srv.x, G.srv.y + G.srv.r + 21, shortSrv[srv], 'server', {fill:C.ink});
+  cap(svg, G.app.x, G.app.y + G.app.r + 21, shortApp[app], 'app', {fill:C.ink});
+
+  /* the ring's caption: the job being done, in the article's words */
+  const JOBNAME = {3:'parsing', 4:'building environ', 6:'running', 9:'constructing the response'};
+  if (JOBNAME[step]){
+    const w = JOBS.srv.includes(step) ? G.srv : G.app;
+    cap(svg, w.x, w.y - w.r - 17, JOBNAME[step], 'work' + step, {'font-size':11.5});
+  }
+  /* the held disc's caption: the article's own name for what is parked there */
+  if (step >= 7 && step <= 9 && !(step === 7 && sub < 1))
+    cap(svg, G.srv.x, G.srv.y - G.srv.r - (JOBNAME[step] ? 37 : 17), 'headers_set', 'held',
+      {'font-size':11.5, 'font-family':MONO, fill:col});
 
   const NAMEY = 226;
-  if (at(1) > 0) txt(svg, (i0+i1)/2, NAMEY, 'application(environ, start_response)',
-      {'font-size':11.5, fill:C.tert, 'font-family':MONO});
-  if (at(2) > 0) txt(svg, (n0+n1)/2, NAMEY, 'a network connection', {'font-size':11.5, fill:C.tert});
+  if (at(1) > 0) cap(svg, (i0+i1)/2, NAMEY, 'application(environ, start_response)', 'call',
+      {'font-size':11.5, 'font-family':MONO});
+  if (at(2) > 0) cap(svg, (n0+n1)/2, NAMEY, 'a network connection', 'net', {'font-size':11.5});
 
-  const val = (x, y, s, c) => txt(svg, x, y, s, {fill:c, 'font-family':MONO, 'font-size':12.5});
-  if (at(2) > 0) val((n0+n1)/2, G.you.y - 48, 'GET /hello', C.accent);
-  if (at(4) > 0) val(G.srv.x, G.srv.y - G.srv.r - 16,
-      Object.keys(R.environ).length + ' keys', C.accent);
-  if (at(5) > 0) val((i0+i1)/2, G.srv.y - 48, 'environ', C.accent);
+  /* A value rides the disc while it travels and the trace once it has landed - one
+     caption, one door, for both marks. ADR 0003. */
+  const val = (x, y, s, c, id) => cap(svg, x, y, s, id, {fill:c, 'font-family':MONO, 'font-size':12.5});
+  if (at(2) > 0) val((n0+n1)/2, G.you.y - 48, 'GET /hello', C.accent, 'request');
+  if (at(5) > 0) val((i0+i1)/2, G.srv.y - 48, 'environ', C.accent, 'env');
   /* the two routes back, labelled apart so neither sits on the other's arc */
   /* the start_response label sits toward the application, where it came from; the body
      label sits lower and further left, so neither lands on the other's arc or on a name */
@@ -341,9 +373,9 @@ function draw(){
      below the lower one, neither on a curve and neither on a name */
   if (at(7) > 0) val(i0 + (i1-i0)*.66, G.srv.y + 42,
       R.status + ' · ' + R.appHeaders.length + ' header' +
-      (R.appHeaders.length === 1 ? '' : 's'), col);
-  if (at(8) > 0) val(i0 + (i1-i0)*.38, G.srv.y + 96, R.body.trim(), col);
-  if (at(10) > 0) val((n0+n1)/2, G.you.y + 48, R.statusLine, col);
+      (R.appHeaders.length === 1 ? '' : 's'), col, 'sr');
+  if (at(8) > 0) val(i0 + (i1-i0)*.38, G.srv.y + 96, R.body.trim(), col, 'body');
+  if (at(10) > 0) val((n0+n1)/2, G.you.y + 48, R.statusLine, col, 'response');
 
   const [name, , art] = STEPS[step];
   $('#phase').innerHTML = '<span class="n">' + (art ? 'article ' + art : '&nbsp;&nbsp;&nbsp;·') +
@@ -500,6 +532,79 @@ const DOORS = {
     '<p>Under <b>ADR 0002</b>: <b>checked</b> against the article\'s own list of servers, ' +
     '<b>real</b> — twelve pairs, every byte captured — and <b>marked</b> here, where you meet it. ' +
     'Without it the server would have exactly one value and would not be something you can turn.</p>'],
+  you: () => ['you',
+    '<p>A browser, or <code>curl</code>, or the socket this capture used. The only part of ' +
+    'this picture that is <b>not</b> inside the server\'s program — everything to the right of ' +
+    'the first line runs in one process.</p>'],
+  server: () => ['the server: ' + srv,
+    srv === 'webserver2'
+      ? '<p>The article\'s own <code>webserver2.py</code>, copied verbatim — just under 150 ' +
+        'lines. It implements the <b>server half</b> of WSGI: read, parse, build ' +
+        '<code>environ</code>, call the application, build the response, send it.</p>' +
+        '<p>It answers one connection at a time, and it has no error handling: an empty ' +
+        'connection makes <code>parse_request(\'\')</code> raise on <code>splitlines()[0]</code> ' +
+        'and the server stops. That is genuinely what the article\'s code does.</p>'
+      : '<p><b>' + srv + '</b>, a production server the article <b>names but never runs</b>. ' +
+        'It was installed and really run here against the article\'s own unmodified application ' +
+        'files. It puts <b>' + Object.keys(run().environ).length + '</b> keys in ' +
+        '<code>environ</code> where the article\'s server puts eleven, and sets ' +
+        '<code>SERVER_SOFTWARE</code> to <code>' +
+        esc(run().environ['SERVER_SOFTWARE'] || '') + '</code>.</p>'],
+  app: () => ['the application: ' + shortApp[app],
+    '<p>The framework half of WSGI. Whatever else it is, to the server it is ' +
+    '<b>one callable</b> taking <code>(environ, start_response)</code> and returning an ' +
+    'iterable of bytes.</p>' +
+    '<p>This one answered with <code>' + esc(run().body.trim()) + '</code> and set ' +
+    run().appHeaders.length + ' header' + (run().appHeaders.length === 1 ? '' : 's') + ': ' +
+    run().appHeaders.map(h => '<code>' + esc(h[0]) + '</code>').join(', ') + '.</p>'],
+  net: () => ['a network connection',
+    '<p>A real TCP socket. Two separate programs, possibly two separate machines, exchanging ' +
+    'bytes. It opens when you ask and closes when the reply has been sent — the server\'s last ' +
+    'line is <code>client_connection.close()</code>, inside a <code>finally</code>.</p>'],
+  call: () => ['application(environ, start_response)',
+    '<p>Not a network hop. The server and the application are the <b>same running program</b>, ' +
+    'and this is an ordinary Python function call — same process, same call stack.</p>' +
+    '<p>It is drawn with the same line mark as the network connection because the mark means ' +
+    '<b>a channel between two places</b>, and the word underneath says which kind. Three other ' +
+    'ways were built and rejected: a second kind of line, the application drawn inside the ' +
+    'server, and no third place at all.</p>' +
+    '<p>This call is <b>identical in all twelve combinations</b>. It is the thing WSGI is.</p>'],
+  work3: () => ['parsing',
+    '<pre>request_line = text.splitlines()[0]\n' +
+    '(self.request_method,\n self.path,\n self.request_version) = request_line.split()</pre>' +
+    '<p>One line, split on spaces into three. Every header after it is ignored by the ' +
+    'article\'s server.</p>'],
+  work4: () => DOORS.env(),
+  work6: () => ['running',
+    '<p>The server is blocked here. It made one call and is waiting for it to return — which ' +
+    'is why the article ends by asking how you would handle more than one request at a time.</p>' +
+    '<p>Inside this time <b>' + shortApp[app] + '</b> routes the path, runs a view, and calls ' +
+    '<code>start_response</code> before returning anything.</p>'],
+  work9: () => ['constructing the response',
+    '<pre>status, response_headers = self.headers_set\n' +
+    'response = f\'HTTP/1.1 {status}\\r\\n\'\n' +
+    'for header in response_headers:\n    response += \'{0}: {1}\\r\\n\'.format(*header)\n' +
+    'response += \'\\r\\n\'\nfor data in result:\n    response += data.decode(\'utf-8\')</pre>' +
+    '<p>Built from <b>both</b> routes back: the headers parked by <code>start_response</code> at ' +
+    'step 7, and the body returned at step 8. <code>result</code> is iterable, not a string — ' +
+    'which is why the loop is there.</p>'],
+  held: () => ['headers_set',
+    '<pre>self.headers_set = [status, response_headers + server_headers]</pre>' +
+    '<p>The status and headers the application handed over <b>while it was still running</b>, ' +
+    'parked in the server until step 9. This is the only thing in the whole exchange that sits ' +
+    'still for a while, which is why it is drawn as a resting disc rather than a moving one.</p>' +
+    '<p>The server appends two of its own here: <code>Date</code> — hardcoded in the article to ' +
+    '<code>Mon, 15 Jul 2019 5:54:48 GMT</code> — and <code>Server</code>.</p>'],
+  request: () => ['the request',
+    '<pre>GET /hello HTTP/1.1\nHost: localhost:8888\nConnection: close</pre>' +
+    '<p>The same request in all twelve runs. The article\'s server reads only the first line; ' +
+    'gunicorn and waitress read the rest and put it in <code>environ</code> as ' +
+    '<code>HTTP_HOST</code> and <code>HTTP_CONNECTION</code>.</p>'],
+  body: () => ['the response body',
+    '<pre>' + esc(JSON.stringify(run().body)) + '</pre>' +
+    '<p>The application\'s return value — a list of one bytestring. The server loops over it, ' +
+    'because WSGI says the result is an <b>iterable</b>: an application is free to return it in ' +
+    'pieces.</p>'],
   real: () => ['where these bytes came from',
     '<p>One real <code>GET /hello</code> sent over a socket to a real running server, twelve ' +
     'times. The response you are reading is what came back, not a reconstruction.</p>' +
@@ -571,6 +676,7 @@ function closeDoor(){
   openDoor = null; $('#pop').hidden = true;
   if (wasPlaying){ wasPlaying = false; play(false); }   /* same instant, not the start */
 }
+$('#svg').addEventListener('click', e => { if (!e.target.closest('.door-g')) return; });
 $('#bub').addEventListener('click', e => {
   const d = e.target.closest('.door');
   if (d) showDoor(d.dataset.door);
