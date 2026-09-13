@@ -342,6 +342,8 @@ const STEPS = [
   ['The connection closes',      520],
 ];
 let step = 0, sub = 1, playing = false, rafId = 0;
+/* Section 3.1: travel eases, work is linear. Steps 2 and 4 are the two legs of travel. */
+const ease = f => f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2)/2;
 
 const measure = (() => {                       /* one off-screen path for arc geometry */
   const m = el('path', {}, $('#svg'));
@@ -361,7 +363,8 @@ function draw(){
   [...svg.children].forEach(c => { if (c.style.display !== 'none') c.remove(); });
   const [, code] = st(sel), ok = code === '200', body = bodyOf(sel);
   const col = ok ? C.ok : C.no;
-  const at = i => step === i ? sub : (step > i ? 1 : 0);   /* progress through step i */
+  const at  = i => step === i ? sub : (step > i ? 1 : 0);        /* progress - linear */
+  const atE = i => step === i ? ease(sub) : (step > i ? 1 : 0);  /* progress - eased */
 
   /* the channel: opens at step 1, retracts at step 6 */
   const open = at(1) - (step === 6 ? sub : (step > 6 ? 1 : 0));
@@ -373,8 +376,8 @@ function draw(){
     const {len, dash} = partial(d, f);
     el('path', {d, fill:'none', stroke:c, 'stroke-width':1.5, 'stroke-dasharray':dash,
       opacity:.45}, svg); };
-  trace(P_OUT,  at(2), C.accent);
-  trace(P_BACK, at(4), col);
+  trace(P_OUT,  atE(2), C.accent);
+  trace(P_BACK, atE(4), col);
 
   /* the two places */
   el('circle', {cx:G.L, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
@@ -399,9 +402,9 @@ function draw(){
   }
 
   /* the messages, each only while travelling */
-  if (step === 2){ const q = pointOn(P_OUT, sub);
+  if (step === 2){ const q = pointOn(P_OUT, ease(sub));
     el('circle', {cx:q.x, cy:q.y, r:8, fill:C.accent}, svg); }
-  if (step === 4){ const q = pointOn(P_BACK, sub);
+  if (step === 4){ const q = pointOn(P_BACK, ease(sub));
     if (ok) el('circle', {cx:q.x, cy:q.y, r:8, fill:col}, svg);
     else { const g = el('g', {transform:'translate('+q.x+','+q.y+')'}, svg);
       el('circle', {cx:0, cy:0, r:9, fill:'none', stroke:col, 'stroke-width':2}, g);
@@ -424,23 +427,27 @@ function draw(){
   $('#phase').innerHTML = '<span class="n">' + step + ' / 6</span>' + STEPS[step][0];
 }
 
-/* play walks the same steps; it is a convenience, not the only way through */
+/* play walks the same steps; it is a convenience, not the only way through.
+   A step animates for ITS OWN duration (section 3.2 - duration is meaning), then rests
+   long enough to be seen (section 3a.3 - landing on a step shows its completed state). */
+const DWELL = 300;
 function stopPlay(){ playing = false; cancelAnimationFrame(rafId); updateChrome(); }
 function play(){
   if (openMark) closePop();
   if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
   if (step >= STEPS.length - 1){ step = 0; sub = 1; }
   playing = true; updateChrome();
-  let last = performance.now();
+  let last = performance.now(), rest = sub >= 1 ? DWELL : 0;
   (function frame(now){
     if (!playing) return;
     const dt = now - last; last = now;
-    const dur = STEPS[Math.min(step + 1, STEPS.length - 1)][1] || 1;
-    sub += dt / dur;
+    if (rest > 0){ rest -= dt; draw(); rafId = requestAnimationFrame(frame); return; }
     if (sub >= 1){
-      if (step >= STEPS.length - 1){ step = STEPS.length - 1; sub = 1; draw(); return stopPlay(); }
+      if (step >= STEPS.length - 1){ sub = 1; draw(); return stopPlay(); }
       step++; sub = 0;
     }
+    sub = Math.min(1, sub + dt / (STEPS[step][1] || 1));
+    if (sub >= 1) rest = DWELL;
     draw();
     rafId = requestAnimationFrame(frame);
   })(last);

@@ -17,7 +17,7 @@ See [`REFERENCES.md`](REFERENCES.md) for the wider reading.
 
 ## 1. The marks
 
-Seven. Nothing else may be drawn.
+Eight. Nothing else may be drawn.
 
 | Mark | Geometry | Means |
 |---|---|---|
