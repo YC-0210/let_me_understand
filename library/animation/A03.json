@@ -1,0 +1,59 @@
+{
+  "id": "A03",
+  "title": "Keep positions fixed while possibilities disappear",
+  "tags": [
+    "elimination",
+    "identity",
+    "range"
+  ],
+  "capabilities": [
+    "show-elimination",
+    "preserve-identity"
+  ],
+  "renderer": "candidateStrip",
+  "communicates": "Which possibilities remain after a decision.",
+  "inputs": [
+    "items",
+    "remaining",
+    "inspected",
+    "found"
+  ],
+  "source": {
+    "url": "https://worrydream.com/LadderOfAbstraction/",
+    "title": "Up and Down the Ladder of Abstraction",
+    "locator": "Concrete examples, changing parameters, comparing outcomes",
+    "kind": "interactive essay"
+  },
+  "observation": "The essay connects concrete instances and broader parameter-space views.",
+  "interpretation": "Keeping each candidate in its original position lets elimination be read without mentally tracking a rearrangement. This is an authored design pattern.",
+  "avoid": [
+    "Moving surviving values into a new order.",
+    "Fading a value without explaining why it was excluded."
+  ],
+  "demo": {
+    "items": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "type": "animation",
+  "review": {
+    "source_checked": true,
+    "implementation": "authored JavaScript/SVG demo",
+    "learner_validated": false
+  }
+}

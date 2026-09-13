@@ -1,0 +1,36 @@
+{
+  "id": "T04",
+  "title": "Give the idea a name after the learner has met it",
+  "tags": [
+    "terminology",
+    "beginner",
+    "abstraction"
+  ],
+  "before": "The learner has seen a concrete relationship.",
+  "after": "A new term names something recognizable.",
+  "sequence": [
+    "Recall the concrete example.",
+    "Identify the shared relationship.",
+    "Introduce the conventional name with its scope."
+  ],
+  "source": {
+    "url": "https://www.3blue1brown.com/about/",
+    "title": "Grant Sanderson — advice for making explanations",
+    "locator": "FAQ: advice for making math videos",
+    "kind": "creator advice"
+  },
+  "observation": "Sanderson warns that pedagogical ordering can differ from the order in which definitions are normally presented.",
+  "interpretation": "A name should compress an idea the learner has already encountered.",
+  "example": "After seeing work overlap, introduce concurrency as the name for that overlap.",
+  "avoid": [
+    "Replacing a missing explanation with a glossary.",
+    "Introducing several dependent terms at once."
+  ],
+  "check": "Can the learner point to an instance of the named idea?",
+  "type": "teaching",
+  "review": {
+    "source_checked": true,
+    "interpretation": "agent-authored; awaiting user review",
+    "learner_validated": false
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "id": "server",
+  "title": "Why is the second person still waiting?",
+  "subtitle": "Two people open a page. One gets an answer. The other waits.",
+  "assumed_knowledge": [
+    "web-page"
+  ],
+  "steps": [
+    {
+      "id": "first",
+      "title": "An answer is only part of the job.",
+      "explanation": "A opens a web page. Their browser connects to a server: a program that answers page requests. This connection is the link between them. Our server sends \u201cHello World!\u201d immediately, then deliberately pauses before closing the link. During that pause, the program is still occupied with A. Watch the answer arrive before the connection closes.",
+      "teaching_card": "T01",
+      "requires": [
+        "web-page"
+      ],
+      "introduces": [
+        "connection",
+        "occupied-program"
+      ],
+      "visual_requirements": [
+        "preserve-history"
+      ],
+      "scene": "one",
+      "action": "Watch A\u2019s request"
+    },
+    {
+      "id": "bottleneck",
+      "title": "B arrives while the program is occupied.",
+      "explanation": "B opens the same page shortly after A. B\u2019s request can wait in a queue\u2014a waiting line\u2014 but this program does not pick it up until it finishes with A. Watch when B gets an answer. The amber interval is time B spends waiting for that answer.",
+      "teaching_card": "T02",
+      "requires": [
+        "connection",
+        "occupied-program"
+      ],
+      "introduces": [
+        "queue",
+        "answer-wait"
+      ],
+      "visual_requirements": [
+        "show-overlap"
+      ],
+      "scene": "serial",
+      "action": "Watch both requests"
+    },
+    {
+      "id": "predict",
+      "title": "Would a bigger waiting room help?",
+      "explanation": "The queue already has room for B. Suppose we give it even more room, while the program still finishes A before taking another request. What happens to B\u2019s wait for an answer?",
+      "teaching_card": "T03",
+      "requires": [
+        "queue",
+        "answer-wait"
+      ],
+      "introduces": [],
+      "visual_requirements": [],
+      "scene": "prediction",
+      "action": "Check my prediction"
+    },
+    {
+      "id": "change",
+      "title": "Let a separate process finish A\u2019s job.",
+      "explanation": "A process is a running instance of a program. The original process can start a child process to handle A, then return to accepting requests. It can give B a child process too. Now their work overlaps: this is concurrency. Compare when B receives its answer in the two versions.",
+      "teaching_card": "T04",
+      "requires": [
+        "occupied-program",
+        "answer-wait"
+      ],
+      "introduces": [
+        "process",
+        "concurrency"
+      ],
+      "visual_requirements": [
+        "show-overlap",
+        "compare-amounts"
+      ],
+      "scene": "compare",
+      "action": "Compare the two versions"
+    },
+    {
+      "id": "transfer",
+      "title": "The benefit depends on when B arrives.",
+      "explanation": "Change B\u2019s arrival time. If B arrives after A\u2019s connection is already closed, even the original version can answer B promptly. Concurrency helps here because requests overlap, not because every individual job gets faster.",
+      "teaching_card": "T03",
+      "requires": [
+        "concurrency"
+      ],
+      "introduces": [],
+      "visual_requirements": [
+        "show-overlap",
+        "compare-amounts"
+      ],
+      "scene": "explore",
+      "action": "Replay this case"
+    }
+  ],
+  "question": {
+    "options": [
+      "B gets an answer sooner.",
+      "B waits about as long."
+    ],
+    "correct": 1,
+    "feedback": [
+      "More queue space can hold more waiting requests. It does not free the occupied program to answer B.",
+      "Yes. B already fits in the queue. The occupied program is what delays the answer."
+    ]
+  }
+}

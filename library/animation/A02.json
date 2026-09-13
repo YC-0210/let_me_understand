@@ -1,0 +1,42 @@
+{
+  "id": "A02",
+  "title": "Keep an event in its place in time",
+  "tags": [
+    "duration",
+    "history",
+    "overlap"
+  ],
+  "capabilities": [
+    "show-overlap",
+    "preserve-history"
+  ],
+  "renderer": "timeline",
+  "communicates": "When events begin and end, and which intervals overlap.",
+  "inputs": [
+    "lanes",
+    "events",
+    "time",
+    "duration"
+  ],
+  "source": {
+    "url": "https://docs.manim.community/en/stable/reference/manim.mobject.value_tracker.ValueTracker.html",
+    "title": "Manim Community — ValueTracker",
+    "locator": "ValueTracker examples",
+    "kind": "animation API example"
+  },
+  "observation": "ValueTracker supports a changing numerical value driving an animation.",
+  "interpretation": "Use one shared time value for all lanes; leave completed intervals visible. This timeline design is our adaptation, not a copied Manim example.",
+  "avoid": [
+    "Animating a future event as if it already happened.",
+    "Resetting a completed event on every frame."
+  ],
+  "demo": {
+    "duration": 10
+  },
+  "type": "animation",
+  "review": {
+    "source_checked": true,
+    "implementation": "authored JavaScript/SVG demo",
+    "learner_validated": false
+  }
+}

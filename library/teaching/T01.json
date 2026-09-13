@@ -1,0 +1,36 @@
+{
+  "id": "T01",
+  "title": "Start with something the learner can already judge",
+  "tags": [
+    "beginner",
+    "familiar-situation",
+    "motivation"
+  ],
+  "before": "The learner has everyday experience but no technical vocabulary.",
+  "after": "They can state the question in their own words.",
+  "sequence": [
+    "Use a specific familiar situation.",
+    "Ask what should happen.",
+    "Identify the missing explanation before introducing its name."
+  ],
+  "source": {
+    "url": "https://www.3blue1brown.com/about/",
+    "title": "Grant Sanderson — advice for making explanations",
+    "locator": "FAQ: advice for making math videos",
+    "kind": "creator advice"
+  },
+  "observation": "Sanderson recommends examples before general frameworks and putting the key exercise near the opening.",
+  "interpretation": "Begin with a judgment the learner can make before asking them to adopt new terminology.",
+  "example": "In the derivative lesson, a moving car gives a familiar starting point for discussing speed.",
+  "avoid": [
+    "Assuming everyday experience supplies technical understanding.",
+    "Using a story that adds more unfamiliar things than it explains."
+  ],
+  "check": "Can a beginner describe the problem without using the new term?",
+  "type": "teaching",
+  "review": {
+    "source_checked": true,
+    "interpretation": "agent-authored; awaiting user review",
+    "learner_validated": false
+  }
+}

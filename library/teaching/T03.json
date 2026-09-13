@@ -1,0 +1,37 @@
+{
+  "id": "T03",
+  "title": "Ask for a prediction, then explain the outcome",
+  "tags": [
+    "prediction",
+    "counterfactual",
+    "transfer",
+    "comparison"
+  ],
+  "before": "The learner has seen a relationship in one case.",
+  "after": "They can use that relationship in a changed case.",
+  "sequence": [
+    "Ask one answerable prediction.",
+    "Let the learner commit or choose to reveal.",
+    "Explain why the result follows, including incorrect answers."
+  ],
+  "source": {
+    "url": "https://www.3blue1brown.com/lessons/derivatives/",
+    "title": "The paradox of the derivative",
+    "locator": "Position and Velocity → Rates of Change",
+    "kind": "written lesson with visual examples"
+  },
+  "observation": "The page asks readers to infer motion from a graph and includes a question about a negative tangent slope.",
+  "interpretation": "A prediction makes an otherwise invisible misunderstanding observable.",
+  "example": "A learner predicts which part of a journey has the greatest speed before seeing the corresponding velocity.",
+  "avoid": [
+    "Testing a fact that has not been introduced.",
+    "Treating a correct guess as proof of understanding."
+  ],
+  "check": "Ask for a reason or a new case, not only the answer.",
+  "type": "teaching",
+  "review": {
+    "source_checked": true,
+    "interpretation": "agent-authored; awaiting user review",
+    "learner_validated": false
+  }
+}

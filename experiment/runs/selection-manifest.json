@@ -1,0 +1,78 @@
+{
+  "search": [
+    {
+      "step": "first",
+      "card": "A03",
+      "renderer": "candidateStrip",
+      "reason": "Required capability: preserve-identity"
+    },
+    {
+      "step": "limit",
+      "card": "A03",
+      "renderer": "candidateStrip",
+      "reason": "Required capability: show-elimination"
+    },
+    {
+      "step": "change",
+      "card": "A03",
+      "renderer": "candidateStrip",
+      "reason": "Required capability: show-elimination"
+    },
+    {
+      "step": "change",
+      "card": "A01",
+      "renderer": "comparisonBars",
+      "reason": "Required capability: compare-amounts"
+    },
+    {
+      "step": "transfer",
+      "card": "A03",
+      "renderer": "candidateStrip",
+      "reason": "Required capability: show-elimination"
+    },
+    {
+      "step": "transfer",
+      "card": "A01",
+      "renderer": "comparisonBars",
+      "reason": "Required capability: compare-amounts"
+    }
+  ],
+  "server": [
+    {
+      "step": "first",
+      "card": "A02",
+      "renderer": "timeline",
+      "reason": "Required capability: preserve-history"
+    },
+    {
+      "step": "bottleneck",
+      "card": "A02",
+      "renderer": "timeline",
+      "reason": "Required capability: show-overlap"
+    },
+    {
+      "step": "change",
+      "card": "A02",
+      "renderer": "timeline",
+      "reason": "Required capability: show-overlap"
+    },
+    {
+      "step": "change",
+      "card": "A01",
+      "renderer": "comparisonBars",
+      "reason": "Required capability: compare-amounts"
+    },
+    {
+      "step": "transfer",
+      "card": "A02",
+      "renderer": "timeline",
+      "reason": "Required capability: show-overlap"
+    },
+    {
+      "step": "transfer",
+      "card": "A01",
+      "renderer": "comparisonBars",
+      "reason": "Required capability: compare-amounts"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "T02",
+  "title": "Expose the limit of the first approach",
+  "tags": [
+    "comparison",
+    "bottleneck",
+    "baseline",
+    "motivation"
+  ],
+  "before": "The learner understands a simple way to do the task.",
+  "after": "They can explain why a change is needed.",
+  "sequence": [
+    "Try the simple approach on one concrete case.",
+    "Show where it stops meeting the goal.",
+    "Change the part responsible for that limitation."
+  ],
+  "source": {
+    "url": "https://www.3blue1brown.com/lessons/derivatives/",
+    "title": "The paradox of the derivative",
+    "locator": "Position and Velocity → Rates of Change",
+    "kind": "written lesson with visual examples"
+  },
+  "observation": "The lesson contrasts speed at an instant with measurements across two times, then examines shorter intervals.",
+  "interpretation": "A limitation gives the next idea a reason to exist; that structure can transfer beyond calculus.",
+  "example": "A single car snapshot cannot reveal its speed. Comparing two times provides the missing information.",
+  "avoid": [
+    "Artificially making the baseline worse.",
+    "Changing the task while comparing solutions."
+  ],
+  "check": "Can the learner identify which part of the first approach causes the limitation?",
+  "type": "teaching",
+  "review": {
+    "source_checked": true,
+    "interpretation": "agent-authored; awaiting user review",
+    "learner_validated": false
+  }
+}

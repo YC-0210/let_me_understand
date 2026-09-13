@@ -1,0 +1,50 @@
+{
+  "id": "A01",
+  "title": "Compare on the same scale",
+  "tags": [
+    "comparison",
+    "duration",
+    "cost"
+  ],
+  "capabilities": [
+    "compare-amounts"
+  ],
+  "renderer": "comparisonBars",
+  "communicates": "A difference in amount between alternatives.",
+  "inputs": [
+    "labels",
+    "values",
+    "unit",
+    "maximum"
+  ],
+  "source": {
+    "url": "https://worrydream.com/LadderOfAbstraction/",
+    "title": "Up and Down the Ladder of Abstraction",
+    "locator": "Concrete examples, changing parameters, comparing outcomes",
+    "kind": "interactive essay"
+  },
+  "observation": "The essay moves from individual runs to comparisons across parameter values.",
+  "interpretation": "Aligned bars can isolate an outcome difference without changing the visual scale.",
+  "avoid": [
+    "Independent scales that exaggerate a difference.",
+    "Implying measured time when the value is an operation count."
+  ],
+  "demo": {
+    "labels": [
+      "Version A",
+      "Version B"
+    ],
+    "values": [
+      8,
+      3
+    ],
+    "unit": "steps",
+    "maximum": 10
+  },
+  "type": "animation",
+  "review": {
+    "source_checked": true,
+    "implementation": "authored JavaScript/SVG demo",
+    "learner_validated": false
+  }
+}

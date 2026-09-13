@@ -1,0 +1,218 @@
+[
+  {
+    "mode": "serial",
+    "arrival": 0.12,
+    "events": [
+      {
+        "who": "A",
+        "kind": "request",
+        "time": 0.0027887080796062946
+      },
+      {
+        "who": "A",
+        "kind": "answer",
+        "time": 0.0028943329816684127
+      },
+      {
+        "who": "B",
+        "kind": "request",
+        "time": 0.1259170420235023
+      },
+      {
+        "who": "A",
+        "kind": "close",
+        "time": 0.6080308750970289
+      },
+      {
+        "who": "B",
+        "kind": "answer",
+        "time": 0.6081350420136005
+      },
+      {
+        "who": "B",
+        "kind": "close",
+        "time": 1.213014458073303
+      }
+    ]
+  },
+  {
+    "mode": "fork",
+    "arrival": 0.12,
+    "events": [
+      {
+        "who": "A",
+        "kind": "request",
+        "time": 0.00042824994307011366
+      },
+      {
+        "who": "A",
+        "kind": "answer",
+        "time": 0.0016473329160362482
+      },
+      {
+        "who": "B",
+        "kind": "request",
+        "time": 0.1255462080007419
+      },
+      {
+        "who": "B",
+        "kind": "answer",
+        "time": 0.12748283299151808
+      },
+      {
+        "who": "A",
+        "kind": "close",
+        "time": 0.602845499990508
+      },
+      {
+        "who": "B",
+        "kind": "close",
+        "time": 0.7279737499775365
+      }
+    ]
+  },
+  {
+    "mode": "serial",
+    "arrival": 0.36,
+    "events": [
+      {
+        "who": "A",
+        "kind": "request",
+        "time": 0.0005290419794619083
+      },
+      {
+        "who": "A",
+        "kind": "answer",
+        "time": 0.0006360840052366257
+      },
+      {
+        "who": "B",
+        "kind": "request",
+        "time": 0.365729916957207
+      },
+      {
+        "who": "A",
+        "kind": "close",
+        "time": 0.6058071249863133
+      },
+      {
+        "who": "B",
+        "kind": "answer",
+        "time": 0.6059357919730246
+      },
+      {
+        "who": "B",
+        "kind": "close",
+        "time": 1.208012874936685
+      }
+    ]
+  },
+  {
+    "mode": "fork",
+    "arrival": 0.36,
+    "events": [
+      {
+        "who": "A",
+        "kind": "request",
+        "time": 0.0005151249933987856
+      },
+      {
+        "who": "A",
+        "kind": "answer",
+        "time": 0.0018346670549362898
+      },
+      {
+        "who": "B",
+        "kind": "request",
+        "time": 0.3657835840713233
+      },
+      {
+        "who": "B",
+        "kind": "answer",
+        "time": 0.36909266700968146
+      },
+      {
+        "who": "A",
+        "kind": "close",
+        "time": 0.6030699170660228
+      },
+      {
+        "who": "B",
+        "kind": "close",
+        "time": 0.9700193339958787
+      }
+    ]
+  },
+  {
+    "mode": "serial",
+    "arrival": 0.8,
+    "events": [
+      {
+        "who": "A",
+        "kind": "request",
+        "time": 0.00046191702131181955
+      },
+      {
+        "who": "A",
+        "kind": "answer",
+        "time": 0.0005465000867843628
+      },
+      {
+        "who": "A",
+        "kind": "close",
+        "time": 0.6058673750376329
+      },
+      {
+        "who": "B",
+        "kind": "request",
+        "time": 0.8057027499889955
+      },
+      {
+        "who": "B",
+        "kind": "answer",
+        "time": 0.8058588750427589
+      },
+      {
+        "who": "B",
+        "kind": "close",
+        "time": 1.40732212504372
+      }
+    ]
+  },
+  {
+    "mode": "fork",
+    "arrival": 0.8,
+    "events": [
+      {
+        "who": "A",
+        "kind": "request",
+        "time": 0.000425709062255919
+      },
+      {
+        "who": "A",
+        "kind": "answer",
+        "time": 0.0013988340506330132
+      },
+      {
+        "who": "A",
+        "kind": "close",
+        "time": 0.6025962500134483
+      },
+      {
+        "who": "B",
+        "kind": "request",
+        "time": 0.8006018339656293
+      },
+      {
+        "who": "B",
+        "kind": "answer",
+        "time": 0.8025967919966206
+      },
+      {
+        "who": "B",
+        "kind": "close",
+        "time": 1.4038319999817759
+      }
+    ]
+  }
+]

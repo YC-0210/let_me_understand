@@ -1,0 +1,17 @@
+{
+  "id": "search",
+  "title": "Find 13 without checking every number",
+  "domain": "algorithms",
+  "learner": "Can compare whole numbers; has not studied search algorithms.",
+  "tags": [
+    "beginner",
+    "motivation",
+    "comparison",
+    "baseline",
+    "prediction",
+    "terminology",
+    "transfer"
+  ],
+  "goal": "Explain why sorted order allows a comparison to rule out half of the remaining candidates.",
+  "source": "https://docs.python.org/3/library/bisect.html"
+}

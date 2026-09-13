@@ -1,0 +1,104 @@
+{
+  "id": "search",
+  "title": "Find a number without opening every card",
+  "subtitle": "Sixteen hidden numbers. One target. How much do you need to uncover?",
+  "assumed_knowledge": [
+    "compare-numbers"
+  ],
+  "steps": [
+    {
+      "id": "first",
+      "title": "Start with a method that always works.",
+      "explanation": "There are 16 cards, with different whole numbers arranged from smallest to largest. Their faces are hidden. Find 13 by turning over cards from left to right, one at a time. Each card turned over counts as one check.",
+      "teaching_card": "T01",
+      "requires": [
+        "compare-numbers"
+      ],
+      "introduces": [
+        "ordered-cards",
+        "check"
+      ],
+      "visual_requirements": [
+        "preserve-identity"
+      ],
+      "scene": "linear",
+      "action": "Try checking one by one"
+    },
+    {
+      "id": "limit",
+      "title": "One check can tell us about many cards.",
+      "explanation": "The first approach needs 13 checks in this example. But we know the cards are sorted. Instead, turn over a card near the middle: it shows 8. All cards to its left are smaller than 8, so none of them can be 13. We can rule out that entire half.",
+      "teaching_card": "T02",
+      "requires": [
+        "ordered-cards",
+        "check"
+      ],
+      "introduces": [
+        "discard-half"
+      ],
+      "visual_requirements": [
+        "show-elimination"
+      ],
+      "scene": "first-split",
+      "action": "Reveal the middle card"
+    },
+    {
+      "id": "predict",
+      "title": "Where should we look next?",
+      "explanation": "We are looking for 13, and the middle card showed 8. Given that the cards are sorted, which remaining side could contain 13? Choose before watching the search continue.",
+      "teaching_card": "T03",
+      "requires": [
+        "discard-half"
+      ],
+      "introduces": [],
+      "visual_requirements": [],
+      "scene": "prediction",
+      "action": "Check my prediction"
+    },
+    {
+      "id": "change",
+      "title": "Repeat the same reasoning on what remains.",
+      "explanation": "Look near the middle of the remaining cards. Compare its number with the target, then keep only the side that could contain the target. Repeat until the number matches. This method is called binary search. Watch the excluded cards stay in place so you can track what each check ruled out.",
+      "teaching_card": "T04",
+      "requires": [
+        "discard-half"
+      ],
+      "introduces": [
+        "binary-search"
+      ],
+      "visual_requirements": [
+        "show-elimination",
+        "compare-amounts"
+      ],
+      "scene": "compare",
+      "action": "Watch the search"
+    },
+    {
+      "id": "transfer",
+      "title": "Does it always need fewer checks?",
+      "explanation": "Choose another target and compare the methods. If the target is the first card, checking from the left wins. Binary search is useful because it can rapidly shrink a large sorted range; it does not win every individual case. The same rule would be unsafe on unsorted cards.",
+      "teaching_card": "T03",
+      "requires": [
+        "binary-search"
+      ],
+      "introduces": [],
+      "visual_requirements": [
+        "show-elimination",
+        "compare-amounts"
+      ],
+      "scene": "explore",
+      "action": "Search for this target"
+    }
+  ],
+  "question": {
+    "options": [
+      "The left side: smaller numbers.",
+      "The right side: larger numbers."
+    ],
+    "correct": 1,
+    "feedback": [
+      "13 is larger than 8. All cards to the left are smaller than 8, so they cannot contain 13.",
+      "Yes. 13 is larger than 8. Sorted order lets us safely rule out 8 and everything to its left."
+    ]
+  }
+}

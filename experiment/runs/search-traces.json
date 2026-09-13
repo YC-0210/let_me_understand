@@ -1,0 +1,2568 @@
+{
+  "1": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          0,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          0,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          0,
+          6
+        ],
+        "remaining": [
+          0,
+          2
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          0,
+          2
+        ],
+        "remaining": [
+          0,
+          0
+        ],
+        "found": false
+      },
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          0
+        ],
+        "remaining": [
+          0,
+          0
+        ],
+        "found": true
+      }
+    ]
+  },
+  "2": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          0,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          0,
+          6
+        ],
+        "remaining": [
+          0,
+          2
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          0,
+          2
+        ],
+        "remaining": [
+          0,
+          2
+        ],
+        "found": true
+      }
+    ]
+  },
+  "3": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          0,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          0,
+          6
+        ],
+        "remaining": [
+          0,
+          2
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          0,
+          2
+        ],
+        "remaining": [
+          2,
+          2
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          2
+        ],
+        "remaining": [
+          2,
+          2
+        ],
+        "found": true
+      }
+    ]
+  },
+  "4": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          0,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          0,
+          6
+        ],
+        "remaining": [
+          0,
+          6
+        ],
+        "found": true
+      }
+    ]
+  },
+  "5": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          0,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          0,
+          6
+        ],
+        "remaining": [
+          4,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          4,
+          6
+        ],
+        "remaining": [
+          4,
+          4
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          4
+        ],
+        "remaining": [
+          4,
+          4
+        ],
+        "found": true
+      }
+    ]
+  },
+  "6": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          0,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          0,
+          6
+        ],
+        "remaining": [
+          4,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          4,
+          6
+        ],
+        "remaining": [
+          4,
+          6
+        ],
+        "found": true
+      }
+    ]
+  },
+  "7": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          0,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          0,
+          6
+        ],
+        "remaining": [
+          4,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          4,
+          6
+        ],
+        "remaining": [
+          6,
+          6
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          6
+        ],
+        "remaining": [
+          6,
+          6
+        ],
+        "found": true
+      }
+    ]
+  },
+  "8": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          7,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          0,
+          15
+        ],
+        "found": true
+      }
+    ]
+  },
+  "9": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          7,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 8,
+        "value": 9,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          8,
+          10
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          8,
+          10
+        ],
+        "remaining": [
+          8,
+          8
+        ],
+        "found": false
+      },
+      {
+        "index": 8,
+        "value": 9,
+        "before": [
+          8,
+          8
+        ],
+        "remaining": [
+          8,
+          8
+        ],
+        "found": true
+      }
+    ]
+  },
+  "10": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          7,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 8,
+        "value": 9,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          9,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          9,
+          15
+        ],
+        "remaining": [
+          9,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          8,
+          10
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          8,
+          10
+        ],
+        "remaining": [
+          8,
+          10
+        ],
+        "found": true
+      }
+    ]
+  },
+  "11": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          7,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 8,
+        "value": 9,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          9,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          9,
+          15
+        ],
+        "remaining": [
+          10,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 10,
+        "value": 11,
+        "before": [
+          10,
+          15
+        ],
+        "remaining": [
+          10,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          8,
+          10
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          8,
+          10
+        ],
+        "remaining": [
+          10,
+          10
+        ],
+        "found": false
+      },
+      {
+        "index": 10,
+        "value": 11,
+        "before": [
+          10,
+          10
+        ],
+        "remaining": [
+          10,
+          10
+        ],
+        "found": true
+      }
+    ]
+  },
+  "12": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          7,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 8,
+        "value": 9,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          9,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          9,
+          15
+        ],
+        "remaining": [
+          10,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 10,
+        "value": 11,
+        "before": [
+          10,
+          15
+        ],
+        "remaining": [
+          11,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          11,
+          15
+        ],
+        "remaining": [
+          11,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": true
+      }
+    ]
+  },
+  "13": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          7,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 8,
+        "value": 9,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          9,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          9,
+          15
+        ],
+        "remaining": [
+          10,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 10,
+        "value": 11,
+        "before": [
+          10,
+          15
+        ],
+        "remaining": [
+          11,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          11,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 12,
+        "value": 13,
+        "before": [
+          12,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 13,
+        "value": 14,
+        "before": [
+          12,
+          15
+        ],
+        "remaining": [
+          12,
+          12
+        ],
+        "found": false
+      },
+      {
+        "index": 12,
+        "value": 13,
+        "before": [
+          12,
+          12
+        ],
+        "remaining": [
+          12,
+          12
+        ],
+        "found": true
+      }
+    ]
+  },
+  "14": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          7,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 8,
+        "value": 9,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          9,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          9,
+          15
+        ],
+        "remaining": [
+          10,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 10,
+        "value": 11,
+        "before": [
+          10,
+          15
+        ],
+        "remaining": [
+          11,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          11,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 12,
+        "value": 13,
+        "before": [
+          12,
+          15
+        ],
+        "remaining": [
+          13,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 13,
+        "value": 14,
+        "before": [
+          13,
+          15
+        ],
+        "remaining": [
+          13,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 13,
+        "value": 14,
+        "before": [
+          12,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": true
+      }
+    ]
+  },
+  "15": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          7,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 8,
+        "value": 9,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          9,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          9,
+          15
+        ],
+        "remaining": [
+          10,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 10,
+        "value": 11,
+        "before": [
+          10,
+          15
+        ],
+        "remaining": [
+          11,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          11,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 12,
+        "value": 13,
+        "before": [
+          12,
+          15
+        ],
+        "remaining": [
+          13,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 13,
+        "value": 14,
+        "before": [
+          13,
+          15
+        ],
+        "remaining": [
+          14,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 14,
+        "value": 15,
+        "before": [
+          14,
+          15
+        ],
+        "remaining": [
+          14,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 13,
+        "value": 14,
+        "before": [
+          12,
+          15
+        ],
+        "remaining": [
+          14,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 14,
+        "value": 15,
+        "before": [
+          14,
+          15
+        ],
+        "remaining": [
+          14,
+          15
+        ],
+        "found": true
+      }
+    ]
+  },
+  "16": {
+    "linear": [
+      {
+        "index": 0,
+        "value": 1,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          1,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 1,
+        "value": 2,
+        "before": [
+          1,
+          15
+        ],
+        "remaining": [
+          2,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 2,
+        "value": 3,
+        "before": [
+          2,
+          15
+        ],
+        "remaining": [
+          3,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 3,
+        "value": 4,
+        "before": [
+          3,
+          15
+        ],
+        "remaining": [
+          4,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 4,
+        "value": 5,
+        "before": [
+          4,
+          15
+        ],
+        "remaining": [
+          5,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 5,
+        "value": 6,
+        "before": [
+          5,
+          15
+        ],
+        "remaining": [
+          6,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 6,
+        "value": 7,
+        "before": [
+          6,
+          15
+        ],
+        "remaining": [
+          7,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          7,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 8,
+        "value": 9,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          9,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 9,
+        "value": 10,
+        "before": [
+          9,
+          15
+        ],
+        "remaining": [
+          10,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 10,
+        "value": 11,
+        "before": [
+          10,
+          15
+        ],
+        "remaining": [
+          11,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          11,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 12,
+        "value": 13,
+        "before": [
+          12,
+          15
+        ],
+        "remaining": [
+          13,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 13,
+        "value": 14,
+        "before": [
+          13,
+          15
+        ],
+        "remaining": [
+          14,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 14,
+        "value": 15,
+        "before": [
+          14,
+          15
+        ],
+        "remaining": [
+          15,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 15,
+        "value": 16,
+        "before": [
+          15,
+          15
+        ],
+        "remaining": [
+          15,
+          15
+        ],
+        "found": true
+      }
+    ],
+    "binary": [
+      {
+        "index": 7,
+        "value": 8,
+        "before": [
+          0,
+          15
+        ],
+        "remaining": [
+          8,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 11,
+        "value": 12,
+        "before": [
+          8,
+          15
+        ],
+        "remaining": [
+          12,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 13,
+        "value": 14,
+        "before": [
+          12,
+          15
+        ],
+        "remaining": [
+          14,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 14,
+        "value": 15,
+        "before": [
+          14,
+          15
+        ],
+        "remaining": [
+          15,
+          15
+        ],
+        "found": false
+      },
+      {
+        "index": 15,
+        "value": 16,
+        "before": [
+          15,
+          15
+        ],
+        "remaining": [
+          15,
+          15
+        ],
+        "found": true
+      }
+    ]
+  }
+}

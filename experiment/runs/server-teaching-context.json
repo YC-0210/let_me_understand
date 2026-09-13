@@ -1,0 +1,167 @@
+{
+  "brief": {
+    "id": "server",
+    "title": "Why is the second person still waiting?",
+    "domain": "web servers",
+    "learner": "Has opened a web page; has not read the article.",
+    "tags": [
+      "beginner",
+      "motivation",
+      "comparison",
+      "bottleneck",
+      "prediction",
+      "terminology"
+    ],
+    "goal": "Explain why adding queue space does not remove a wait caused by one occupied process.",
+    "source": "https://ruslanspivak.com/lsbaws-part3/"
+  },
+  "instruction": "Author a concrete lesson plan. Introduce prerequisites before using them. Specify visual capabilities, never renderer names. Animation selection happens after this plan.",
+  "teaching_examples": [
+    {
+      "id": "T02",
+      "title": "Expose the limit of the first approach",
+      "tags": [
+        "comparison",
+        "bottleneck",
+        "baseline",
+        "motivation"
+      ],
+      "before": "The learner understands a simple way to do the task.",
+      "after": "They can explain why a change is needed.",
+      "sequence": [
+        "Try the simple approach on one concrete case.",
+        "Show where it stops meeting the goal.",
+        "Change the part responsible for that limitation."
+      ],
+      "source": {
+        "url": "https://www.3blue1brown.com/lessons/derivatives/",
+        "title": "The paradox of the derivative",
+        "locator": "Position and Velocity \u2192 Rates of Change",
+        "kind": "written lesson with visual examples"
+      },
+      "observation": "The lesson contrasts speed at an instant with measurements across two times, then examines shorter intervals.",
+      "interpretation": "A limitation gives the next idea a reason to exist; that structure can transfer beyond calculus.",
+      "example": "A single car snapshot cannot reveal its speed. Comparing two times provides the missing information.",
+      "avoid": [
+        "Artificially making the baseline worse.",
+        "Changing the task while comparing solutions."
+      ],
+      "check": "Can the learner identify which part of the first approach causes the limitation?",
+      "type": "teaching",
+      "review": {
+        "source_checked": true,
+        "interpretation": "agent-authored; awaiting user review",
+        "learner_validated": false
+      }
+    },
+    {
+      "id": "T01",
+      "title": "Start with something the learner can already judge",
+      "tags": [
+        "beginner",
+        "familiar-situation",
+        "motivation"
+      ],
+      "before": "The learner has everyday experience but no technical vocabulary.",
+      "after": "They can state the question in their own words.",
+      "sequence": [
+        "Use a specific familiar situation.",
+        "Ask what should happen.",
+        "Identify the missing explanation before introducing its name."
+      ],
+      "source": {
+        "url": "https://www.3blue1brown.com/about/",
+        "title": "Grant Sanderson \u2014 advice for making explanations",
+        "locator": "FAQ: advice for making math videos",
+        "kind": "creator advice"
+      },
+      "observation": "Sanderson recommends examples before general frameworks and putting the key exercise near the opening.",
+      "interpretation": "Begin with a judgment the learner can make before asking them to adopt new terminology.",
+      "example": "In the derivative lesson, a moving car gives a familiar starting point for discussing speed.",
+      "avoid": [
+        "Assuming everyday experience supplies technical understanding.",
+        "Using a story that adds more unfamiliar things than it explains."
+      ],
+      "check": "Can a beginner describe the problem without using the new term?",
+      "type": "teaching",
+      "review": {
+        "source_checked": true,
+        "interpretation": "agent-authored; awaiting user review",
+        "learner_validated": false
+      }
+    },
+    {
+      "id": "T03",
+      "title": "Ask for a prediction, then explain the outcome",
+      "tags": [
+        "prediction",
+        "counterfactual",
+        "transfer",
+        "comparison"
+      ],
+      "before": "The learner has seen a relationship in one case.",
+      "after": "They can use that relationship in a changed case.",
+      "sequence": [
+        "Ask one answerable prediction.",
+        "Let the learner commit or choose to reveal.",
+        "Explain why the result follows, including incorrect answers."
+      ],
+      "source": {
+        "url": "https://www.3blue1brown.com/lessons/derivatives/",
+        "title": "The paradox of the derivative",
+        "locator": "Position and Velocity \u2192 Rates of Change",
+        "kind": "written lesson with visual examples"
+      },
+      "observation": "The page asks readers to infer motion from a graph and includes a question about a negative tangent slope.",
+      "interpretation": "A prediction makes an otherwise invisible misunderstanding observable.",
+      "example": "A learner predicts which part of a journey has the greatest speed before seeing the corresponding velocity.",
+      "avoid": [
+        "Testing a fact that has not been introduced.",
+        "Treating a correct guess as proof of understanding."
+      ],
+      "check": "Ask for a reason or a new case, not only the answer.",
+      "type": "teaching",
+      "review": {
+        "source_checked": true,
+        "interpretation": "agent-authored; awaiting user review",
+        "learner_validated": false
+      }
+    },
+    {
+      "id": "T04",
+      "title": "Give the idea a name after the learner has met it",
+      "tags": [
+        "terminology",
+        "beginner",
+        "abstraction"
+      ],
+      "before": "The learner has seen a concrete relationship.",
+      "after": "A new term names something recognizable.",
+      "sequence": [
+        "Recall the concrete example.",
+        "Identify the shared relationship.",
+        "Introduce the conventional name with its scope."
+      ],
+      "source": {
+        "url": "https://www.3blue1brown.com/about/",
+        "title": "Grant Sanderson \u2014 advice for making explanations",
+        "locator": "FAQ: advice for making math videos",
+        "kind": "creator advice"
+      },
+      "observation": "Sanderson warns that pedagogical ordering can differ from the order in which definitions are normally presented.",
+      "interpretation": "A name should compress an idea the learner has already encountered.",
+      "example": "After seeing work overlap, introduce concurrency as the name for that overlap.",
+      "avoid": [
+        "Replacing a missing explanation with a glossary.",
+        "Introducing several dependent terms at once."
+      ],
+      "check": "Can the learner point to an instance of the named idea?",
+      "type": "teaching",
+      "review": {
+        "source_checked": true,
+        "interpretation": "agent-authored; awaiting user review",
+        "learner_validated": false
+      }
+    }
+  ]
+}

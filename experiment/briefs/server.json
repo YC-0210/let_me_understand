@@ -1,0 +1,16 @@
+{
+  "id": "server",
+  "title": "Why is the second person still waiting?",
+  "domain": "web servers",
+  "learner": "Has opened a web page; has not read the article.",
+  "tags": [
+    "beginner",
+    "motivation",
+    "comparison",
+    "bottleneck",
+    "prediction",
+    "terminology"
+  ],
+  "goal": "Explain why adding queue space does not remove a wait caused by one occupied process.",
+  "source": "https://ruslanspivak.com/lsbaws-part3/"
+}
