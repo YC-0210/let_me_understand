@@ -1,0 +1,269 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One More Shape</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* PROTOTYPE - throwaway. Answers one question: which single extra shape earns its place
+   in the part 3 drawing? Delete this file once the answer is recorded. */
+:root{
+  color-scheme:dark;
+  --canvas:#010102; --s1:#0f1011; --s2:#141516; --s3:#18191a;
+  --hair:#23252a; --hair-strong:#34343a;
+  --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-tert:#62666d;
+  --accent:#5e6ad2; --accent-hover:#828fff; --ok:#27a644; --no:#d95448;
+  --sans:"Inter",-apple-system,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.5; padding:0 24px 150px}
+.wrap{max-width:900px; margin:0 auto}
+header{padding:48px 0 0}
+.eyebrow{font-size:12px; letter-spacing:.5px; color:var(--ink-subtle)}
+h1{font-size:30px; font-weight:600; margin:6px 0 0; letter-spacing:0}
+.lede{color:var(--ink-muted); font-size:16px; max-width:62ch; margin:12px 0 0}
+.pitch{margin:26px 0 0; padding:16px 18px; background:var(--s1);
+  border:1px solid var(--hair); border-left:2px solid var(--accent); border-radius:8px}
+.pitch h2{margin:0 0 6px; font-size:18px; font-weight:600}
+.pitch p{margin:0; color:var(--ink-muted); font-size:14.5px; max-width:66ch}
+.pitch .cost{display:block; margin:8px 0 0; color:var(--ink-tert); font-size:13px}
+.moment{margin:30px 0 0; padding:20px; background:var(--s1); border:1px solid var(--hair);
+  border-radius:14px}
+.moment h3{margin:0 0 2px; font-size:15px; font-weight:600}
+.moment .want{margin:0 0 14px; color:var(--ink-subtle); font-size:13px; max-width:70ch}
+.moment .want b{color:var(--ink-muted); font-weight:500}
+svg{display:block; width:100%; height:auto}
+.bar{position:fixed; left:0; right:0; bottom:0; z-index:9; padding:12px 24px;
+  background:#0a0a0ceb; border-top:1px solid var(--hair); backdrop-filter:blur(8px)}
+.bar-in{max-width:900px; margin:0 auto; display:flex; gap:8px; flex-wrap:wrap;
+  align-items:center}
+.bar .lab{font-size:11px; letter-spacing:.4px; color:var(--ink-tert); margin-right:4px}
+.opt{font:500 13px var(--sans); cursor:pointer; color:var(--ink-subtle);
+  background:var(--s1); border:1px solid var(--hair); border-radius:8px; padding:8px 12px}
+.opt:hover{border-color:var(--hair-strong); color:var(--ink)}
+.opt[aria-pressed=true]{border-color:var(--accent); color:var(--ink); background:var(--s2)}
+.opt .k{font-family:var(--mono); font-size:11px; color:var(--ink-tert); margin-right:6px}
+.opt[aria-pressed=true] .k{color:var(--accent)}
+.note{margin:34px 0 0; color:var(--ink-tert); font-size:13px; max-width:70ch}
+.note code{font-family:var(--mono); font-size:12px}
+@media (max-width:560px){ h1{font-size:24px} body{padding:0 16px 190px} }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">PROTOTYPE · PART 3 · THROWAWAY</span>
+  <h1>One more shape</h1>
+  <p class="lede">The drawing has eight marks and none of them is a container. Four
+    candidates for a ninth, each one shape with one meaning, each shown on the same three
+    moments. Pick one or none. Every number drawn below was really captured.</p>
+</header>
+
+<div class="pitch"><h2 id="vName"></h2><p id="vWhat"></p></div>
+
+<div class="moment">
+  <h3>1 · The fork</h3>
+  <p class="want"><b>Should be obvious:</b> the child is a <i>copy</i> of the parent, and
+    both of them are now holding the same connection.</p>
+  <svg id="m1" viewBox="0 0 860 250"></svg>
+</div>
+
+<div class="moment">
+  <h3>2 · Two people waiting</h3>
+  <p class="want"><b>Should be obvious:</b> clients 2 and 3 are connected and simply
+    stuck, because the one server is busy with client 1. Nothing is broken — they are in
+    a queue.</p>
+  <svg id="m2" viewBox="0 0 860 330"></svg>
+</div>
+
+<div class="moment">
+  <h3>3 · Everything the article warns you about, at once</h3>
+  <p class="want"><b>Should be obvious:</b> the parent is holding four things it will
+    never give back, three children are dead but not gone, and all three clients are
+    waiting for a close that is never coming.</p>
+  <svg id="m3" viewBox="0 0 860 330"></svg>
+</div>
+
+<p class="note">Real values: <code>webserver3b</code> with 3 clients takes 1502 ms;
+  <code>webserver3c</code> takes 503 ms; <code>webserver3d</code> ends holding 4
+  descriptors with 3 zombies and 0 of 3 clients released; the article's
+  <code>REQUEST_QUEUE_SIZE</code> is 5. All from <code>fork.data.json</code>.</p>
+</div>
+
+<div class="bar"><div class="bar-in"><span class="lab">SHAPE</span></div></div>
+
+<script>
+const NS='http://www.w3.org/2000/svg', $=s=>document.querySelector(s);
+const C={accent:'#5e6ad2',ok:'#27a644',no:'#d95448',ink:'#f7f8f8',sub:'#8a8f98',
+         tert:'#62666d',hair:'#34343a'};
+const MONO='JetBrains Mono, ui-monospace, monospace', SANS='Inter, system-ui, sans-serif';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);
+  if(p)p.appendChild(e);return e;};
+const tx=(p,x,y,s,o)=>{const e=el('text',Object.assign({x,y,'text-anchor':'middle',fill:C.sub,
+  'font-size':12,'font-family':SANS},o||{}),p);e.textContent=s;return e;};
+
+const VARIANTS={
+  none:{name:'Today — eight marks, no container',
+    what:'What the page ships now. A circle is a place, a small faint disc is a thing that place is holding, a cross is something absent. Nothing says how <i>many</i> a place can hold, or who is holding it on whose behalf.',
+    cost:''},
+  A:{name:'A · Square = a slot in a table the kernel keeps',
+    what:'An outlined square is one slot; a filled square is an occupied one. The kernel keeps three finite tables on the program’s behalf — the queue of connections it has accepted but not handed over, the descriptors each process has open, and the processes themselves. <b>Every failure in this article is a slot that never empties.</b>',
+    cost:'Cost: in part 3 the square replaces the held disc, because the things at rest here <i>are</i> slots. One mark does two jobs across the series.'},
+  B:{name:'B · Square = the kernel',
+    what:'One rounded rectangle behind the server and its children, labelled. The queue, the reference counts and the dead children are all drawn <b>inside</b> it, and the client sits outside. It names the actor that is doing all the holding and is currently invisible.',
+    cost:'Cost: it is a region, not a mark — it encloses rather than stands for something, which is a different kind of thing from the other eight.'},
+  C:{name:'C · Triangle = stuck',
+    what:'A small triangle on anything that is waiting and cannot proceed: a client in the queue, a client that never got its close, a server blocked inside accept(). The thing the reader is meant to <i>feel</i> in chapters 1 and 4 becomes visible at a glance.',
+    cost:'Cost: this is shape carrying <b>state</b>, and the whole language rests on Bertin — shape carries kind, colour carries state. A real break, not a gap.'},
+  D:{name:'D · Square = this process’s copy of the program',
+    what:'Each circle contains a square: the code and memory that process is running. <code>os.fork()</code> makes a second identical square, side by side — the page’s title drawn literally.',
+    cost:'Cost: it pays off in one moment and does nothing in the other two.'},
+};
+let V=new URL(location).searchParams.get('v')||'none';
+if(!VARIANTS[V])V='none';
+
+/* ---- marks ---- */
+const R=30;
+function place(p,x,y,label,o){
+  el('circle',Object.assign({cx:x,cy:y,r:R,fill:'none',stroke:C.sub,'stroke-width':2},o||{}),p);
+  if(label)tx(p,x,y+R+18,label,{'font-size':11.5,fill:C.ink});
+}
+function chan(p,ax,ay,bx,by,o){
+  const dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,pad=R+8;
+  const a=[ax+ux*pad,ay+uy*pad,bx-ux*pad,by-uy*pad];
+  let d='M'+a[0]+' '+a[1]+' L'+a[2]+' '+a[3];
+  if(o&&o.bow){const mx=(a[0]+a[2])/2,my=(a[1]+a[3])/2+o.bow;
+    d='M'+a[0]+' '+a[1]+' Q'+mx+' '+my+' '+a[2]+' '+a[3];}
+  const e=el('path',Object.assign({d,fill:'none',stroke:C.hair,'stroke-width':2,
+    'stroke-linecap':'round'},o&&o.attr||{}),p);
+  return e;
+}
+function cross(p,x,y,arm,col){
+  el('line',{x1:x-arm,y1:y-arm,x2:x+arm,y2:y+arm,stroke:col||C.no,'stroke-width':2,
+    'stroke-linecap':'round'},p);
+  el('line',{x1:x+arm,y1:y-arm,x2:x-arm,y2:y+arm,stroke:col||C.no,'stroke-width':2,
+    'stroke-linecap':'round'},p);
+}
+function heldDiscs(p,x,y,k){
+  const gap=16,x0=x-(k-1)*gap/2;
+  for(let i=0;i<k;i++)el('circle',{cx:x0+i*gap,cy:y,r:6.5,fill:C.sub,'fill-opacity':.22,
+    stroke:C.sub,'stroke-width':2},p);
+}
+function ring(p,x,y,frac){
+  const rr=R+9,CIRC=2*Math.PI*rr;
+  el('circle',{cx:x,cy:y,r:rr,fill:'none',stroke:C.accent,'stroke-width':2.5,
+    'stroke-linecap':'butt','stroke-dasharray':(CIRC*frac)+' '+CIRC,
+    transform:'rotate(-90 '+x+' '+y+')'},p);
+}
+/* the candidate: one square = one slot */
+function slots(p,x,y,total,used,o){
+  const s=11,gap=4,w=total*s+(total-1)*gap,x0=x-w/2;
+  for(let i=0;i<total;i++){
+    const fill=i<used;
+    el('rect',{x:x0+i*(s+gap),y:y-s/2,width:s,height:s,rx:1.5,
+      fill:fill?((o&&o.fill)||C.sub):'none','fill-opacity':fill?((o&&o.op)||.9):0,
+      stroke:(o&&o.stroke)||C.sub,'stroke-width':1.6,
+      opacity:fill?1:.32},p);
+  }
+  if(o&&o.label)tx(p,x,y+(o.below?15:-13),o.label,{'font-size':10,fill:C.tert,
+    'font-family':MONO});
+}
+function tri(p,x,y,col){
+  const s=9;
+  el('path',{d:'M'+x+' '+(y-s)+' L'+(x+s*0.92)+' '+(y+s*0.7)+' L'+(x-s*0.92)+' '+(y+s*0.7)+' Z',
+    fill:'none',stroke:col||C.no,'stroke-width':2,'stroke-linejoin':'round'},p);
+}
+function progSquare(p,x,y,col){
+  el('rect',{x:x-9,y:y-9,width:18,height:18,rx:2,fill:'none',stroke:col||C.sub,
+    'stroke-width':2},p);
+}
+function kernelBox(p,x,y,w,h){
+  el('rect',{x,y,width:w,height:h,rx:14,fill:C.sub,'fill-opacity':.045,
+    stroke:C.hair,'stroke-width':1.5,'stroke-dasharray':'1 0'},p);
+  tx(p,x+w-12,y+18,'the kernel',{'text-anchor':'end','font-size':11,fill:C.tert,
+    'font-family':MONO});
+}
+const val=(p,x,y,s,col)=>tx(p,x,y,s,{fill:col,'font-family':MONO,'font-size':11.5});
+
+/* ---- the three moments ---- */
+function M1(){                                  /* the fork, one client */
+  const p=$('#m1'); p.innerHTML='';
+  const CX=90,PX=430,KX=770,Y=130;
+  if(V==='B')kernelBox(p,PX-120,42,430,180);
+  chan(p,CX,Y,KX,Y,{bow:-58});
+  chan(p,PX,Y,KX,Y);
+  place(p,CX,Y,'a client'); place(p,PX,Y,'the parent'); place(p,KX,Y,'the child');
+  if(V==='none'||V==='C'){ heldDiscs(p,PX,Y,2); heldDiscs(p,KX,Y,2);
+    val(p,PX,Y-R-12,'2 open',C.sub); val(p,KX,Y-R-12,'2 open',C.sub); }
+  if(V==='A'){ slots(p,PX,Y,2,2); slots(p,KX,Y,2,2);
+    val(p,PX,Y-R-12,'2 sockets',C.sub); val(p,KX,Y-R-12,'2 sockets',C.sub); }
+  if(V==='B'){ heldDiscs(p,PX,Y,2); heldDiscs(p,KX,Y,2);
+    val(p,PX,Y-R-12,'2 open',C.sub); val(p,KX,Y-R-12,'2 open',C.sub); }
+  if(V==='D'){ progSquare(p,PX,Y); progSquare(p,KX,Y,C.accent);
+    val(p,(PX+KX)/2,Y+40,'the same program, twice',C.accent); }
+  val(p,(CX+KX)/2,Y-62,'one connection · 2 holders',C.accent);
+}
+function M2(){                                  /* three clients, server busy with one */
+  const p=$('#m2'); p.innerHTML='';
+  const CX=90,PX=470,YS=[70,170,270],PY=170;
+  if(V==='B')kernelBox(p,PX-150,28,480,284);
+  YS.forEach((y,i)=>chan(p,CX,y,PX,PY,{bow:i===1?-46:0}));
+  YS.forEach((y,i)=>place(p,CX,y,'client '+(i+1)));
+  place(p,PX,PY,V==='A'?'':'the server');
+  if(V==='A')tx(p,PX,PY+R+96,'the server',{'font-size':11.5,fill:C.ink});
+  ring(p,PX,PY,.6);
+  if(V==='none'||V==='D'||V==='C'){ heldDiscs(p,PX,PY,1); val(p,PX,PY-R-12,'1 open',C.sub); }
+  if(V==='B'){ heldDiscs(p,PX,PY,1); val(p,PX,PY-R-12,'1 open',C.sub); }
+  if(V==='D')progSquare(p,PX,PY);
+  if(V==='A'){
+    slots(p,PX,PY,1,1); val(p,PX,PY-R-12,'1 socket',C.sub);
+    slots(p,PX,PY+R+50,5,2,{label:'accept queue · listen(5)',below:1,
+      fill:C.accent,stroke:C.accent});
+  }
+  if(V==='C'){ tri(p,CX+R+16,YS[1],C.sub); tri(p,CX+R+16,YS[2],C.sub); }
+  val(p,240,YS[0]-R-12,'being served',C.accent);
+  val(p,250,YS[1]-R-12,'waiting',C.sub); val(p,250,YS[2]-R-12,'waiting',C.sub);
+}
+function M3(){                                  /* webserver3d, three clients, the end */
+  const p=$('#m3'); p.innerHTML='';
+  const CX=90,PX=430,KX=770,YS=[70,170,270],PY=170;
+  if(V==='B')kernelBox(p,PX-120,28,460,284);
+  YS.forEach((y,i)=>chan(p,CX,y,PX,PY,{bow:i===1?-46:0}));
+  YS.forEach((y,i)=>{ place(p,CX,y,'client '+(i+1));
+    const t=i===1?-46:0, mx=(CX+R+38+PX-R-8)/2;
+    cross(p,CX+R+30,y+(i===1?-6:0),8,C.no); });
+  place(p,PX,PY,V==='A'?'':'the parent');
+  if(V==='A')tx(p,PX,PY+R+96,'the parent',{'font-size':11.5,fill:C.ink});
+  YS.forEach(y=>{ cross(p,KX,y,14,C.no); tx(p,KX,y+R+18,'zombie',{'font-size':11.5,fill:C.no});
+    chan(p,PX,PY,KX,y); });
+  if(V==='none'||V==='C'){ heldDiscs(p,PX,PY,4); val(p,PX,PY-R-12,'4 open',C.sub); }
+  if(V==='B'){ heldDiscs(p,PX,PY,4); val(p,PX,PY-R-12,'4 open',C.sub); }
+  if(V==='D'){ progSquare(p,PX,PY); heldDiscs(p,PX,PY+R+26,4); }
+  if(V==='A'){
+    slots(p,PX,PY,4,4); val(p,PX,PY-R-12,'4 held · none ever released',C.no);
+    slots(p,PX,PY+R+50,3,3,{label:'3 process slots, held by the dead',below:1,
+      fill:C.no,stroke:C.no});
+  }
+  if(V==='C')YS.forEach(y=>tri(p,CX+R+16,y+(y===170?-18:0),C.no));
+  YS.forEach(y=>val(p,250,y-R-12,'still waiting',C.no));
+}
+
+function render(){
+  const v=VARIANTS[V];
+  $('#vName').textContent=v.name;
+  $('#vWhat').innerHTML=v.what+(v.cost?'<span class="cost">'+v.cost+'</span>':'');
+  M1();M2();M3();
+  document.querySelectorAll('.opt').forEach(b=>
+    b.setAttribute('aria-pressed',String(b.dataset.v===V)));
+  const u=new URL(location); u.searchParams.set('v',V); history.replaceState(null,'',u);
+}
+const bar=document.querySelector('.bar-in');
+for(const k of Object.keys(VARIANTS)){
+  const b=document.createElement('button');
+  b.className='opt'; b.type='button'; b.dataset.v=k;
+  b.innerHTML='<span class="k">'+(k==='none'?'0':k)+'</span>'+
+    VARIANTS[k].name.split('·').pop().trim().replace(/^Square = |^Triangle = /,'');
+  b.onclick=()=>{V=k;render();};
+  bar.appendChild(b);
+}
+render();
+</script>
