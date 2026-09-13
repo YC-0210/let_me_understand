@@ -32,10 +32,11 @@ Five, and they decide arguments rather than describe them.
    — actually built and actually run, never mocked — and it is **marked** at the point a
    reader meets it, never in a footnote. See [ADR 0002](docs/adr/0002-departing-from-the-source.md).
 
-3. **Assume the reader has no foundation, and spend their attention accordingly.** The
-   first thing on screen is only what an ordinary person has already experienced.
-   Everything else is folded away until asked for. Every element that is on screen is
-   named, in the source's own words where the source names it.
+3. **Never make the reader bridge an unexplained gap. Adapt to what they know, reveal
+   complexity gradually, and provide context at the moment it becomes necessary.** Begin
+   with what the reader already understands, keep deeper detail folded away until it is
+   useful, and name each new element when it first enters the explanation. Use the source's
+   own words where the source names it, while explaining unfamiliar language in place.
 
 4. **A parameter the reader can turn, not a menu they can pick from.** A control with no
    order cannot be plotted against, so nothing can be built on top of it. This is what

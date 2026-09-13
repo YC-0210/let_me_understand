@@ -751,7 +751,7 @@ const door = (id, text, datum) =>
   '<button class="door' + (datum ? ' datum' : '') + '" data-door="' + id + '">' + text + '</button>';
 /* a reference to another step is a way of getting there, not just a number */
 const to = n => '<button class="to" data-step="' + n + '">step ' + n + '</button>';
-/* a word the article never explains. Principle 3: assume no foundation. */
+/* The article never explains this word. Principle 3: explain it when it becomes necessary. */
 const why = (id, text) => '<button class="why" data-why="' + id + '">' + text + '</button>';
 const glossary = (concept, text) => door('term' + concept, text);
 const handler = () => isNew('server') ? 'The request-handling program' : 'The server';
