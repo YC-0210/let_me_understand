@@ -26,7 +26,9 @@ APPS = [
     ('flaskapp',   'Flask'),
     ('djangoapp',  'Django'),
 ]
-PORT0 = 8901
+# Every pair runs on the article's own port, one at a time. A port per pair would
+# make SERVER_PORT differ between cells for a reason the reader's knob did not cause.
+PORT = 8888
 REQUEST = ('GET /hello HTTP/1.1\r\n'
            'Host: localhost:%d\r\n'
            'Connection: close\r\n'
@@ -89,10 +91,11 @@ def run_pair(server, app, port):
     return rec
 
 if __name__ == '__main__':
-    runs, port = [], PORT0
+    runs = []
     for si, (server, _) in enumerate(SERVERS):
         for ai, (app, _) in enumerate(APPS):
-            r = run_pair(server, app, port); port += 1
+            r = run_pair(server, app, PORT)
+            time.sleep(.6)                    # let the port be released before the next pair
             runs.append(r)
             keys = len(r.get('environ', {}))
             print('%-11s x %-11s %s  environ keys: %-3s %s' % (
