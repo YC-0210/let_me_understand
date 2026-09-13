@@ -1,0 +1,256 @@
+<title>How does the server hand environ to the application?</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  /* Dark canvas only - the system ships no light theme (DESIGN.md). Declared so the
+     host's native controls (the step slider) render on the same ground. */
+  color-scheme:dark;
+  --canvas:#010102; --s1:#0f1011; --s2:#141516; --s3:#18191a;
+  --hair:#23252a; --hair-strong:#34343a;
+  --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-tert:#62666d;
+  --accent:#5e6ad2; --accent-hover:#828fff; --accent-focus:#5e69d1;
+  --ok:#27a644; --no:#d95448;
+  --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-pill:9999px;
+  --sp-xs:8px; --sp-sm:12px; --sp-md:16px; --sp-lg:24px; --sp-xl:32px; --sp-xxl:48px;
+  --sans:"Inter",-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.5; letter-spacing:-.05px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:760px; margin:0 auto; padding:0 var(--sp-lg)}
+code{font-family:var(--mono); font-size:13px}
+h1{font-size:30px; font-weight:600; line-height:1.14; letter-spacing:-.8px; margin:0}
+.lede{color:var(--ink-muted); font-size:17px; margin:14px 0 0; max-width:56ch}
+header{padding-block:var(--sp-xxl) 0}
+.eyebrow{font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
+
+
+.panel{margin:var(--sp-xl) 0 0; background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
+svg.draw{display:block; width:100%; height:auto}
+.steps{margin:var(--sp-md) 0 0}
+/* the step control is drawn, not inherited - the host's native track is light */
+#scrub{width:100%; cursor:pointer; -webkit-appearance:none; appearance:none; background:transparent}
+#scrub:focus-visible{outline:2px solid var(--accent-focus); outline-offset:4px}
+#scrub::-webkit-slider-runnable-track{height:4px; border-radius:var(--r-pill); background:var(--hair-strong)}
+#scrub::-moz-range-track{height:4px; border-radius:var(--r-pill); background:var(--hair-strong)}
+#scrub::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:14px; height:14px;
+  margin-top:-5px; border-radius:50%; background:var(--accent); border:0}
+#scrub::-moz-range-thumb{width:14px; height:14px; border-radius:50%; background:var(--accent); border:0}
+.phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-xs) 2px 0;
+  display:flex; gap:10px; align-items:baseline}
+.phase .n{font-family:var(--mono); font-size:12px; color:var(--ink-tert); flex:none}
+.phase b{color:var(--ink); font-weight:500}
+.ctl{display:flex; align-items:center; gap:var(--sp-sm); margin:var(--sp-md) 0 0}
+.btn{font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; color:var(--ink);
+  background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-md); padding:8px 14px}
+.btn:hover{border-color:var(--hair-strong)}
+.btn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.btn[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
+
+.verdict{margin:var(--sp-lg) 0 0; border:1px solid var(--hair); border-radius:var(--r-lg); overflow:hidden}
+.verdict .row{padding:var(--sp-md); font-size:14px; line-height:1.5; color:var(--ink-muted); background:var(--canvas)}
+.verdict .row + .row{border-top:1px solid var(--hair)}
+.verdict h4{margin:0 0 6px; font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
+.verdict b{color:var(--ink); font-weight:500}
+.verdict code{background:var(--s2); border:1px solid var(--hair); border-radius:4px; padding:1px 5px}
+.cost{background:var(--s1); border-left:2px solid var(--hair-strong)}
+.foot{padding-block:var(--sp-xl) 64px; color:var(--ink-tert); font-size:12px; line-height:1.5}
+.foot b{color:var(--ink-subtle); font-weight:500}
+[hidden]{display:none!important}
+@media (max-width:560px){ h1{font-size:25px} .lede{font-size:16px} }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">PROTOTYPE · PART 2 · SETTLED</span>
+  <h1>How should the server hand <code>environ</code> to the application?</h1>
+  <p class="lede">Between you and the server there is a real network connection. Between the
+  server and the application there is not — they are the same running program, and the call is
+  an ordinary function call. Four ways to draw that were built and compared; this is the one
+  that was chosen.</p>
+</header>
+
+<div class="panel">
+  <svg id="svg" class="draw" viewBox="0 0 700 215" role="img"
+       aria-label="A request travelling from you to a server to a Flask application and back"></svg>
+  <div class="steps">
+    <input type="range" id="scrub" min="0" max="7" step="1" value="0" aria-label="Step through the exchange">
+    <p class="phase" id="phase"></p>
+  </div>
+  <div class="ctl">
+    <button class="btn" id="play" aria-pressed="false">▶ Play</button>
+    <span class="eyebrow" id="hint">work fills · travel moves</span>
+  </div>
+</div>
+
+<div class="verdict">
+  <div class="row"><h4>WHAT WAS DECIDED</h4>One line mark for both channels. The
+  <b>word underneath</b> says which kind it is — <code>a network connection</code> or
+  <code>a function call</code>. The mark carries <i>channel</i>; the name carries <i>what kind</i>.</div>
+  <div class="row cost"><h4>WHAT IT COSTS</h4>The drawing ends symmetrical, so at a glance the
+  application looks as far away as the server does. The word is doing work the mark is not.
+  Three rejected alternatives — a second kind of line, the application drawn inside the server,
+  and no third place at all — are in git history.</div>
+  <div class="row"><h4>WHAT IT DOES TO THE SPEC</h4>Nothing new. No ADR. §1 already defines a
+  line as <b>a channel between two places</b>; part 1 simply never had more than one kind of
+  channel, so the definition was never tested.</div>
+  <div class="row cost"><h4>NOT DRAWN YET</h4><code>start_response</code>. The application calls
+  it to hand status and headers back to the server <b>while the application is still running</b>,
+  and the server parks them in <code>headers_set</code> until it builds the response. That is a
+  thing genuinely at rest inside a place — which is where the <b>held disc</b> belongs, and it is
+  the only place in part 2 that earns it.</div>
+</div>
+
+<p class="foot">Throwaway. Nothing here is captured — the body reads
+<b>Hello world from Flask!</b> because that is what the article's <code>flaskapp.py</code> returns,
+but no server has been run yet. This page settled one thing: the mark between the server and the
+application. <b>Delete it once the real drawing exists.</b></p>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const C = {accent:'#5e6ad2', ok:'#27a644', ink:'#f7f8f8', sub:'#8a8f98',
+           tert:'#62666d', hair:'#34343a'};
+const MONO = 'JetBrains Mono, ui-monospace, monospace';
+const SANS = 'Inter, system-ui, sans-serif';
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function el(t, a, p){ const e = document.createElementNS(NS, t);
+  for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+function txt(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anchor':'middle',
+  fill:C.sub, 'font-size':12.5, 'font-family':SANS}, o||{}), p); e.textContent = s; return e; }
+
+/* Work steps and travel steps alternate. A place that works gets a ring and nothing
+   else; a hand-off is a disc on a line. One mark animates per step. */
+const WORK = [2, 4, 6];
+const STEPS = [
+  ['Nothing yet',                            0],
+  ['Your request arrives',                1000],
+  ['The server builds <b>environ</b>',     800],
+  ['The server calls the application',    1000],
+  ['The application works',               1300],
+  ['The application answers',             1000],
+  ['The server builds the response',       800],
+  ['The server replies to you',           1000],
+];
+/* Section 3: travel eases, work is linear. Without this they read as one motion. */
+const ease = f => f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2)/2;
+
+const G = {you:{x:80,y:118,r:38}, srv:{x:350,y:118,r:38}, app:{x:620,y:118,r:38}};
+const gap = (a,b) => [a.x + a.r + 9, b.x - b.r - 9];
+const [n0, n1] = gap(G.you, G.srv);        /* the real network gap */
+const [i0, i1] = gap(G.srv, G.app);        /* the function call */
+
+const measure = (() => { const m = el('path', {}, $('#svg')); m.style.display='none'; return d => {
+  m.setAttribute('d', d); return m; }; })();
+function pointOn(d, f){ const m = measure(d); return m.getPointAtLength(Math.max(.001,f)*m.getTotalLength()); }
+function partial(d, f){ const m = measure(d), L = m.getTotalLength(); return (f*L)+' '+L; }
+const arc = (x0, x1, y, lift) =>
+  'M'+x0+' '+y+' C'+(x0+(x1-x0)*.32)+' '+(y+lift)+' '+(x1-(x1-x0)*.32)+' '+(y+lift)+' '+x1+' '+y;
+
+const P_IN   = arc(n0, n1, G.you.y, -30);
+const P_BACK = arc(n1, n0, G.you.y,  30);
+const P_CALL = arc(i0, i1, G.srv.y, -30);
+const P_RET  = arc(i1, i0, G.srv.y,  30);
+
+let step = 0, sub = 1, playing = false, rafId = 0;
+
+function draw(){
+  const svg = $('#svg');
+  [...svg.children].forEach(c => { if (c.style.display !== 'none') c.remove(); });
+  const at  = i => step === i ? sub : (step > i ? 1 : 0);        /* linear - work */
+  const atE = i => step === i ? ease(sub) : (step > i ? 1 : 0);  /* eased  - travel */
+
+  /* the function call exists from the start: the application is loaded before any request */
+  el('line', {x1:i0, y1:G.srv.y, x2:i1, y2:G.srv.y, stroke:C.hair,
+    'stroke-width':2, 'stroke-linecap':'round'}, svg);
+  /* the network connection opens when you ask */
+  if (at(1) > 0) el('line', {x1:n0, y1:G.you.y, x2:n0 + (n1-n0)*Math.min(1, at(1)*1.6),
+    y2:G.you.y, stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
+
+  /* traces: history, left by whatever travelled. ADR 0003. */
+  const trace = (d, f, c) => { if (f <= 0) return;
+    el('path', {d, fill:'none', stroke:c, 'stroke-width':1.5, opacity:.45,
+      'stroke-linecap':'round', 'stroke-dasharray':partial(d, f)}, svg); };
+  trace(P_IN,   atE(1), C.accent);
+  trace(P_CALL, atE(3), C.accent);
+  trace(P_RET,  atE(5), C.ok);
+  trace(P_BACK, atE(7), C.ok);
+
+  /* the three places, persisting for the whole scene */
+  [G.you, G.srv, G.app].forEach(p => el('circle', {cx:p.x, cy:p.y, r:p.r, fill:'none',
+    stroke:C.sub, 'stroke-width':2}, svg));
+
+  /* ring: work taking time, around whatever is doing it. The ONLY cue that something
+     is happening - a second filling mark would be a second progress bar for one event.
+     Linear: labour does not accelerate. */
+  const worker  = {2:G.srv, 4:G.app, 6:G.srv};
+  const workCol = {2:C.accent, 4:C.accent, 6:C.ok};
+  if (WORK.includes(step)){
+    const p = worker[step], R = p.r + 9, CIRC = 2*Math.PI*R;
+    el('circle', {cx:p.x, cy:p.y, r:R, fill:'none', stroke:workCol[step], 'stroke-width':2.5,
+      'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC*(1-sub),
+      transform:'rotate(-90 '+p.x+' '+p.y+')'}, svg);
+  }
+
+  /* discs, each only while travelling. Eased: travel accelerates. */
+  const disc = (d, col) => { const q = pointOn(d, ease(sub));
+    el('circle', {cx:q.x, cy:q.y, r:8, fill:col}, svg); };
+  if (step === 1) disc(P_IN,   C.accent);
+  if (step === 3) disc(P_CALL, C.accent);
+  if (step === 5) disc(P_RET,  C.ok);
+  if (step === 7) disc(P_BACK, C.ok);
+
+  /* names below marks, values above the mark carrying them (section 4) */
+  txt(svg, G.you.x, G.you.y + G.you.r + 22, 'you');
+  txt(svg, G.srv.x, G.srv.y + G.srv.r + 22, 'the server');
+  txt(svg, G.app.x, G.app.y + G.app.r + 22, 'Flask');
+  const NAMEY = G.you.y + G.you.r + 40;
+  txt(svg, (i0+i1)/2, NAMEY, 'a function call', {'font-size':11.5, fill:C.tert});
+  if (at(1) > 0) txt(svg, (n0+n1)/2, NAMEY, 'a network connection', {'font-size':11.5, fill:C.tert});
+
+  if (at(1) > 0) txt(svg, (n0+n1)/2, G.you.y - 46, 'GET /hello',
+    {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
+  if (at(3) > 0) txt(svg, (i0+i1)/2, G.srv.y - 46, 'environ',
+    {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
+  if (at(5) > 0) txt(svg, (i0+i1)/2, G.srv.y + 44, 'Hello world from Flask!',
+    {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
+  if (at(7) > 0) txt(svg, (n0+n1)/2, G.you.y + 44, 'HTTP/1.1 200 OK',
+    {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
+
+  $('#phase').innerHTML = '<span class="n">' + step + ' / 7</span>' + STEPS[step][0];
+  $('#scrub').value = step;
+}
+
+/* Section 3a: a step's animation shows the transition INTO that step, and landing on a
+   step shows its completed state. So each step runs for its OWN duration, then rests. */
+const DWELL = 300;
+function stopPlay(){ playing = false; cancelAnimationFrame(rafId);
+  $('#play').setAttribute('aria-pressed','false'); $('#play').textContent = '▶ Play'; }
+function play(){
+  if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
+  playing = true; $('#play').setAttribute('aria-pressed','true'); $('#play').textContent = '❚❚ Pause';
+  step = 0; sub = 1; draw();
+  let t0 = performance.now(), resting = t0 + DWELL;
+  const tick = now => {
+    if (!playing) return;
+    if (resting){
+      if (now < resting){ rafId = requestAnimationFrame(tick); return; }
+      if (step >= STEPS.length - 1) return stopPlay();
+      step++; sub = 0; t0 = now; resting = 0;
+    }
+    sub = Math.min(1, (now - t0) / (STEPS[step][1] || 1));
+    if (sub >= 1){ sub = 1; resting = now + DWELL; }
+    draw(); rafId = requestAnimationFrame(tick);
+  };
+  rafId = requestAnimationFrame(tick);
+}
+
+$('#scrub').addEventListener('input', e => { stopPlay(); step = +e.target.value; sub = 1; draw(); });
+$('#play').addEventListener('click', () => playing ? stopPlay() : play());
+
+if (REDUCED){ step = STEPS.length - 1; draw(); } else play();
+</script>

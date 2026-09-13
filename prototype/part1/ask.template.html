@@ -44,9 +44,16 @@ header{padding-block:var(--sp-xxl) 0}
 /* the drawing panel */
 .panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
 #svg{display:block; width:100%; height:auto; cursor:pointer}
-#svg [data-mark]{cursor:pointer}
+#svg .door{cursor:pointer}
+#svg .door:hover .lbl,#svg .door:hover .lbl-u{opacity:.72}
+#svg .door:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
 .mark{display:block; flex:none}
-.phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-sm) 2px 0}
+.steps{margin:var(--sp-md) 0 0}
+#scrub{width:100%; accent-color:var(--accent); cursor:pointer}
+#scrub:focus-visible{outline:2px solid var(--accent-focus); outline-offset:4px}
+.phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-xs) 2px 0;
+  display:flex; gap:10px; align-items:baseline}
+.phase .n{font-family:var(--mono); font-size:12px; color:var(--ink-tert); flex:none}
 .phase b{color:var(--ink); font-weight:500}
 .phase i{font-style:normal; color:var(--ink-tert)}
 
@@ -112,19 +119,21 @@ header{padding-block:var(--sp-xxl) 0}
   <span class="eyebrow">ASKING FOR</span>
   <button class="pn" id="pn"></button>
   <button class="btn last" id="pause" aria-pressed="false">
-    <span id="pauseGlyph">❙❙</span> <span id="pauseWord">Pause</span></button>
-  <button class="btn" id="replay">Replay</button>
+    <span id="pauseGlyph">▶</span> <span id="pauseWord">Play</span></button>
 </div>
 
 <div class="panel">
-  <svg id="svg" viewBox="0 0 620 200" role="img" aria-label="A dot carrying a page name between two circles"></svg>
+  <svg id="svg" viewBox="0 0 620 202" role="img" aria-label="A dot carrying a page name between two circles"></svg>
   <div class="pop" id="pop" hidden>
     <button class="close" id="popClose" aria-label="Close and carry on">✕</button>
     <span class="caret" id="caret"></span>
     <div id="popBody"></div>
   </div>
 </div>
-<p class="phase" id="phase"></p>
+<div class="steps">
+  <input type="range" id="scrub" min="0" max="6" step="1" value="0" aria-label="Step through the exchange">
+  <p class="phase" id="phase"></p>
+</div>
 
 <div id="library" hidden>
   <div class="piece" id="pTcp">
@@ -202,6 +211,20 @@ header{padding-block:var(--sp-xxl) 0}
         representation for the target resource”.</p></div>
     </div>
   </div>
+  <div class="piece" id="pYou">
+    <p class="phead">
+      <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
+        <circle cx="13" cy="7" r="5.5" fill="none" stroke="#8a8f98" stroke-width="2"/></svg>
+      <span class="pname">The circle on the left — you</span></p>
+    <p class="plain">Your browser. It asks for a page, waits, and shows whatever comes back.</p>
+    <div class="notes">
+      <div class="note"><h4>FROM THE ARTICLE</h4>
+        “Then it sends an HTTP request over the TCP connection to the server and waits for the server
+        to send an HTTP response back. And when your browser receives the response it displays it, in
+        this case it displays <b>Hello, World!</b>”</div>
+    </div>
+  </div>
+
   <div class="piece" id="pSrv">
     <p class="phead">
       <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
@@ -237,7 +260,7 @@ const runOf = p => D.runs.find(r => r.path === p);
 const st = p => runOf(p).response.split('\n')[0].split(' ');
 const bodyOf = p => runOf(p).response.split('\n\n').slice(1).join('\n\n').trim();
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let sel = '/hello', token = 0, paused = false, openMark = null;
+let sel = '/hello', openMark = null;
 
 const NS = 'http://www.w3.org/2000/svg';
 function el(t, a, p){ const e = document.createElementNS(NS, t);
@@ -246,187 +269,192 @@ function label(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-a
   fill:C.sub, 'font-size':13, 'font-family':'Inter, system-ui, sans-serif'}, o||{}), p);
   e.textContent = s; return e; }
 const MONO = {'font-family':'JetBrains Mono, monospace', 'font-size':13};
-const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
-const linear = t => t;
-
-/* pause-aware tween: elapsed time only accumulates while running */
-function tween(ms, step, my, easing){
-  return new Promise(res => {
-    if (REDUCED){ step(1); return res(); }
-    let last = performance.now(), acc = 0;
-    const f2 = easing || ease;
-    (function frame(now){
-      if (token !== my) return res();
-      const dt = now - last; last = now;
-      if (!paused) acc += dt;
-      const t = Math.min(1, acc / ms);
-      step(f2(t));
-      t < 1 ? requestAnimationFrame(frame) : res();
-    })(last);
-  });
-}
-const wait = ms => tween(ms, () => {}, token, linear);
-const head = (x, y, dir) => 'M'+(x-9*dir)+' '+(y-6)+'L'+(x-dir)+' '+y+'L'+(x-9*dir)+' '+(y+6);
 
 /* ---------- marks you can click ---------- */
 const VB = 620;
-function makeHit(g, name, cx, cy, r){
-  const h = el('circle', {cx, cy, r, fill:'transparent', 'data-mark':name}, g);
-  h.style.cursor = 'pointer';
-  h.addEventListener('click', ev => { ev.stopPropagation(); openPop(name, cx); });
-  return h;
-}
-const PIECE = {tcp:'pTcp', req:'pReq', srv:'pSrv', res:'pRes'};
+const PIECE = {you:'pYou', tcp:'pTcp', req:'pReq', srv:'pSrv', res:'pRes'};
 
-/* a faint ring on every clickable mark, but only while stopped */
-function syncRings(){
-  const svg = $('#svg');
-  const old = svg.querySelector('#rings');
-  if (old) old.remove();
-  if (!paused) return;
-  const g = el('g', {id:'rings', 'pointer-events':'none'}, svg);
-  svg.querySelectorAll('[data-mark]').forEach(m => {
-    const on = m.getAttribute('data-mark') === openMark;
-    const a = {fill:'none', stroke: on ? C.accent : C.sub,
-      'stroke-width': on ? 1.8 : 1.4, opacity: on ? .85 : .34};
-    if (m.tagName === 'circle')
-      el('circle', Object.assign({cx:m.getAttribute('cx'), cy:m.getAttribute('cy'),
-        r:m.getAttribute('r')}, a), g);
-    else
-      el('rect', Object.assign({x:m.getAttribute('x'), y:m.getAttribute('y'),
-        width:m.getAttribute('width'), height:m.getAttribute('height'), rx:16}, a), g);
-  });
+/* The word is the door. Captions are clicked; marks are never buttons.
+   See docs/VISUAL-LANGUAGE.md section 5. */
+function door(g, name){
+  const t = g.querySelector('text');
+  t.classList.add('lbl');
+  /* a label that IS the datum keeps its data colour; the underline makes it a door.
+     A structural caption carries no data, so it takes the accent. */
+  if (t.getAttribute('fill') === C.sub) t.setAttribute('fill', C.accent);
+  const col = t.getAttribute('fill');
+  const x = +t.getAttribute('x'), y = +t.getAttribute('y'), w = t.textContent.length * 3.6 + 8;
+  el('line', {class:'lbl-u', x1:x-w, y1:y+4, x2:x+w, y2:y+4, stroke:col,
+    'stroke-width':1, 'stroke-dasharray':'2 2', opacity:.7}, g);
+  g.classList.add('door');
+  g.setAttribute('tabindex', '0');
+  g.setAttribute('role', 'button');
+  g.setAttribute('aria-label', TITLES[name]);
+  const go = ev => { ev.stopPropagation(); openPop(name, +t.getAttribute('x')); };
+  g.addEventListener('click', go);
+  g.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') go(ev); });
+  return g;
 }
+function slideDoor(g, x){
+  const t = g.querySelector('text'), u = g.querySelector('.lbl-u');
+  t.setAttribute('x', x);
+  if (u){ const w = t.textContent.length * 3.6 + 8;
+    u.setAttribute('x1', x-w); u.setAttribute('x2', x+w); }
+}
+const TITLES = {you:'you', tcp:'the connection', req:'the request', srv:'the server', res:'the response'};
+
 function updateChrome(){
-  const btn = $('#pause');
-  btn.setAttribute('aria-pressed', String(paused));
-  $('#pauseWord').textContent = paused ? 'Play' : 'Pause';
-  $('#pauseGlyph').textContent = paused ? '▶' : '❙❙';
-  syncRings();
+  $('#pause').setAttribute('aria-pressed', String(playing));
+  $('#pauseWord').textContent = playing ? 'Pause' : 'Play';
+  $('#pauseGlyph').textContent = playing ? '❙❙' : '▶';
 }
+
+/* opening a door stops time; closing it resumes the same instant */
 function openPop(name, svgX){
   if (openMark === name) return closePop();
   if (openMark) putBack();
-  paused = true;
-  openMark = name;
-  updateChrome();
+  stopPlay(); openMark = name;
   $('#popBody').appendChild($('#' + PIECE[name]));
   $('#pop').hidden = false;
-  $('#caret').style.left = Math.max(14, Math.min(94, svgX / VB * 100)) + '%';
-  $('#phase').innerHTML = '<i>stopped — close this to carry on</i>';
+  $('#caret').style.left = Math.max(14, Math.min(94, (svgX ?? 310) / VB * 100)) + '%';
   $('#popClose').focus();
 }
 function putBack(){ if (openMark) $('#library').appendChild($('#' + PIECE[openMark])); }
 function closePop(){
-  putBack(); openMark = null; paused = false;
+  putBack(); openMark = null;
   $('#pop').hidden = true;
-  updateChrome();
-  $('#phase').innerHTML = lastSaid;
 }
-function setPaused(v){
-  if (openMark) return closePop();
-  paused = v;
-  updateChrome();
-  $('#phase').innerHTML = paused
-    ? '<i>stopped — click any ringed mark to see what it is</i>' : lastSaid;
-}
-let lastSaid = '';
-const say = t => { lastSaid = t; if (!openMark) $('#phase').innerHTML = t; };
+/* ---------- the drawing: a pure function of (step, t) ----------
+   The independent variable is the STEP, not elapsed time. Every step is a state the
+   article describes; t is progress into that step. See docs/VISUAL-LANGUAGE.md 3a. */
+const G = {L:112, R:508, Y:92, RAD:40};
+const X0 = G.L + G.RAD + 8, X1 = G.R - G.RAD - 8;
+const P_OUT  = 'M'+X0+' '+G.Y+' C'+(X0+110)+' '+(G.Y-46)+' '+(X1-110)+' '+(G.Y-46)+' '+X1+' '+G.Y;
+const P_BACK = 'M'+X1+' '+G.Y+' C'+(X1-110)+' '+(G.Y+46)+' '+(X0+110)+' '+(G.Y+46)+' '+X0+' '+G.Y;
 
-/* ---------- the drawing ---------- */
-const G = {L:112, R:508, Y:84, RAD:42};
-async function play(){
-  const my = ++token, svg = $('#svg');
-  closePop(); paused = false; updateChrome();
-  svg.innerHTML = '';
+const STEPS = [
+  ['Nothing yet',                  0],
+  ['The connection opens',       450],
+  ['The request goes across',   1100],
+  ['The server works',          1500],
+  ['The response comes back',   1100],
+  ['Your browser shows it',      360],
+  ['The connection closes',      520],
+];
+let step = 0, sub = 1, playing = false, rafId = 0;
+/* Section 3.1: travel eases, work is linear. Steps 2 and 4 are the two legs of travel. */
+const ease = f => f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2)/2;
+
+const measure = (() => {                       /* one off-screen path for arc geometry */
+  const m = el('path', {}, $('#svg'));
+  m.style.display = 'none';
+  return d => { m.setAttribute('d', d); return m; };
+})();
+function pointOn(d, f){
+  const m = measure(d); return m.getPointAtLength(Math.max(.001, f) * m.getTotalLength());
+}
+function partial(d, f){
+  const m = measure(d), L = m.getTotalLength();
+  return {len:L, dash: (f*L) + ' ' + L};
+}
+
+function draw(){
+  const svg = $('#svg');
+  [...svg.children].forEach(c => { if (c.style.display !== 'none') c.remove(); });
   const [, code] = st(sel), ok = code === '200', body = bodyOf(sel);
   const col = ok ? C.ok : C.no;
-  const x0 = G.L + G.RAD + 8, x1 = G.R - G.RAD - 8;
+  const at  = i => step === i ? sub : (step > i ? 1 : 0);        /* progress - linear */
+  const atE = i => step === i ? ease(sub) : (step > i ? 1 : 0);  /* progress - eased */
 
-  const wire = el('line', {x1:x0, y1:G.Y, x2:x0, y2:G.Y, stroke:C.hair, 'stroke-width':2,
-    'stroke-linecap':'round'}, svg);
+  /* the channel: opens at step 1, retracts at step 6 */
+  const open = at(1) - (step === 6 ? sub : (step > 6 ? 1 : 0));
+  if (open > 0) el('line', {x1:X0, y1:G.Y, x2:X0 + (X1-X0)*open, y2:G.Y,
+    stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
+
+  /* traces: history, left by whatever travelled. ADR 0003. */
+  const trace = (d, f, c) => { if (f <= 0) return;
+    const {len, dash} = partial(d, f);
+    el('path', {d, fill:'none', stroke:c, 'stroke-width':1.5, 'stroke-dasharray':dash,
+      opacity:.45}, svg); };
+  trace(P_OUT,  atE(2), C.accent);
+  trace(P_BACK, atE(4), col);
+
+  /* the two places */
   el('circle', {cx:G.L, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
-  const srv = el('circle', {cx:G.R, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
-  label(svg, G.L, G.Y+G.RAD+26, 'you'); label(svg, G.R, G.Y+G.RAD+26, 'the server');
-  const held = el('circle', {cx:G.L, cy:G.Y, r:0, fill:col, 'fill-opacity':.22, stroke:col, 'stroke-width':2}, svg);
-  const ansT = label(svg, G.L, G.Y+G.RAD+48, '', Object.assign({fill:col, opacity:0}, MONO));
+  el('circle', {cx:G.R, cy:G.Y, r:G.RAD, fill:'none',
+    stroke: step >= 4 ? col : C.sub, 'stroke-width':2}, svg);
 
-  /* always-present marks */
-  const hitLine = el('rect', {x:x0, y:G.Y-16, width:x1-x0, height:32, fill:'transparent',
-    'data-mark':'tcp'}, svg);
-  hitLine.style.cursor = 'pointer';
-  hitLine.addEventListener('click', ev => { ev.stopPropagation(); openPop('tcp', (x0+x1)/2); });
-  makeHit(svg, 'srv', G.R, G.Y, G.RAD + 6);
-
-  say('nothing between them yet'); await wait(300);
-  say('a <b>line</b> opens between you and the server');
-  await tween(450, t => wire.setAttribute('x2', x0 + (x1-x0)*t), my);
-  if (token !== my) return;
-
-  const dg = el('g', {}, svg);
-  const d = el('circle', {cx:x0, cy:G.Y, r:8, fill:C.accent}, dg);
-  const g = label(svg, x0, G.Y-22, sel, Object.assign({fill:C.accent}, MONO));
-  const a = el('path', {d:'', stroke:C.accent, 'stroke-width':2.5, fill:'none',
-    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
-  const hitReq = el('circle', {cx:x0, cy:G.Y, r:22, fill:'transparent', 'data-mark':'req'}, svg);
-  hitReq.style.cursor = 'pointer';
-  hitReq.addEventListener('click', ev => { ev.stopPropagation();
-    openPop('req', +hitReq.getAttribute('cx')); });
-  if (paused) syncRings();
-  say('a <b>dot</b> carries the page name across — or stop it and click anything');
-  await tween(1100, t => { const x = x0+(x1-x0)*t;
-    d.setAttribute('cx',x); g.setAttribute('x',x); hitReq.setAttribute('cx',x);
-    a.setAttribute('d', head(x+20, G.Y, 1)); }, my);
-  if (token !== my) return;
-  dg.remove(); g.remove(); a.remove(); hitReq.remove();
-
-  /* the server works - a ring closes around it, at a constant rate */
-  const CIRC = 2 * Math.PI * (G.RAD + 9);
-  const prog = el('circle', {cx:G.R, cy:G.Y, r:G.RAD+9, fill:'none', stroke:C.accent, 'stroke-width':2.5,
-    'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC,
-    transform:'rotate(-90 '+G.R+' '+G.Y+')'}, svg);
-  say('the server is working on it');
-  await tween(1500, t => prog.setAttribute('stroke-dashoffset', CIRC * (1 - t)), my, linear);
-  if (token !== my) return;
-  await tween(320, t => { prog.setAttribute('opacity', 1-t);
-    prog.setAttribute('r', G.RAD + 9 + 10*t); }, my);
-  prog.remove();
-  if (token !== my) return;
-  srv.setAttribute('stroke', col);
-
-  const bg = el('g', {}, svg);
-  if (ok){ el('circle', {cx:0, cy:0, r:8, fill:col}, bg); }
-  else {
-    el('circle', {cx:0, cy:0, r:9, fill:'none', stroke:col, 'stroke-width':2}, bg);
-    el('path', {d:'M-4.5 -4.5L4.5 4.5M4.5 -4.5L-4.5 4.5', stroke:col, 'stroke-width':2,
-      'stroke-linecap':'round'}, bg);
+  /* a thing at rest inside a place */
+  if (at(5) > 0){
+    el('circle', {cx:G.L, cy:G.Y, r:22*at(5), fill:col, 'fill-opacity':.22,
+      stroke:col, 'stroke-width':2}, svg);
+    if (!ok) el('path', {d:'M'+(G.L-8)+' '+(G.Y-8)+'L'+(G.L+8)+' '+(G.Y+8)+
+      'M'+(G.L+8)+' '+(G.Y-8)+'L'+(G.L-8)+' '+(G.Y+8), stroke:col, 'stroke-width':2,
+      'stroke-linecap':'round', opacity:at(5)}, svg);
   }
-  bg.setAttribute('transform', 'translate('+x1+','+G.Y+')');
-  const g2 = label(svg, x1, G.Y-22, body, Object.assign({fill:col}, MONO));
-  const a2 = el('path', {d:'', stroke:col, 'stroke-width':2.5, fill:'none',
-    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
-  const hitRes = el('circle', {cx:x1, cy:G.Y, r:22, fill:'transparent', 'data-mark':'res'}, svg);
-  hitRes.style.cursor = 'pointer';
-  hitRes.addEventListener('click', ev => { ev.stopPropagation();
-    openPop('res', +hitRes.getAttribute('cx')); });
-  if (paused) syncRings();
-  say(ok ? 'a <b>dot</b> brings the page back' : 'a <b>crossed circle</b> comes back — no such page');
-  await tween(1100, t => { const x = x1-(x1-x0)*t;
-    bg.setAttribute('transform', 'translate('+x+','+G.Y+')');
-    g2.setAttribute('x', x); hitRes.setAttribute('cx', x);
-    a2.setAttribute('d', head(x-20, G.Y, -1)); }, my);
-  if (token !== my) return;
-  bg.remove(); g2.remove(); a2.remove();
-  ansT.textContent = body;
-  await tween(330, t => { held.setAttribute('r', 22*t); ansT.setAttribute('opacity', t); }, my);
-  if (!ok){ held.setAttribute('fill-opacity', 0);
-    el('path', {d:'M'+(G.L-8)+' '+(G.Y-8)+'L'+(G.L+8)+' '+(G.Y+8)+'M'+(G.L+8)+' '+(G.Y-8)+'L'+(G.L-8)+' '+(G.Y+8),
-      stroke:col, 'stroke-width':2, 'stroke-linecap':'round'}, svg); }
-  /* the response mark stays reachable once it has landed */
-  hitRes.setAttribute('cx', G.L);
-  say(ok ? 'you have the page' : 'there was no page by that name');
+
+  /* the server working */
+  if (step === 3){
+    const R = G.RAD + 9, CIRC = 2*Math.PI*R;
+    el('circle', {cx:G.R, cy:G.Y, r:R, fill:'none', stroke:C.accent, 'stroke-width':2.5,
+      'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC*(1-sub),
+      transform:'rotate(-90 '+G.R+' '+G.Y+')'}, svg);
+  }
+
+  /* the messages, each only while travelling */
+  if (step === 2){ const q = pointOn(P_OUT, ease(sub));
+    el('circle', {cx:q.x, cy:q.y, r:8, fill:C.accent}, svg); }
+  if (step === 4){ const q = pointOn(P_BACK, ease(sub));
+    if (ok) el('circle', {cx:q.x, cy:q.y, r:8, fill:col}, svg);
+    else { const g = el('g', {transform:'translate('+q.x+','+q.y+')'}, svg);
+      el('circle', {cx:0, cy:0, r:9, fill:'none', stroke:col, 'stroke-width':2}, g);
+      el('path', {d:'M-4.5 -4.5L4.5 4.5M4.5 -4.5L-4.5 4.5', stroke:col, 'stroke-width':2,
+        'stroke-linecap':'round'}, g); } }
+
+  /* the words are the doors */
+  const cap = (x, y, txt, name, fill) => {
+    const g = el('g', {}, svg);
+    label(g, x, y, txt, fill ? {fill} : {});
+    door(g, name);
+  };
+  cap(G.L, G.Y+G.RAD+30, 'you', 'you');
+  cap(G.R, G.Y+G.RAD+30, 'the server', 'srv');
+  if (step >= 1) cap((X0+X1)/2, G.Y+G.RAD+52, 'the connection', 'tcp');
+  if (at(2) > 0) cap((X0+X1)/2, G.Y-48, sel, 'req', C.accent);        /* above the upper arc */
+  if (at(4) > 0) cap((X0+X1)/2, G.Y+54, body, 'res', col);            /* below the lower arc */
+
+  $('#scrub').value = step;
+  $('#phase').innerHTML = '<span class="n">' + step + ' / 6</span>' + STEPS[step][0];
 }
 
+/* play walks the same steps; it is a convenience, not the only way through.
+   A step animates for ITS OWN duration (section 3.2 - duration is meaning), then rests
+   long enough to be seen (section 3a.3 - landing on a step shows its completed state). */
+const DWELL = 300;
+function stopPlay(){ playing = false; cancelAnimationFrame(rafId); updateChrome(); }
+function play(){
+  if (openMark) closePop();
+  if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
+  if (step >= STEPS.length - 1){ step = 0; sub = 1; }
+  playing = true; updateChrome();
+  let last = performance.now(), rest = sub >= 1 ? DWELL : 0;
+  (function frame(now){
+    if (!playing) return;
+    const dt = now - last; last = now;
+    if (rest > 0){ rest -= dt; draw(); rafId = requestAnimationFrame(frame); return; }
+    if (sub >= 1){
+      if (step >= STEPS.length - 1){ sub = 1; draw(); return stopPlay(); }
+      step++; sub = 0;
+    }
+    sub = Math.min(1, sub + dt / (STEPS[step][1] || 1));
+    if (sub >= 1) rest = DWELL;
+    draw();
+    rafId = requestAnimationFrame(frame);
+  })(last);
+}
+function goTo(i){ stopPlay(); if (openMark) closePop(); step = i; sub = 1; draw(); }
+
+/* the popover panels follow the chosen page name */
 function sync(){
   const [, code, ...rest] = st(sel), miss = code !== '200';
   $('#pn').textContent = sel;
@@ -443,14 +471,14 @@ function sync(){
       '<path d="M11 3L6 7l5 4" stroke="'+C.no+'" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
     : '<circle cx="19" cy="7" r="5.5" fill="'+C.ok+'"/>' +
       '<path d="M11 3L6 7l5 4" stroke="'+C.ok+'" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
-  play();
 }
 
-$('#pn').onclick = () => { sel = NAMES[(NAMES.indexOf(sel)+1) % NAMES.length]; sync(); };
-$('#replay').onclick = () => play();
+$('#pn').onclick = () => { sel = NAMES[(NAMES.indexOf(sel)+1) % NAMES.length];
+  sync(); stopPlay(); step = 0; sub = 1; draw(); play(); };
+$('#scrub').oninput = e => goTo(+e.target.value);
 $('#popClose').onclick = () => closePop();
-$('#pause').onclick = () => setPaused(!paused);
-$('#svg').addEventListener('click', () => setPaused(!paused));
+$('#pause').onclick = () => playing ? stopPlay() : play();
 addEventListener('keydown', e => { if (e.key === 'Escape' && openMark) closePop(); });
-sync();
+sync(); step = 0; sub = 1; draw();
+if (REDUCED){ step = STEPS.length - 1; draw(); } else play();
 </script>
