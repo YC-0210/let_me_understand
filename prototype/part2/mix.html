@@ -57,15 +57,34 @@ svg.draw{display:block; width:100%; height:auto}
 .btn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
 .btn[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
 
-/* the environ readout - the subject of the article, so it is always on screen */
-.env{margin:var(--sp-lg) 0 0; border:1px solid var(--hair); border-radius:var(--r-lg); overflow:hidden}
-.env .cap{display:flex; align-items:baseline; gap:var(--sp-sm); flex-wrap:wrap;
-  padding:var(--sp-md) var(--sp-md) var(--sp-xs)}
-.env .cap h4{margin:0; font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
-.env .cap .note{font-size:13px; color:var(--ink-tert)}
-.env .cap .note b{color:var(--ink-muted); font-weight:500}
-.keys{display:grid; grid-template-columns:repeat(auto-fill,minmax(232px,1fr));
-  gap:1px var(--sp-lg); padding:0 var(--sp-md) var(--sp-md)}
+/* ---------------- doors (section 5) ----------------
+   The word is the door. Marks are never buttons. A door looks like a link: dotted
+   underline, accent colour - unless the word IS the datum, which keeps its own colour
+   and lets the underline alone carry the affordance. Opening one stops time. */
+.door{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
+.door:hover{color:var(--accent-hover)}
+.door:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px; border-radius:2px}
+.door.datum{color:var(--ink)}
+
+.pop{position:relative; margin:var(--sp-md) 0 0; background:var(--s2);
+  border:1px solid var(--hair-strong); border-radius:var(--r-lg); padding:var(--sp-md)}
+.pop h4{margin:0 0 10px; font-size:12px; font-weight:500; letter-spacing:.5px;
+  color:var(--ink-subtle); padding-right:32px}
+.pop .close{position:absolute; top:8px; right:8px; width:28px; height:28px;
+  border-radius:var(--r-sm); background:transparent; border:1px solid transparent;
+  color:var(--ink-subtle); cursor:pointer; font-size:15px; line-height:1; font-family:var(--sans)}
+.pop .close:hover{background:var(--s3); border-color:var(--hair); color:var(--ink)}
+.pop .close:focus-visible{outline:2px solid var(--accent-focus); outline-offset:1px}
+.pop p{margin:0 0 8px; font-size:13.5px; line-height:1.5; color:var(--ink-muted)}
+.pop p:last-child{margin-bottom:0}
+.pop b{color:var(--ink); font-weight:500}
+.pop code, .pop pre{font-family:var(--mono); font-size:12.5px}
+.pop pre{margin:0; padding:10px 12px; background:var(--canvas); border:1px solid var(--hair);
+  border-radius:var(--r-md); overflow-x:auto; color:var(--ink-muted); line-height:1.55}
+
+.keys{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:1px var(--sp-lg); margin:0 0 10px}
 .k{display:flex; gap:8px; align-items:baseline; font-family:var(--mono); font-size:12px;
   padding:3px 0; min-width:0}
 .k .n{color:var(--ink-muted); flex:none}
@@ -73,21 +92,11 @@ svg.draw{display:block; width:100%; height:auto}
 .k.floor .n{color:var(--ink)}
 .k.extra{opacity:.62}
 .k.extra .n{color:var(--ink-subtle)}
-.legend{display:flex; gap:var(--sp-md); flex-wrap:wrap; padding:0 var(--sp-md) var(--sp-md);
-  font-size:12px; color:var(--ink-tert)}
+.legend{display:flex; gap:var(--sp-md); flex-wrap:wrap; font-size:12px; color:var(--ink-tert);
+  margin:0 0 10px}
 .legend i{font-style:normal; display:inline-flex; align-items:center; gap:6px}
 .legend .sw{width:10px; height:2px; background:var(--ink); display:inline-block}
 .legend .sw.dim{background:var(--ink-subtle); opacity:.62}
-
-.note{margin:var(--sp-lg) 0 0; border:1px solid var(--hair); border-radius:var(--r-lg); overflow:hidden}
-.note .row{padding:var(--sp-md); font-size:14px; line-height:1.5; color:var(--ink-muted); background:var(--canvas)}
-.note .row + .row{border-top:1px solid var(--hair)}
-.note h4{margin:0 0 6px; font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
-.note b{color:var(--ink); font-weight:500}
-.note code{background:var(--s2); border:1px solid var(--hair); border-radius:var(--r-xs); padding:1px 5px}
-.lift{background:var(--s1); border-left:2px solid var(--hair-strong)}
-.foot{padding-block:var(--sp-xl) 64px; color:var(--ink-tert); font-size:12px; line-height:1.5}
-.foot b{color:var(--ink-subtle); font-weight:500}
 
 /* ---------------- Wink, the mascot ----------------
    Brought over from the part 1 study on claude/focused-galileo-m6tm74. Chrome, not a
@@ -167,64 +176,16 @@ svg.draw{display:block; width:100%; height:auto}
     </svg>
     <p class="bub" id="bub" role="status" aria-live="polite"></p>
   </div>
+  <div class="pop" id="pop" hidden>
+    <button class="close" id="popClose" aria-label="Close and carry on">✕</button>
+    <h4 id="popTitle"></h4>
+    <div id="popBody"></div>
+  </div>
   <div class="ctl">
     <button class="btn" id="play" aria-pressed="false">▶ Play</button>
   </div>
 </div>
 
-<div class="env">
-  <div class="cap">
-    <h4>ENVIRON</h4>
-    <span class="note" id="envNote"></span>
-  </div>
-  <div class="keys" id="keys"></div>
-  <div class="legend">
-    <i><span class="sw"></span> the eleven every server provides</i>
-    <i><span class="sw dim"></span> extra, this server only — a framework cannot rely on it</i>
-  </div>
-</div>
-
-<div class="note">
-  <div class="row"><h4>THE MEASUREMENT</h4>The keys present in <b>all twelve runs</b> are exactly
-  the eleven the article's <code>get_environ()</code> sets. Not a subset, not a superset. The
-  article's list is precisely the floor — what every server provides and every framework may
-  rely on. Gunicorn and Waitress each add thirteen more, and <b>not the same thirteen</b>.</div>
-  <div class="row lift"><h4>DEPARTURE — BEYOND THE ARTICLE</h4>The article <b>names</b> Gunicorn
-  and Waitress but never runs them; it only ever runs its own <code>webserver2.py</code>. Both
-  were installed and really run here against the article's own unmodified application files, so
-  the claim it makes in words could be checked. Under
-  <b>ADR 0002</b>: checked against the article's own list of servers, real, and marked here.
-  The Django project is ours too — the article says to clone its repository rather than printing
-  it, so its <code>/hello</code> view is authored by us.</div>
-  <div class="row"><h4>THE SEVEN STEPS</h4>Every step in the article's recap is drawn and
-  labelled with its number. Its fifth — <i>calls the callable and gets back a body</i> — is opened
-  into the three things that really happen inside it, because there are <b>two routes back</b>:
-  <code>start_response</code> is a callback made while the application is still running, and the
-  body is the call's return value. The server holds the status and headers from step 7 until it
-  constructs the response at step 9, which is the article's sixth step — <i>using the data
-  returned by the call <b>and</b> the status and response headers set by start_response</i>.
-  Only <i>the application works</i> carries no number: the article's sequence figure shows it,
-  its list does not name it.</div>
-  <div class="row"><h4>WINK</h4>The narrator under the drawing, brought over from the part 1
-  study on <code>claude/focused-galileo-m6tm74</code>. It is <b>chrome, not a mark</b> — it sits
-  under the drawing and never on it, because §1 closes the drawing at eight marks and §3.3 forbids
-  idle drift inside it. Its eyes point at whatever is being talked about, which a caption cannot
-  do: a circle has no facing, so where the features sit is the only direction it has. <b>Two things
-  it is not yet:</b> its three colours — <code>#F5F0FF</code>, <code>#4B3869</code>,
-  <code>#B491F5</code> — are not in the palette, and §2 says one accent forever and any new hue
-  must pass the validator. Whether chrome is exempt from §2 is written down nowhere. And because
-  it is anchored at the far left, its gaze only ever points <i>rightward</i>: it varies in degree
-  across the drawing, never in direction. The part 1 study offered four placements; only this one
-  has been tried here.</div>
-  <div class="row lift"><h4>NOT BUILT YET</h4>Doors. §5 says every mark has one and the word is
-  the door; nothing here opens yet.</div>
-</div>
-
-<p class="foot">Every byte on this page was captured from a real run: three servers
-(<b>webserver2</b> as the article prints it, <b>gunicorn 26.2.0</b>, <b>waitress 3.0.2</b>) against
-four applications (<b>a bare WSGI app</b>, <b>Pyramid</b>, <b>Flask 3.1.3</b>, <b>Django 5.2.17</b>),
-each sent one real <code>GET /hello</code> over a socket. Rebuild with
-<code>capture.py</code>. Throwaway prototype.</p>
 </div>
 
 <script>
@@ -395,18 +356,6 @@ function draw(){
 }
 
 /* what turning a knob changed, for the step you are on */
-function renderEnv(){
-  const R = run(), extra = new Set(R.extra), all = Object.keys(R.environ);
-  $('#envNote').innerHTML = '<b>' + all.length + ' keys</b> from ' + shortSrv[srv] +
-    ' — ' + D.shared.length + ' every server provides' +
-    (extra.size ? ', ' + extra.size + ' only this one does' : ', and no others');
-  $('#keys').innerHTML = all.sort((a, b) =>
-      (extra.has(a) - extra.has(b)) || a.localeCompare(b))
-    .map(k => '<div class="k ' + (extra.has(k) ? 'extra' : 'floor') + '">' +
-      '<span class="n">' + k + '</span><span class="v">' +
-      R.environ[k].replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span></div>').join('');
-}
-
 /* section 3a: each step runs for its own duration, then rests long enough to be seen */
 /* ---------------- Wink ----------------
    The controller from the part 1 study, unchanged in behaviour: it breathes, blinks on a
@@ -456,27 +405,109 @@ const W = (() => {
 
 /* What Wink says at each step. Its job is the sentence the drawing cannot carry - the
    drawing names its marks, Wink says what just happened and why it matters. */
+const door = (id, text, datum) =>
+  '<button class="door' + (datum ? ' datum' : '') + '" data-door="' + id + '">' + text + '</button>';
+
 const NARRATION = [
-  () => 'three places and nothing joined up yet — twelve combinations to try',
-  () => 'the server is handed an application. It has <b>none of its own</b>',
+  () => 'three places and nothing joined up yet — ' + door('grid', 'twelve combinations') + ' to try',
+  () => 'the server is ' + door('loaded', 'handed an application') +
+        '. It has <b>none of its own</b>' +
+        (srv === 'webserver2' ? '' : ' — and ' + door('beyond', 'this one is not in the article')),
   () => 'your request crosses a real network. The same request in all twelve runs',
-  () => 'only the <b>first line</b> is parsed: method, path, version',
-  () => 'the server packs <b>' + Object.keys(run().environ).length +
-        ' keys</b> into one plain dictionary, and it decides how many',
+  () => 'only the ' + door('parse', 'first line') + ' is parsed: method, path, version',
+  () => 'the server packs ' +
+        door('env', Object.keys(run().environ).length + ' keys', true) +
+        ' into one plain dictionary, and it decides how many',
   () => 'one call, and it looks the same whichever two you picked',
   () => '<b>' + shortApp[app] + '</b> is deciding what to send',
-  () => 'status and headers, handed back <b>while it is still running</b>. ' +
+  () => door('sr', 'status and headers', true) + ', handed back <b>while it is still running</b>. ' +
         'The server parks them until step 9',
   () => run().chunked
-          ? 'and the body — with <b>no Content-Length</b>, which will cost this server in a moment'
+          ? 'and the body — with ' + door('chunk', 'no Content-Length') +
+            ', which will cost this server in a moment'
           : 'and the body, as the return value. ' + run().appHeaders.length +
             ' headers came with it: ' + run().appHeaders.map(h => h[0]).join(', '),
   () => 'built from the body <b>and</b> the headers held since step 7' +
-        (run().chunked ? ' — with no Content-Length, this server had to chunk the body'
+        (run().chunked ? ' — so this server had to ' + door('chunk', 'chunk the body')
                        : ', plus ' + run().respHeaders.filter(h =>
                            !run().appHeaders.some(a => a[0] === h[0])).map(h => h[0]).join(' and ')),
-  () => 'and it lands back with you: <b>' + run().statusLine + '</b>',
+  () => 'and it lands back with you: ' + door('response', run().statusLine, true) +
+        ' — ' + door('real', 'really ran'),
 ];
+
+/* What is behind each word. This is where the notes that used to sit under the drawing
+   went: section 5 says the word is the door, and ADR 0002 says a departure is marked
+   where the reader meets it, never in a footnote. */
+const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const DOORS = {
+  env: () => {
+    const R = run(), extra = new Set(R.extra);
+    return ['environ, as this server built it',
+      '<div class="keys">' + Object.keys(R.environ)
+        .sort((a, b) => (extra.has(a) - extra.has(b)) || a.localeCompare(b))
+        .map(k => '<div class="k ' + (extra.has(k) ? 'extra' : 'floor') + '">' +
+          '<span class="n">' + k + '</span><span class="v">' + esc(R.environ[k]) +
+          '</span></div>').join('') + '</div>' +
+      '<div class="legend"><i><span class="sw"></span> the eleven every server provides</i>' +
+      '<i><span class="sw dim"></span> extra, this server only — a framework cannot rely on it</i></div>' +
+      '<p>The keys present in <b>all twelve runs</b> are exactly the eleven the article\'s ' +
+      '<code>get_environ()</code> sets. Not a subset, not a superset — the article\'s list is ' +
+      'precisely the floor. Gunicorn and Waitress each add thirteen more, and <b>not the same ' +
+      'thirteen</b>.</p>'];
+  },
+  loaded: () => ['how the server got an application',
+    '<pre>$ python webserver2.py ' + app + ':app\nWSGIServer: Serving HTTP on port 8888 ...</pre>' +
+    '<p>The server splits <code>' + app + ':app</code>, imports the module, and keeps the callable. ' +
+    'That is the whole of it:</p>' +
+    '<pre>module, application = app_path.split(\':\')\nmodule = __import__(module)\n' +
+    'application = getattr(module, application)\nhttpd = make_server(SERVER_ADDRESS, application)</pre>' +
+    '<p>Run it with no argument and it will not start: <code>Provide a WSGI application object as ' +
+    'module:callable</code>. The server has no application of its own, and says so.</p>'],
+  parse: () => ['what parsing actually is',
+    '<pre>' + esc(run().environ['REQUEST_METHOD']) + '  ' + esc(run().environ['PATH_INFO']) +
+    '  HTTP/1.1</pre>' +
+    '<p>One line, split on spaces into three: method, path, version. Everything after it — the ' +
+    '<code>Host</code> header and the rest — the article\'s server never looks at. Only two of ' +
+    'the three reach <code>environ</code>, as <code>REQUEST_METHOD</code> and ' +
+    '<code>PATH_INFO</code>.</p>'],
+  sr: () => ['what ' + shortApp[app] + ' passed to start_response',
+    '<pre>start_response(\n  ' + JSON.stringify(run().status) + ',\n  [\n' +
+    run().appHeaders.map(h => '    (' + JSON.stringify(h[0]) + ', ' + JSON.stringify(h[1]) + '),')
+      .join('\n') + '\n  ]\n)</pre>' +
+    '<p>Captured from the real call. The server stores these in <code>headers_set</code> and does ' +
+    'nothing with them until it builds the response.</p>'],
+  chunk: () => ['why the body had to be chunked',
+    '<p>The bare application is the only one of the four that sets no ' +
+    '<code>Content-Length</code>. Without it this server cannot say how long the body is, so it ' +
+    'falls back to <code>Transfer-Encoding: chunked</code> and sends the length in front of each ' +
+    'piece. Waitress, given the same application, buffers the body and works the length out ' +
+    'instead. Same application, same interface, two different answers.</p>' +
+    '<pre>' + esc((run().wire || '').slice(0, 200)) + '</pre>'],
+  response: () => ['the bytes that came back',
+    '<pre>' + esc(run().statusLine) + '\n' +
+    run().respHeaders.map(h => esc(h[0] + ': ' + h[1])).join('\n') + '\n\n' +
+    esc(run().body) + '</pre>'],
+  grid: () => ['the twelve combinations',
+    '<p>Three servers — the article\'s own <code>webserver2.py</code>, <b>gunicorn 26.2.0</b> and ' +
+    '<b>waitress 3.0.2</b> — against four applications: a bare WSGI app, <b>Pyramid</b>, ' +
+    '<b>Flask 3.1.3</b> and <b>Django 5.2.17</b>. Every pair was really run, and every byte on ' +
+    'this page came back over a socket. All twelve work, which is the point.</p>'],
+  beyond: () => ['beyond the article',
+    '<p>The article <b>names</b> Gunicorn and Waitress but never runs them — it only ever runs ' +
+    'its own <code>webserver2.py</code>. Both were installed and really run here, against the ' +
+    'article\'s own unmodified application files, so the claim it makes in words could be ' +
+    'checked rather than repeated.</p>' +
+    '<p>Under <b>ADR 0002</b>: <b>checked</b> against the article\'s own list of servers, ' +
+    '<b>real</b> — twelve pairs, every byte captured — and <b>marked</b> here, where you meet it. ' +
+    'Without it the server would have exactly one value and would not be something you can turn.</p>'],
+  real: () => ['where these bytes came from',
+    '<p>One real <code>GET /hello</code> sent over a socket to a real running server, twelve ' +
+    'times. The response you are reading is what came back, not a reconstruction.</p>' +
+    '<p>The one thing here the article does not contain is the Django project: it says to clone ' +
+    'its repository rather than printing the files, so the <code>/hello</code> view is ours. ' +
+    'Everything else — the server and all four applications — is the article\'s code, copied ' +
+    'verbatim.</p>'],
+};
 /* where Wink looks: at the place doing the work, or at the dot in flight */
 const GAZE = {0:null, 1:G.app, 3:G.srv, 4:G.srv, 6:G.app, 9:G.srv};
 const FLIGHT = {2:P_IN, 5:P_CALL, 7:P_SR, 8:P_BODY, 10:P_BACK};
@@ -484,11 +515,14 @@ const FLIGHT = {2:P_IN, 5:P_CALL, 7:P_SR, 8:P_BODY, 10:P_BACK};
 const DWELL = 300;
 function stopPlay(){ playing = false; cancelAnimationFrame(rafId);
   $('#play').setAttribute('aria-pressed','false'); $('#play').textContent = '▶ Play'; }
-function play(){
+function play(fromStart){
   if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
+  if (openDoor) closeDoor();
   playing = true; $('#play').setAttribute('aria-pressed','true'); $('#play').textContent = '❚❚ Pause';
-  step = 0; sub = 1; draw();
-  let last = performance.now(), rest = DWELL;
+  /* resume picks up where it stopped; only a knob or the end rewinds */
+  if (fromStart || step >= STEPS.length - 1){ step = 0; sub = 1; }
+  draw();
+  let last = performance.now(), rest = sub >= 1 ? DWELL : 0;
   (function frame(now){
     if (!playing) return;
     const dt = now - last; last = now;
@@ -510,7 +544,7 @@ function knob(host, list, get, set){
     b.className = 'opt'; b.type = 'button';
     b.textContent = (host.id === 'knobSrv' ? shortSrv : shortApp)[id];
     b.setAttribute('aria-pressed', String(get() === id));
-    b.onclick = () => { set(id); syncKnobs(); renderEnv(); stopPlay(); play(); };
+    b.onclick = () => { set(id); syncKnobs(); stopPlay(); play(true); };
     host.appendChild(b);
   });
 }
@@ -519,9 +553,35 @@ function syncKnobs(){
   knob($('#knobApp'), D.apps,    () => app, v => app = v);
 }
 
-$('#scrub').addEventListener('input', e => { stopPlay(); step = +e.target.value; sub = 1; draw(); });
-$('#play').addEventListener('click', () => playing ? stopPlay() : play());
+/* ---- doors: the word is the door, and opening one stops time (section 5) ---- */
+let openDoor = null, wasPlaying = false;
+function showDoor(id){
+  if (openDoor === id) return closeDoor();
+  wasPlaying = playing || wasPlaying;
+  stopPlay();
+  const [title, body] = DOORS[id]();
+  openDoor = id;
+  $('#popTitle').textContent = title;
+  $('#popBody').innerHTML = body;
+  $('#pop').hidden = false;
+  $('#popClose').focus();
+}
+function closeDoor(){
+  if (!openDoor) return;
+  openDoor = null; $('#pop').hidden = true;
+  if (wasPlaying){ wasPlaying = false; play(false); }   /* same instant, not the start */
+}
+$('#bub').addEventListener('click', e => {
+  const d = e.target.closest('.door');
+  if (d) showDoor(d.dataset.door);
+});
+$('#popClose').addEventListener('click', closeDoor);
+addEventListener('keydown', e => { if (e.key === 'Escape' && openDoor) closeDoor(); });
 
-syncKnobs(); renderEnv();
-if (REDUCED){ step = STEPS.length - 1; draw(); } else play();
+$('#scrub').addEventListener('input', e => {
+  stopPlay(); wasPlaying = false; closeDoor(); step = +e.target.value; sub = 1; draw(); });
+$('#play').addEventListener('click', () => playing ? stopPlay() : play(false));
+
+syncKnobs();
+if (REDUCED){ step = STEPS.length - 1; draw(); } else play(true);
 </script>
