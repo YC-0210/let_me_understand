@@ -56,8 +56,6 @@ svg.draw{display:block; width:100%; height:auto}
 .btn:hover{border-color:var(--hair-strong)}
 .btn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
 .btn[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
-.says{font-size:13.5px; color:var(--ink-tert); margin-left:2px}
-.says b{color:var(--ink-muted); font-weight:500}
 
 /* the environ readout - the subject of the article, so it is always on screen */
 .env{margin:var(--sp-lg) 0 0; border:1px solid var(--hair); border-radius:var(--r-lg); overflow:hidden}
@@ -90,6 +88,44 @@ svg.draw{display:block; width:100%; height:auto}
 .lift{background:var(--s1); border-left:2px solid var(--hair-strong)}
 .foot{padding-block:var(--sp-xl) 64px; color:var(--ink-tert); font-size:12px; line-height:1.5}
 .foot b{color:var(--ink-subtle); font-weight:500}
+
+/* ---------------- Wink, the mascot ----------------
+   Brought over from the part 1 study on claude/focused-galileo-m6tm74. Chrome, not a
+   mark: it lives under the drawing, never on it, because section 1 closes the drawing at
+   eight marks and section 3.3 forbids idle drift inside it. Its three colours are NOT in
+   the palette - see the note on the page. */
+#winkHost{display:flex; align-items:center; gap:var(--sp-sm); margin:var(--sp-md) 0 0}
+.wink{flex:none; width:44px; height:44px; overflow:visible; opacity:.5; transition:opacity .45s ease}
+.wink.speaking{opacity:1; animation:wkNod .42s cubic-bezier(.22,.9,.3,1)}
+.wk-body{fill:#F5F0FF}
+.wk-eye{fill:#4B3869}
+.wk-wink{stroke:#4B3869; stroke-width:3.2; fill:none; stroke-linecap:round}
+.wk-spark{fill:#B491F5}
+.wk-breathe{transform-box:view-box; transform-origin:50px 50px; animation:wkBreathe 3.1s ease-in-out infinite}
+.wk-bob{transform-box:view-box; transform-origin:50px 50px; animation:wkBob 4.3s ease-in-out infinite}
+.wk-spark{transform-box:fill-box; transform-origin:center; animation:wkTwinkle 1.7s ease-in-out infinite}
+.wk-face{transform:translate(var(--gx,0px), var(--gy,0px)); transition:transform .5s cubic-bezier(.22,.9,.3,1)}
+.wk-eye{transform-box:fill-box; transform-origin:center}
+.wink.blink .wk-eye{animation:wkBlink .14s ease-in-out}
+@keyframes wkBreathe{0%,100%{transform:scale(1)} 50%{transform:scale(1.02)}}
+@keyframes wkBob{0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.2px)}}
+@keyframes wkTwinkle{0%,100%{opacity:.6; transform:scale(.9)} 50%{opacity:1; transform:scale(1.1)}}
+@keyframes wkBlink{0%,100%{transform:scaleY(1)} 50%{transform:scaleY(.08)}}
+@keyframes wkNod{0%{transform:translateY(0) scale(1,1)}
+  32%{transform:translateY(1.4px) scale(1.05,.95)} 100%{transform:translateY(0) scale(1,1)}}
+.bub{position:relative; background:var(--s2); border:1px solid var(--hair-strong);
+  border-radius:var(--r-lg); padding:9px 14px; font-size:14px; line-height:1.45;
+  color:var(--ink-muted); max-width:52ch; min-height:20px}
+.bub b{color:var(--ink); font-weight:500}
+.bub code{font-family:var(--mono); font-size:12.5px}
+.bub:empty{display:none}
+.bub::before{content:""; position:absolute; width:9px; height:9px; background:var(--s2);
+  border-left:1px solid var(--hair-strong); border-bottom:1px solid var(--hair-strong);
+  left:-6px; top:calc(50% - 5px); transform:rotate(45deg)}
+@media (prefers-reduced-motion:reduce){
+  .wk-breathe,.wk-bob,.wk-spark,.wink.blink .wk-eye,.wink.speaking{animation:none}
+  .wk-face,.wink{transition:none}
+}
 [hidden]{display:none!important}
 @media (max-width:560px){ h1{font-size:25px} .lede{font-size:16px} }
 </style>
@@ -114,9 +150,25 @@ svg.draw{display:block; width:100%; height:auto}
     <input type="range" id="scrub" min="0" max="10" step="1" value="0" aria-label="Step through the exchange">
     <p class="phase" id="phase"></p>
   </div>
+  <div id="winkHost">
+    <svg class="wink" id="wink" viewBox="0 0 100 100" aria-hidden="true">
+      <g class="wk-bob"><g class="wk-breathe">
+        <circle class="wk-body" cx="50" cy="50" r="46"/>
+        <g class="wk-face">
+          <g transform="rotate(-10 38.04 45.4)">
+            <ellipse class="wk-eye" cx="38.04" cy="45.4" rx="5.98" ry="9.2"/>
+          </g>
+          <path class="wk-wink" d="M59.2 42.6 Q67 54.6 74.8 42.6"/>
+        </g>
+        <g transform="translate(76.2 16.9)">
+          <path class="wk-spark" d="M0,-6.2 Q0.9,-1.5 5.2,0 Q0.9,1.5 0,6.2 Q-0.9,1.5 -5.2,0 Q-0.9,-1.5 0,-6.2 Z"/>
+        </g>
+      </g></g>
+    </svg>
+    <p class="bub" id="bub" role="status" aria-live="polite"></p>
+  </div>
   <div class="ctl">
     <button class="btn" id="play" aria-pressed="false">▶ Play</button>
-    <span class="says" id="says"></span>
   </div>
 </div>
 
@@ -153,6 +205,17 @@ svg.draw{display:block; width:100%; height:auto}
   returned by the call <b>and</b> the status and response headers set by start_response</i>.
   Only <i>the application works</i> carries no number: the article's sequence figure shows it,
   its list does not name it.</div>
+  <div class="row"><h4>WINK</h4>The narrator under the drawing, brought over from the part 1
+  study on <code>claude/focused-galileo-m6tm74</code>. It is <b>chrome, not a mark</b> — it sits
+  under the drawing and never on it, because §1 closes the drawing at eight marks and §3.3 forbids
+  idle drift inside it. Its eyes point at whatever is being talked about, which a caption cannot
+  do: a circle has no facing, so where the features sit is the only direction it has. <b>Two things
+  it is not yet:</b> its three colours — <code>#F5F0FF</code>, <code>#4B3869</code>,
+  <code>#B491F5</code> — are not in the palette, and §2 says one accent forever and any new hue
+  must pass the validator. Whether chrome is exempt from §2 is written down nowhere. And because
+  it is anchored at the far left, its gaze only ever points <i>rightward</i>: it varies in degree
+  across the drawing, never in direction. The part 1 study offered four placements; only this one
+  has been tried here.</div>
   <div class="row lift"><h4>NOT BUILT YET</h4>Doors. §5 says every mark has one and the word is
   the door; nothing here opens yet.</div>
 </div>
@@ -201,10 +264,14 @@ const STEPS = [
   ['The server constructs an HTTP response',              850, 6],
   ['The server transmits it back to you',                1000, 7],
 ];
-const WORK = [3, 4, 6, 9];          /* a place is working: parse, build, run, construct */
+/* Which steps are which job, by the place doing it. The server works THREE times in one
+   exchange and the application once - so a ring has to say which time it is. ADR 0004. */
+const JOBS = {srv:[3, 4, 9], app:[6]};
+const WORK = [...JOBS.srv, ...JOBS.app];
 /* section 3.1: travel eases, work is linear */
 const ease = f => f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2)/2;
 
+const VBW = 740;
 const G = {you:{x:74,y:104,r:36}, srv:{x:344,y:104,r:36}, app:{x:646,y:104,r:36}};
 const gap = (a,b) => [a.x + a.r + 9, b.x - b.r - 9];
 const [n0, n1] = gap(G.you, G.srv);
@@ -262,15 +329,23 @@ function draw(){
       stroke:col, 'stroke-width':2}, svg);
   }
 
-  /* ring: work taking time, around whatever is doing it. The only cue that something
-     is happening. Linear - labour does not accelerate. */
-  const worker = {3:G.srv, 4:G.srv, 6:G.app, 9:G.srv};
-  const wcol   = {3:C.accent, 4:C.accent, 6:C.accent, 9:col};
-  if (WORK.includes(step)){
-    const p = worker[step], r = p.r + 9, CIRC = 2*Math.PI*r;
-    el('circle', {cx:p.x, cy:p.y, r, fill:'none', stroke:wcol[step], 'stroke-width':2.5,
-      'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC*(1-sub),
+  /* Work, past and present. A place's jobs divide its ring into consecutive arcs: each
+     job starts where the last one stopped, finished arcs stay at 38%, the one in progress
+     sweeps at full strength. ADR 0004. Linear - labour does not accelerate. Always the
+     accent: work carries no outcome, and tinting it by the result made finished arcs
+     change colour retroactively. */
+  for (const key of ['srv', 'app']){
+    const p = G[key], list = JOBS[key], total = list.length;
+    const cur = list.indexOf(step);
+    const done = cur >= 0 ? cur : list.filter(j => j < step).length;
+    if (done === 0 && cur < 0) continue;
+    const r = p.r + 9, CIRC = 2*Math.PI*r, seg = CIRC/total;
+    const ringArc = (len, offset, opacity) => el('circle', {cx:p.x, cy:p.y, r, fill:'none',
+      stroke:C.accent, 'stroke-width':2.5, 'stroke-linecap':'butt', opacity,
+      'stroke-dasharray':len + ' ' + (CIRC - len), 'stroke-dashoffset':-offset,
       transform:'rotate(-90 '+p.x+' '+p.y+')'}, svg);
+    for (let k = 0; k < done; k++) ringArc(seg, k*seg, .38);
+    if (cur >= 0) ringArc(seg*sub, cur*seg, 1);
   }
 
   /* discs, only while travelling. Eased. */
@@ -313,28 +388,13 @@ function draw(){
   $('#phase').innerHTML = '<span class="n">' + (art ? 'article ' + art : '&nbsp;&nbsp;&nbsp;·') +
     '</span>' + name;
   $('#scrub').value = step;
-  $('#says').innerHTML = SAYS[step] ? SAYS[step]() : '';
+  if (NARRATION[step]) W.say(NARRATION[step]());
+  if (FLIGHT[step]){ const q = pointOn(FLIGHT[step], ease(sub)); W.lookAtSvg(q.x, q.y); }
+  else if (GAZE[step]) W.lookAtSvg(GAZE[step].x, GAZE[step].y);
+  else W.setGaze(0, 1.8);
 }
 
 /* what turning a knob changed, for the step you are on */
-const SAYS = {
-  0:  () => 'twelve combinations, every one really run',
-  1:  () => '<b>' + shortSrv[srv] + '</b> has no application of its own — it was handed one',
-  2:  () => 'the same request in all twelve runs',
-  3:  () => 'only the first line is parsed: method, path, version',
-  4:  () => '<b>' + Object.keys(run().environ).length + ' keys</b> — the server decides how many',
-  5:  () => 'the call is identical in all twelve runs',
-  6:  () => '<b>' + shortApp[app] + '</b> decides what comes back',
-  7:  () => 'the application is <b>still running</b>; the server parks these until step 9',
-  8:  () => run().chunked
-              ? 'no <b>Content-Length</b> here, which will cost this server later'
-              : run().appHeaders.length + ' headers came with it: ' +
-                run().appHeaders.map(h => h[0]).join(', '),
-  9:  () => 'built from the body <b>and</b> the headers held since step 7' +
-            (run().chunked ? ' — with no Content-Length, this server had to chunk the body' : ''),
-  10: () => run().statusLine,
-};
-
 function renderEnv(){
   const R = run(), extra = new Set(R.extra), all = Object.keys(R.environ);
   $('#envNote').innerHTML = '<b>' + all.length + ' keys</b> from ' + shortSrv[srv] +
@@ -348,6 +408,79 @@ function renderEnv(){
 }
 
 /* section 3a: each step runs for its own duration, then rests long enough to be seen */
+/* ---------------- Wink ----------------
+   The controller from the part 1 study, unchanged in behaviour: it breathes, blinks on a
+   random period so it never lands on the breathing beat, nods while speaking, and points
+   its features at whatever is being talked about. A circle has no facing; where the
+   features sit is the only direction it has. */
+const W = (() => {
+  const svg = $('#wink'), bub = $('#bub');
+  let speakTimer = 0;
+  const setGaze = (gx, gy) => {
+    svg.style.setProperty('--gx', gx.toFixed(2) + 'px');
+    svg.style.setProperty('--gy', gy.toFixed(2) + 'px');
+  };
+  function lookAt(clientX, clientY){
+    if (REDUCED) return;
+    const r = svg.getBoundingClientRect();
+    if (!r.width) return;
+    const dx = clientX - (r.left + r.width/2), dy = clientY - (r.top + r.height/2);
+    const L = Math.hypot(dx, dy) || 1, k = Math.min(1, L / 240);
+    setGaze(4.6 * k * dx / L, 3.0 * k * dy / L);
+  }
+  function lookAtSvg(x, y){
+    const r = $('#svg').getBoundingClientRect();
+    if (!r.width) return;
+    const s = r.width / VBW;
+    lookAt(r.left + x * s, r.top + y * s);
+  }
+  function say(t){
+    if (bub.innerHTML === t) return;
+    bub.innerHTML = t;
+    svg.classList.remove('speaking'); void svg.offsetWidth;
+    svg.classList.add('speaking');
+    clearTimeout(speakTimer);
+    speakTimer = setTimeout(() => svg.classList.remove('speaking'),
+      Math.max(900, t.replace(/<[^>]*>/g, '').length * 46));
+  }
+  (function blink(){
+    if (REDUCED) return;
+    setTimeout(() => {
+      svg.classList.add('blink');
+      setTimeout(() => svg.classList.remove('blink'), 160);
+      blink();
+    }, 3000 + Math.random() * 3000);
+  })();
+  return {say, lookAt, lookAtSvg, setGaze};
+})();
+
+/* What Wink says at each step. Its job is the sentence the drawing cannot carry - the
+   drawing names its marks, Wink says what just happened and why it matters. */
+const NARRATION = [
+  () => 'three places and nothing joined up yet — twelve combinations to try',
+  () => 'the server is handed an application. It has <b>none of its own</b>',
+  () => 'your request crosses a real network. The same request in all twelve runs',
+  () => 'only the <b>first line</b> is parsed: method, path, version',
+  () => 'the server packs <b>' + Object.keys(run().environ).length +
+        ' keys</b> into one plain dictionary, and it decides how many',
+  () => 'one call, and it looks the same whichever two you picked',
+  () => '<b>' + shortApp[app] + '</b> is deciding what to send',
+  () => 'status and headers, handed back <b>while it is still running</b>. ' +
+        'The server parks them until step 9',
+  () => run().chunked
+          ? 'and the body — with <b>no Content-Length</b>, which will cost this server in a moment'
+          : 'and the body, as the return value. ' + run().appHeaders.length +
+            ' headers came with it: ' + run().appHeaders.map(h => h[0]).join(', '),
+  () => 'built from the body <b>and</b> the headers held since step 7' +
+        (run().chunked ? ' — with no Content-Length, this server had to chunk the body'
+                       : ', plus ' + run().respHeaders.filter(h =>
+                           !run().appHeaders.some(a => a[0] === h[0])).map(h => h[0]).join(' and ')),
+  () => 'and it lands back with you: <b>' + run().statusLine + '</b>',
+];
+/* where Wink looks: at the place doing the work, or at the dot in flight */
+const GAZE = {0:null, 1:G.app, 3:G.srv, 4:G.srv, 6:G.app, 9:G.srv};
+const FLIGHT = {2:P_IN, 5:P_CALL, 7:P_SR, 8:P_BODY, 10:P_BACK};
+
 const DWELL = 300;
 function stopPlay(){ playing = false; cancelAnimationFrame(rafId);
   $('#play').setAttribute('aria-pressed','false'); $('#play').textContent = '▶ Play'; }
