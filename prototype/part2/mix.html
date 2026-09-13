@@ -1,0 +1,829 @@
+<title>Mix and Match</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;   /* dark canvas only - the system ships no light theme (DESIGN.md) */
+  --canvas:#010102; --s1:#0f1011; --s2:#141516; --s3:#18191a;
+  --hair:#23252a; --hair-strong:#34343a;
+  --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-tert:#62666d;
+  --accent:#5e6ad2; --accent-hover:#828fff; --accent-focus:#5e69d1;
+  --ok:#27a644; --no:#d95448;
+  --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-pill:9999px;
+  --sp-xs:8px; --sp-sm:12px; --sp-md:16px; --sp-lg:24px; --sp-xl:32px; --sp-xxl:48px;
+  --sans:"Inter",-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.5; letter-spacing:-.05px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:820px; margin:0 auto; padding:0 var(--sp-lg)}
+code{font-family:var(--mono); font-size:13px}
+h1{font-size:31px; font-weight:600; line-height:1.13; letter-spacing:-.85px; margin:0}
+.lede{color:var(--ink-muted); font-size:17px; margin:14px 0 0; max-width:58ch}
+header{padding-block:var(--sp-xxl) 0}
+.eyebrow{font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
+
+/* the two knobs */
+.knobs{display:flex; flex-wrap:wrap; gap:var(--sp-lg); margin:var(--sp-xl) 0 var(--sp-md)}
+.knob{display:flex; flex-direction:column; gap:var(--sp-xs); min-width:0}
+.knob .row{display:flex; flex-wrap:wrap; gap:6px}
+.opt{font-family:var(--sans); font-size:13.5px; font-weight:500; cursor:pointer; white-space:nowrap;
+  color:var(--ink-subtle); background:var(--s1); border:1px solid var(--hair);
+  border-radius:var(--r-md); padding:7px 12px}
+.opt:hover{border-color:var(--hair-strong); color:var(--ink)}
+.opt:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.opt[aria-pressed=true]{border-color:var(--accent); color:var(--ink); background:var(--s2)}
+
+.panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
+svg.draw{display:block; width:100%; height:auto}
+#svg .door-g{cursor:pointer}
+#svg .door-g:hover text{opacity:.72}
+#svg .door-g:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.steps{margin:var(--sp-md) 0 0}
+#scrub{width:100%; cursor:pointer; -webkit-appearance:none; appearance:none; background:transparent}
+#scrub:focus-visible{outline:2px solid var(--accent-focus); outline-offset:4px}
+#scrub::-webkit-slider-runnable-track{height:4px; border-radius:var(--r-pill); background:var(--hair-strong)}
+#scrub::-moz-range-track{height:4px; border-radius:var(--r-pill); background:var(--hair-strong)}
+#scrub::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:14px; height:14px;
+  margin-top:-5px; border-radius:50%; background:var(--accent); border:0}
+#scrub::-moz-range-thumb{width:14px; height:14px; border-radius:50%; background:var(--accent); border:0}
+/* where the reader is, so a reference to "step 9" points at something they can see */
+.bub .lead{display:block; font-family:var(--mono); font-size:11px; letter-spacing:.3px;
+  color:var(--ink-tert); margin:0 0 4px}
+.bub .lead b{color:var(--ink-subtle); font-weight:500}
+.bub .to{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit;
+  white-space:nowrap}
+.bub .to:hover, .pop .to:hover{color:var(--accent-hover)}
+.pop .to{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
+.ctl{display:flex; align-items:center; gap:var(--sp-sm); margin:var(--sp-md) 0 0}
+.btn{font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; color:var(--ink);
+  background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-md); padding:8px 14px}
+.btn:hover{border-color:var(--hair-strong)}
+.btn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.btn[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
+
+/* ---------------- doors (section 5) ----------------
+   The word is the door. Marks are never buttons. A door looks like a link: dotted
+   underline, accent colour - unless the word IS the datum, which keeps its own colour
+   and lets the underline alone carry the affordance. Opening one stops time. */
+.door{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
+.door:hover{color:var(--accent-hover)}
+.door:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px; border-radius:2px}
+.door.datum{color:var(--ink)}
+
+.pop{position:relative; margin:var(--sp-md) 0 0; background:var(--s2);
+  border:1px solid var(--hair-strong); border-radius:var(--r-lg); padding:var(--sp-md)}
+.pop h4{margin:0 0 10px; font-size:12px; font-weight:500; letter-spacing:.5px;
+  color:var(--ink-subtle); padding-right:32px}
+.pop .close{position:absolute; top:8px; right:8px; width:28px; height:28px;
+  border-radius:var(--r-sm); background:transparent; border:1px solid transparent;
+  color:var(--ink-subtle); cursor:pointer; font-size:15px; line-height:1; font-family:var(--sans)}
+.pop .close:hover{background:var(--s3); border-color:var(--hair); color:var(--ink)}
+.pop .close:focus-visible{outline:2px solid var(--accent-focus); outline-offset:1px}
+.pop p{margin:0 0 8px; font-size:13.5px; line-height:1.5; color:var(--ink-muted)}
+.pop p:last-child{margin-bottom:0}
+.pop b{color:var(--ink); font-weight:500}
+.pop code, .pop pre{font-family:var(--mono); font-size:12.5px}
+.pop pre{margin:0; padding:10px 12px; background:var(--canvas); border:1px solid var(--hair);
+  border-radius:var(--r-md); overflow-x:auto; color:var(--ink-muted); line-height:1.55}
+
+.keys{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:1px var(--sp-lg); margin:0 0 10px}
+.k{display:flex; gap:8px; align-items:baseline; font-family:var(--mono); font-size:12px;
+  padding:3px 0; min-width:0}
+.k .n{color:var(--ink-muted); flex:none}
+.k .v{color:var(--ink-tert); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0}
+.k.floor .n{color:var(--ink)}
+.k.extra{opacity:.62}
+.k.extra .n{color:var(--ink-subtle)}
+.legend{display:flex; gap:var(--sp-md); flex-wrap:wrap; font-size:12px; color:var(--ink-tert);
+  margin:0 0 10px}
+.legend i{font-style:normal; display:inline-flex; align-items:center; gap:6px}
+.legend .sw{width:10px; height:2px; background:var(--ink); display:inline-block}
+.legend .sw.dim{background:var(--ink-subtle); opacity:.62}
+
+/* ---------------- a Branch, in front of the screen ----------------
+   CONTEXT.md: a Branch is an opt-in note that goes further than the primary Source and
+   carries its tier openly. The main line opens in place, under the drawing; a Branch
+   comes in front, because it is a detour rather than the next thing. Every claim in one
+   carries a Citation with a link, so a reader can check it rather than trust it. */
+.scrim{position:fixed; inset:0; background:rgba(1,1,2,.72); z-index:40;
+  display:flex; align-items:center; justify-content:center; padding:var(--sp-lg)}
+.branch{position:relative; width:min(620px,100%); max-height:82vh; overflow-y:auto;
+  background:var(--s2); border:1px solid var(--hair-strong); border-radius:var(--r-xl);
+  padding:var(--sp-lg); box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.branch .tier{display:inline-block; font-size:11px; font-weight:500; letter-spacing:.5px;
+  color:var(--ink-tert); border:1px solid var(--hair-strong); border-radius:var(--r-pill);
+  padding:3px 10px; margin:0 0 12px}
+.branch h3{margin:0 0 10px; font-size:19px; font-weight:600; letter-spacing:-.3px}
+.branch p{margin:0 0 10px; font-size:14.5px; line-height:1.55; color:var(--ink-muted)}
+.branch b{color:var(--ink); font-weight:500}
+.branch code{font-family:var(--mono); font-size:12.5px; background:var(--canvas);
+  border:1px solid var(--hair); border-radius:var(--r-xs); padding:1px 5px}
+.branch .quote{margin:0 0 10px; padding:10px 14px; border-left:2px solid var(--hair-strong);
+  background:var(--canvas); border-radius:0 var(--r-md) var(--r-md) 0}
+.branch .quote p{margin:0 0 6px; color:var(--ink); font-size:14px}
+.branch .quote cite{display:block; font-style:normal; font-size:12px; color:var(--ink-tert)}
+.branch .quote cite a{color:var(--accent); text-decoration:none;
+  border-bottom:1px dotted currentColor}
+.branch .quote cite a:hover{color:var(--accent-hover)}
+.branch .srcs{margin:14px 0 0; padding:12px 0 0; border-top:1px solid var(--hair)}
+.branch .srcs h4{margin:0 0 8px; font-size:11px; font-weight:500; letter-spacing:.5px;
+  color:var(--ink-subtle)}
+.branch .srcs li{font-size:13px; line-height:1.5; color:var(--ink-tert); margin:0 0 6px}
+.branch .srcs ul{margin:0; padding-left:18px}
+.branch .srcs a{color:var(--accent); text-decoration:none; border-bottom:1px dotted currentColor}
+.branch .srcs a:hover{color:var(--accent-hover)}
+.branch .close{position:absolute; top:12px; right:12px; width:30px; height:30px;
+  border-radius:var(--r-sm); background:transparent; border:1px solid transparent;
+  color:var(--ink-subtle); cursor:pointer; font-size:16px; line-height:1; font-family:var(--sans)}
+.branch .close:hover{background:var(--s3); border-color:var(--hair); color:var(--ink)}
+.branch .close:focus-visible{outline:2px solid var(--accent-focus); outline-offset:1px}
+.bub .why, .pop .why{color:var(--accent); border-bottom:1px dashed currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
+.bub .why:hover, .pop .why:hover{color:var(--accent-hover)}
+
+/* ---------------- Wink, the mascot ----------------
+   Brought over from the part 1 study on claude/focused-galileo-m6tm74. Chrome, not a
+   mark: it lives under the drawing, never on it, because section 1 closes the drawing at
+   eight marks and section 3.3 forbids idle drift inside it. Its three colours are NOT in
+   the palette - see the note on the page. */
+#winkHost{display:flex; align-items:center; gap:var(--sp-sm); margin:var(--sp-md) 0 0}
+.wink{flex:none; width:44px; height:44px; overflow:visible; opacity:.5; transition:opacity .45s ease}
+.wink.speaking{opacity:1; animation:wkNod .42s cubic-bezier(.22,.9,.3,1)}
+.wk-body{fill:#F5F0FF}
+.wk-eye{fill:#4B3869}
+.wk-wink{stroke:#4B3869; stroke-width:3.2; fill:none; stroke-linecap:round}
+.wk-spark{fill:#B491F5}
+.wk-breathe{transform-box:view-box; transform-origin:50px 50px; animation:wkBreathe 3.1s ease-in-out infinite}
+.wk-bob{transform-box:view-box; transform-origin:50px 50px; animation:wkBob 4.3s ease-in-out infinite}
+.wk-spark{transform-box:fill-box; transform-origin:center; animation:wkTwinkle 1.7s ease-in-out infinite}
+.wk-face{transform:translate(var(--gx,0px), var(--gy,0px)); transition:transform .5s cubic-bezier(.22,.9,.3,1)}
+.wk-eye{transform-box:fill-box; transform-origin:center}
+.wink.blink .wk-eye{animation:wkBlink .14s ease-in-out}
+@keyframes wkBreathe{0%,100%{transform:scale(1)} 50%{transform:scale(1.02)}}
+@keyframes wkBob{0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.2px)}}
+@keyframes wkTwinkle{0%,100%{opacity:.6; transform:scale(.9)} 50%{opacity:1; transform:scale(1.1)}}
+@keyframes wkBlink{0%,100%{transform:scaleY(1)} 50%{transform:scaleY(.08)}}
+@keyframes wkNod{0%{transform:translateY(0) scale(1,1)}
+  32%{transform:translateY(1.4px) scale(1.05,.95)} 100%{transform:translateY(0) scale(1,1)}}
+.bub{position:relative; background:var(--s2); border:1px solid var(--hair-strong);
+  border-radius:var(--r-lg); padding:9px 14px; font-size:14px; line-height:1.45;
+  color:var(--ink-muted); max-width:52ch; min-height:20px}
+.bub b{color:var(--ink); font-weight:500}
+.bub code{font-family:var(--mono); font-size:12.5px}
+.bub:empty{display:none}
+.bub::before{content:""; position:absolute; width:9px; height:9px; background:var(--s2);
+  border-left:1px solid var(--hair-strong); border-bottom:1px solid var(--hair-strong);
+  left:-6px; top:calc(50% - 5px); transform:rotate(45deg)}
+@media (prefers-reduced-motion:reduce){
+  .wk-breathe,.wk-bob,.wk-spark,.wink.blink .wk-eye,.wink.speaking{animation:none}
+  .wk-face,.wink{transition:none}
+}
+[hidden]{display:none!important}
+@media (max-width:560px){ h1{font-size:25px} .lede{font-size:16px} }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">PROTOTYPE · PART 2 · TWO KNOBS</span>
+  <h1>Change the server. Change the framework. The thing in between does not move.</h1>
+  <p class="lede">All seven steps the article lists, in its own words, over twelve combinations
+  that were really run. Turn either knob and watch what changes — then watch what refuses to.</p>
+</header>
+
+<div class="knobs">
+  <div class="knob"><span class="eyebrow">SERVER</span><div class="row" id="knobSrv"></div></div>
+  <div class="knob"><span class="eyebrow">FRAMEWORK</span><div class="row" id="knobApp"></div></div>
+</div>
+
+<div class="panel">
+  <svg id="svg" class="draw" viewBox="0 0 740 244" role="img"
+       aria-label="A request travelling from you to a server to a framework application and back"></svg>
+  <div class="steps">
+    <input type="range" id="scrub" min="0" max="10" step="1" value="0" aria-label="Step through the exchange">
+  </div>
+  <div id="winkHost">
+    <svg class="wink" id="wink" viewBox="0 0 100 100" aria-hidden="true">
+      <g class="wk-bob"><g class="wk-breathe">
+        <circle class="wk-body" cx="50" cy="50" r="46"/>
+        <g class="wk-face">
+          <g transform="rotate(-10 38.04 45.4)">
+            <ellipse class="wk-eye" cx="38.04" cy="45.4" rx="5.98" ry="9.2"/>
+          </g>
+          <path class="wk-wink" d="M59.2 42.6 Q67 54.6 74.8 42.6"/>
+        </g>
+        <g transform="translate(76.2 16.9)">
+          <path class="wk-spark" d="M0,-6.2 Q0.9,-1.5 5.2,0 Q0.9,1.5 0,6.2 Q-0.9,1.5 -5.2,0 Q-0.9,-1.5 0,-6.2 Z"/>
+        </g>
+      </g></g>
+    </svg>
+    <p class="bub" id="bub" role="status" aria-live="polite"></p>
+  </div>
+  <div class="scrim" id="scrim" hidden>
+    <div class="branch" id="branch" role="dialog" aria-modal="true" aria-labelledby="branchTitle">
+      <button class="close" id="branchClose" aria-label="Close and carry on">✕</button>
+      <span class="tier">BEYOND THE ARTICLE</span>
+      <h3 id="branchTitle"></h3>
+      <div id="branchBody"></div>
+    </div>
+  </div>
+  <div class="pop" id="pop" hidden>
+    <button class="close" id="popClose" aria-label="Close and carry on">✕</button>
+    <h4 id="popTitle"></h4>
+    <div id="popBody"></div>
+  </div>
+  <div class="ctl">
+    <button class="btn" id="play" aria-pressed="false">▶ Play</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+const D = {"servers":[["webserver2","the article's own server, ~150 lines"],["gunicorn","Gunicorn, named in the article"],["waitress","Waitress, named in the article"]],"apps":[["wsgiapp","a bare WSGI application"],["pyramidapp","Pyramid"],["flaskapp","Flask"],["djangoapp","Django"]],"shared":["PATH_INFO","REQUEST_METHOD","SERVER_NAME","SERVER_PORT","wsgi.errors","wsgi.input","wsgi.multiprocess","wsgi.multithread","wsgi.run_once","wsgi.url_scheme","wsgi.version"],"runs":{"webserver2|wsgiapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Content-Type","text/plain"],["Date","Mon, 15 Jul 2019 5:54:48 GMT"],["Server","WSGIServer 0.2"]],"body":"Hello world from a simple WSGI application!\n","wire":null,"chunked":false,"environ":{"PATH_INFO":"'/hello'","REQUEST_METHOD":"'GET'","SERVER_NAME":"'localhost'","SERVER_PORT":"'8888'","wsgi.errors":"<_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>","wsgi.input":"<_io.StringIO object>","wsgi.multiprocess":"False","wsgi.multithread":"False","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":[]},"webserver2|pyramidapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain; charset=UTF-8"],["Content-Length","26"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Content-Type","text/plain; charset=UTF-8"],["Content-Length","26"],["Date","Mon, 15 Jul 2019 5:54:48 GMT"],["Server","WSGIServer 0.2"]],"body":"Hello world from Pyramid!\n","wire":null,"chunked":false,"environ":{"PATH_INFO":"'/hello'","REQUEST_METHOD":"'GET'","SERVER_NAME":"'localhost'","SERVER_PORT":"'8888'","wsgi.errors":"<_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>","wsgi.input":"<_io.StringIO object>","wsgi.multiprocess":"False","wsgi.multithread":"False","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":[]},"webserver2|flaskapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain; charset=utf-8"],["Content-Length","24"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Content-Type","text/plain; charset=utf-8"],["Content-Length","24"],["Date","Mon, 15 Jul 2019 5:54:48 GMT"],["Server","WSGIServer 0.2"]],"body":"Hello world from Flask!\n","wire":null,"chunked":false,"environ":{"PATH_INFO":"'/hello'","REQUEST_METHOD":"'GET'","SERVER_NAME":"'localhost'","SERVER_PORT":"'8888'","wsgi.errors":"<_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>","wsgi.input":"<_io.StringIO object>","wsgi.multiprocess":"False","wsgi.multithread":"False","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":[]},"webserver2|djangoapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain"],["X-Frame-Options","DENY"],["Content-Length","25"],["X-Content-Type-Options","nosniff"],["Referrer-Policy","same-origin"],["Cross-Origin-Opener-Policy","same-origin"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Content-Type","text/plain"],["X-Frame-Options","DENY"],["Content-Length","25"],["X-Content-Type-Options","nosniff"],["Referrer-Policy","same-origin"],["Cross-Origin-Opener-Policy","same-origin"],["Date","Mon, 15 Jul 2019 5:54:48 GMT"],["Server","WSGIServer 0.2"]],"body":"Hello world from Django!\n","wire":null,"chunked":false,"environ":{"PATH_INFO":"'/hello'","REQUEST_METHOD":"'GET'","SERVER_NAME":"'localhost'","SERVER_PORT":"'8888'","wsgi.errors":"<_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>","wsgi.input":"<_io.StringIO object>","wsgi.multiprocess":"False","wsgi.multithread":"False","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":[]},"gunicorn|wsgiapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Server","gunicorn"],["Date","Sun, 13 Sep 2026 02:21:49 GMT"],["Connection","close"],["Transfer-Encoding","chunked"],["Content-Type","text/plain"]],"body":"Hello world from a simple WSGI application!\n","wire":"2C\r\nHello world from a simple WSGI application!\n\r\n0\r\n\r\n","chunked":true,"environ":{"HTTP_CONNECTION":"'close'","HTTP_HOST":"'localhost:8888'","PATH_INFO":"'/hello'","QUERY_STRING":"''","RAW_URI":"'/hello'","REMOTE_ADDR":"'127.0.0.1'","REMOTE_PORT":"'49304'","REQUEST_METHOD":"'GET'","SCRIPT_NAME":"''","SERVER_NAME":"'127.0.0.1'","SERVER_PORT":"'8888'","SERVER_PROTOCOL":"'HTTP/1.1'","SERVER_SOFTWARE":"'gunicorn/26.2.0'","gunicorn.socket":"<socket.socket fd=7, family=2, type=1, proto=0, laddr=('127.0.0.1', 8888), raddr=('127.0.0.1', 49304)>","wsgi.early_hints":"<function _make_early_hints_callback.<locals>.send_early_hints>","wsgi.errors":"<gunicorn.http.wsgi.WSGIErrorsWrapper object>","wsgi.file_wrapper":"<class 'gunicorn.http.wsgi.FileWrapper'>","wsgi.input":"<gunicorn.http.body.Body object>","wsgi.input_terminated":"True","wsgi.multiprocess":"False","wsgi.multithread":"False","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":["HTTP_CONNECTION","HTTP_HOST","QUERY_STRING","RAW_URI","REMOTE_ADDR","REMOTE_PORT","SCRIPT_NAME","SERVER_PROTOCOL","SERVER_SOFTWARE","gunicorn.socket","wsgi.early_hints","wsgi.file_wrapper","wsgi.input_terminated"]},"gunicorn|pyramidapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain; charset=UTF-8"],["Content-Length","26"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Server","gunicorn"],["Date","Sun, 13 Sep 2026 02:21:50 GMT"],["Connection","close"],["Content-Type","text/plain; charset=UTF-8"],["Content-Length","26"]],"body":"Hello world from Pyramid!\n","wire":null,"chunked":false,"environ":{"HTTP_CONNECTION":"'close'","HTTP_HOST":"'localhost:8888'","PATH_INFO":"'/hello'","QUERY_STRING":"''","RAW_URI":"'/hello'","REMOTE_ADDR":"'127.0.0.1'","REMOTE_PORT":"'49324'","REQUEST_METHOD":"'GET'","SCRIPT_NAME":"''","SERVER_NAME":"'127.0.0.1'","SERVER_PORT":"'8888'","SERVER_PROTOCOL":"'HTTP/1.1'","SERVER_SOFTWARE":"'gunicorn/26.2.0'","gunicorn.socket":"<socket.socket fd=7, family=2, type=1, proto=0, laddr=('127.0.0.1', 8888), raddr=('127.0.0.1', 49324)>","wsgi.early_hints":"<function _make_early_hints_callback.<locals>.send_early_hints>","wsgi.errors":"<gunicorn.http.wsgi.WSGIErrorsWrapper object>","wsgi.file_wrapper":"<class 'gunicorn.http.wsgi.FileWrapper'>","wsgi.input":"<gunicorn.http.body.Body object>","wsgi.input_terminated":"True","wsgi.multiprocess":"False","wsgi.multithread":"False","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":["HTTP_CONNECTION","HTTP_HOST","QUERY_STRING","RAW_URI","REMOTE_ADDR","REMOTE_PORT","SCRIPT_NAME","SERVER_PROTOCOL","SERVER_SOFTWARE","gunicorn.socket","wsgi.early_hints","wsgi.file_wrapper","wsgi.input_terminated"]},"gunicorn|flaskapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain; charset=utf-8"],["Content-Length","24"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Server","gunicorn"],["Date","Sun, 13 Sep 2026 02:21:51 GMT"],["Connection","close"],["Content-Type","text/plain; charset=utf-8"],["Content-Length","24"]],"body":"Hello world from Flask!\n","wire":null,"chunked":false,"environ":{"HTTP_CONNECTION":"'close'","HTTP_HOST":"'localhost:8888'","PATH_INFO":"'/hello'","QUERY_STRING":"''","RAW_URI":"'/hello'","REMOTE_ADDR":"'127.0.0.1'","REMOTE_PORT":"'51338'","REQUEST_METHOD":"'GET'","SCRIPT_NAME":"''","SERVER_NAME":"'127.0.0.1'","SERVER_PORT":"'8888'","SERVER_PROTOCOL":"'HTTP/1.1'","SERVER_SOFTWARE":"'gunicorn/26.2.0'","gunicorn.socket":"<socket.socket fd=7, family=2, type=1, proto=0, laddr=('127.0.0.1', 8888), raddr=('127.0.0.1', 51338)>","wsgi.early_hints":"<function _make_early_hints_callback.<locals>.send_early_hints>","wsgi.errors":"<gunicorn.http.wsgi.WSGIErrorsWrapper object>","wsgi.file_wrapper":"<class 'gunicorn.http.wsgi.FileWrapper'>","wsgi.input":"<gunicorn.http.body.Body object>","wsgi.input_terminated":"True","wsgi.multiprocess":"False","wsgi.multithread":"False","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":["HTTP_CONNECTION","HTTP_HOST","QUERY_STRING","RAW_URI","REMOTE_ADDR","REMOTE_PORT","SCRIPT_NAME","SERVER_PROTOCOL","SERVER_SOFTWARE","gunicorn.socket","wsgi.early_hints","wsgi.file_wrapper","wsgi.input_terminated"]},"gunicorn|djangoapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain"],["X-Frame-Options","DENY"],["Content-Length","25"],["X-Content-Type-Options","nosniff"],["Referrer-Policy","same-origin"],["Cross-Origin-Opener-Policy","same-origin"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Server","gunicorn"],["Date","Sun, 13 Sep 2026 02:21:52 GMT"],["Connection","close"],["Content-Type","text/plain"],["X-Frame-Options","DENY"],["Content-Length","25"],["X-Content-Type-Options","nosniff"],["Referrer-Policy","same-origin"],["Cross-Origin-Opener-Policy","same-origin"]],"body":"Hello world from Django!\n","wire":null,"chunked":false,"environ":{"HTTP_CONNECTION":"'close'","HTTP_HOST":"'localhost:8888'","PATH_INFO":"'/hello'","QUERY_STRING":"''","RAW_URI":"'/hello'","REMOTE_ADDR":"'127.0.0.1'","REMOTE_PORT":"'51366'","REQUEST_METHOD":"'GET'","SCRIPT_NAME":"''","SERVER_NAME":"'127.0.0.1'","SERVER_PORT":"'8888'","SERVER_PROTOCOL":"'HTTP/1.1'","SERVER_SOFTWARE":"'gunicorn/26.2.0'","gunicorn.socket":"<socket.socket fd=7, family=2, type=1, proto=0, laddr=('127.0.0.1', 8888), raddr=('127.0.0.1', 51366)>","wsgi.early_hints":"<function _make_early_hints_callback.<locals>.send_early_hints>","wsgi.errors":"<gunicorn.http.wsgi.WSGIErrorsWrapper object>","wsgi.file_wrapper":"<class 'gunicorn.http.wsgi.FileWrapper'>","wsgi.input":"<gunicorn.http.body.Body object>","wsgi.input_terminated":"True","wsgi.multiprocess":"False","wsgi.multithread":"False","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":["HTTP_CONNECTION","HTTP_HOST","QUERY_STRING","RAW_URI","REMOTE_ADDR","REMOTE_PORT","SCRIPT_NAME","SERVER_PROTOCOL","SERVER_SOFTWARE","gunicorn.socket","wsgi.early_hints","wsgi.file_wrapper","wsgi.input_terminated"]},"waitress|wsgiapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Connection","close"],["Content-Length","44"],["Content-Type","text/plain"],["Date","Sun, 13 Sep 2026 02:21:53 GMT"],["Server","waitress"]],"body":"Hello world from a simple WSGI application!\n","wire":null,"chunked":false,"environ":{"HTTP_CONNECTION":"'close'","HTTP_HOST":"'localhost:8888'","PATH_INFO":"'/hello'","QUERY_STRING":"''","REMOTE_ADDR":"'127.0.0.1'","REMOTE_HOST":"'127.0.0.1'","REMOTE_PORT":"'51384'","REQUEST_METHOD":"'GET'","REQUEST_URI":"'/hello'","SCRIPT_NAME":"''","SERVER_NAME":"'waitress.invalid'","SERVER_PORT":"'8888'","SERVER_PROTOCOL":"'HTTP/1.1'","SERVER_SOFTWARE":"'waitress'","waitress.client_disconnected":"<bound method HTTPChannel.check_client_disconnected of <waitress.channel.HTTPChannel connected 127.0.0.1:51384>>","wsgi.errors":"<_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>","wsgi.file_wrapper":"<class 'waitress.buffers.ReadOnlyFileBasedBuffer'>","wsgi.input":"<_io.BytesIO object>","wsgi.input_terminated":"True","wsgi.multiprocess":"False","wsgi.multithread":"True","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":["HTTP_CONNECTION","HTTP_HOST","QUERY_STRING","REMOTE_ADDR","REMOTE_HOST","REMOTE_PORT","REQUEST_URI","SCRIPT_NAME","SERVER_PROTOCOL","SERVER_SOFTWARE","waitress.client_disconnected","wsgi.file_wrapper","wsgi.input_terminated"]},"waitress|pyramidapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain; charset=UTF-8"],["Content-Length","26"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Connection","close"],["Content-Length","26"],["Content-Type","text/plain; charset=UTF-8"],["Date","Sun, 13 Sep 2026 02:21:54 GMT"],["Server","waitress"]],"body":"Hello world from Pyramid!\n","wire":null,"chunked":false,"environ":{"HTTP_CONNECTION":"'close'","HTTP_HOST":"'localhost:8888'","PATH_INFO":"'/hello'","QUERY_STRING":"''","REMOTE_ADDR":"'127.0.0.1'","REMOTE_HOST":"'127.0.0.1'","REMOTE_PORT":"'51410'","REQUEST_METHOD":"'GET'","REQUEST_URI":"'/hello'","SCRIPT_NAME":"''","SERVER_NAME":"'waitress.invalid'","SERVER_PORT":"'8888'","SERVER_PROTOCOL":"'HTTP/1.1'","SERVER_SOFTWARE":"'waitress'","waitress.client_disconnected":"<bound method HTTPChannel.check_client_disconnected of <waitress.channel.HTTPChannel connected 127.0.0.1:51410>>","wsgi.errors":"<_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>","wsgi.file_wrapper":"<class 'waitress.buffers.ReadOnlyFileBasedBuffer'>","wsgi.input":"<_io.BytesIO object>","wsgi.input_terminated":"True","wsgi.multiprocess":"False","wsgi.multithread":"True","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":["HTTP_CONNECTION","HTTP_HOST","QUERY_STRING","REMOTE_ADDR","REMOTE_HOST","REMOTE_PORT","REQUEST_URI","SCRIPT_NAME","SERVER_PROTOCOL","SERVER_SOFTWARE","waitress.client_disconnected","wsgi.file_wrapper","wsgi.input_terminated"]},"waitress|flaskapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain; charset=utf-8"],["Content-Length","24"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Connection","close"],["Content-Length","24"],["Content-Type","text/plain; charset=utf-8"],["Date","Sun, 13 Sep 2026 02:21:55 GMT"],["Server","waitress"]],"body":"Hello world from Flask!\n","wire":null,"chunked":false,"environ":{"HTTP_CONNECTION":"'close'","HTTP_HOST":"'localhost:8888'","PATH_INFO":"'/hello'","QUERY_STRING":"''","REMOTE_ADDR":"'127.0.0.1'","REMOTE_HOST":"'127.0.0.1'","REMOTE_PORT":"'51430'","REQUEST_METHOD":"'GET'","REQUEST_URI":"'/hello'","SCRIPT_NAME":"''","SERVER_NAME":"'waitress.invalid'","SERVER_PORT":"'8888'","SERVER_PROTOCOL":"'HTTP/1.1'","SERVER_SOFTWARE":"'waitress'","waitress.client_disconnected":"<bound method HTTPChannel.check_client_disconnected of <waitress.channel.HTTPChannel connected 127.0.0.1:51430>>","wsgi.errors":"<_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>","wsgi.file_wrapper":"<class 'waitress.buffers.ReadOnlyFileBasedBuffer'>","wsgi.input":"<_io.BytesIO object>","wsgi.input_terminated":"True","wsgi.multiprocess":"False","wsgi.multithread":"True","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":["HTTP_CONNECTION","HTTP_HOST","QUERY_STRING","REMOTE_ADDR","REMOTE_HOST","REMOTE_PORT","REQUEST_URI","SCRIPT_NAME","SERVER_PROTOCOL","SERVER_SOFTWARE","waitress.client_disconnected","wsgi.file_wrapper","wsgi.input_terminated"]},"waitress|djangoapp":{"ok":true,"status":"200 OK","appHeaders":[["Content-Type","text/plain"],["X-Frame-Options","DENY"],["Content-Length","25"],["X-Content-Type-Options","nosniff"],["Referrer-Policy","same-origin"],["Cross-Origin-Opener-Policy","same-origin"]],"statusLine":"HTTP/1.1 200 OK","respHeaders":[["Connection","close"],["Content-Length","25"],["Content-Type","text/plain"],["Cross-Origin-Opener-Policy","same-origin"],["Date","Sun, 13 Sep 2026 02:21:56 GMT"],["Referrer-Policy","same-origin"],["Server","waitress"],["X-Content-Type-Options","nosniff"],["X-Frame-Options","DENY"]],"body":"Hello world from Django!\n","wire":null,"chunked":false,"environ":{"HTTP_CONNECTION":"'close'","HTTP_HOST":"'localhost:8888'","PATH_INFO":"'/hello'","QUERY_STRING":"''","REMOTE_ADDR":"'127.0.0.1'","REMOTE_HOST":"'127.0.0.1'","REMOTE_PORT":"'51456'","REQUEST_METHOD":"'GET'","REQUEST_URI":"'/hello'","SCRIPT_NAME":"''","SERVER_NAME":"'waitress.invalid'","SERVER_PORT":"'8888'","SERVER_PROTOCOL":"'HTTP/1.1'","SERVER_SOFTWARE":"'waitress'","waitress.client_disconnected":"<bound method HTTPChannel.check_client_disconnected of <waitress.channel.HTTPChannel connected 127.0.0.1:51456>>","wsgi.errors":"<_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>","wsgi.file_wrapper":"<class 'waitress.buffers.ReadOnlyFileBasedBuffer'>","wsgi.input":"<_io.BytesIO object>","wsgi.input_terminated":"True","wsgi.multiprocess":"False","wsgi.multithread":"True","wsgi.run_once":"False","wsgi.url_scheme":"'http'","wsgi.version":"(1, 0)"},"extra":["HTTP_CONNECTION","HTTP_HOST","QUERY_STRING","REMOTE_ADDR","REMOTE_HOST","REMOTE_PORT","REQUEST_URI","SCRIPT_NAME","SERVER_PROTOCOL","SERVER_SOFTWARE","waitress.client_disconnected","wsgi.file_wrapper","wsgi.input_terminated"]}}};
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const C = {accent:'#5e6ad2', ok:'#27a644', no:'#d95448', ink:'#f7f8f8',
+           sub:'#8a8f98', tert:'#62666d', hair:'#34343a'};
+const MONO = 'JetBrains Mono, ui-monospace, monospace';
+const SANS = 'Inter, system-ui, sans-serif';
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function el(t, a, p){ const e = document.createElementNS(NS, t);
+  for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+/* Section 5: the mark is never the button - its caption is. A caption gets a dotted
+   underline and a click; a caption that IS the datum keeps its own colour, and the
+   underline alone carries the affordance (rule 2). */
+function cap(p, x, y, s, id, o){
+  const g = el('g', {class:'door-g', tabindex:'0', role:'button'}, p);
+  const t = txt(g, x, y, s, o);
+  if (!o || !o.fill || o.fill === C.sub || o.fill === C.tert) t.setAttribute('fill', C.accent);
+  const col = t.getAttribute('fill');
+  const w = (t.getComputedTextLength ? t.getComputedTextLength() : s.length * 6) / 2;
+  el('line', {x1:x - w, y1:y + 4, x2:x + w, y2:y + 4, stroke:col, 'stroke-width':1,
+    'stroke-dasharray':'2 2', opacity:.7}, g);
+  g.setAttribute('aria-label', DOORS[id] ? DOORS[id]()[0] : s);
+  const go = ev => { ev.stopPropagation(); showDoor(id); };
+  g.addEventListener('click', go);
+  g.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); go(ev); } });
+  return g;
+}
+function txt(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anchor':'middle',
+  fill:C.sub, 'font-size':12.5, 'font-family':SANS}, o||{}), p); e.textContent = s; return e; }
+
+/* the two knobs. Their values are unordered, so they are partitioned rather than plotted:
+   every one of the twelve cells lands in the same Region - it works. */
+let srv = 'webserver2', app = 'flaskapp';
+const run = () => D.runs[srv + '|' + app];
+
+/* The article's own seven steps, in its own words (section 3a.1), with the inside of
+   its fifth step - the call - opened into the three things that actually happen there.
+   ART maps each drawn step to the numbered step in the article's recap; a step with no
+   number is mechanism the article's sequence figure shows but its list does not name. */
+const STEPS = [
+  ['Nothing yet',                                          0, 0],
+  ["The server loads an <b>application</b> callable",     700, 1],
+  ['The server reads a request',                         1000, 2],
+  ['The server parses it',                                650, 3],
+  ["The server builds an <b>environ</b> dictionary",      850, 4],
+  ["The server calls the <b>application</b> callable",   1000, 5],
+  ['The application works',                              1300, 0],
+  ["The application calls <b>start_response</b>",         950, 5],
+  ['The application returns a response body',             950, 5],
+  ['The server constructs an HTTP response',              850, 6],
+  ['The server transmits it back to you',                1000, 7],
+];
+/* Which steps are which job, by the place doing it. The server works THREE times in one
+   exchange and the application once - so a ring has to say which time it is. ADR 0004. */
+const JOBS = {srv:[3, 4, 9], app:[6]};
+const WORK = [...JOBS.srv, ...JOBS.app];
+/* section 3.1: travel eases, work is linear */
+const ease = f => f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2)/2;
+
+const VBW = 740;
+const G = {you:{x:74,y:104,r:36}, srv:{x:344,y:104,r:36}, app:{x:646,y:104,r:36}};
+const gap = (a,b) => [a.x + a.r + 9, b.x - b.r - 9];
+const [n0, n1] = gap(G.you, G.srv);
+const [i0, i1] = gap(G.srv, G.app);
+
+const measure = (() => { const m = el('path', {}, $('#svg')); m.style.display='none'; return d => {
+  m.setAttribute('d', d); return m; }; })();
+const pointOn = (d, f) => measure(d).getPointAtLength(Math.max(.001,f)*measure(d).getTotalLength());
+const partial = (d, f) => { const L = measure(d).getTotalLength(); return (f*L)+' '+L; };
+const arc = (x0, x1, y, lift) =>
+  'M'+x0+' '+y+' C'+(x0+(x1-x0)*.32)+' '+(y+lift)+' '+(x1-(x1-x0)*.32)+' '+(y+lift)+' '+x1+' '+y;
+const P_IN = arc(n0,n1,G.you.y,-32), P_BACK = arc(n1,n0,G.you.y,32);
+/* two routes back from the application, because there really are two: start_response is
+   a callback made while it is still running, the body is the call's return value. */
+const P_CALL = arc(i0,i1,G.srv.y,-32), P_SR = arc(i1,i0,G.srv.y,30), P_BODY = arc(i1,i0,G.srv.y,96);
+
+let step = 0, sub = 1, playing = false, rafId = 0;
+const nameOf = (list, id) => (list.find(r => r[0] === id) || [id, id])[1];
+const shortSrv = {webserver2:"the article's server", gunicorn:'gunicorn', waitress:'waitress'};
+const shortApp = {wsgiapp:'a bare WSGI app', pyramidapp:'Pyramid', flaskapp:'Flask', djangoapp:'Django'};
+
+function draw(){
+  const svg = $('#svg'), R = run();
+  [...svg.children].forEach(c => { if (c.style.display !== 'none') c.remove(); });
+  const at  = i => step === i ? sub : (step > i ? 1 : 0);
+  const atE = i => step === i ? ease(sub) : (step > i ? 1 : 0);
+  const col = R.ok ? C.ok : C.no;
+
+  /* The channel to the application does not exist until the server has loaded it.
+     Step 1 IS that line appearing - the article's first step, drawn. */
+  if (at(1) > 0) el('line', {x1:i0, y1:G.srv.y, x2:i0 + (i1-i0)*Math.min(1, at(1)*1.5),
+    y2:G.srv.y, stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
+  if (at(2) > 0) el('line', {x1:n0, y1:G.you.y, x2:n0 + (n1-n0)*Math.min(1, at(2)*1.6),
+    y2:G.you.y, stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
+
+  const trace = (d, f, c) => { if (f <= 0) return;
+    el('path', {d, fill:'none', stroke:c, 'stroke-width':1.5, opacity:.45,
+      'stroke-linecap':'round', 'stroke-dasharray':partial(d, f)}, svg); };
+  trace(P_IN,   atE(2), C.accent);
+  trace(P_CALL, atE(5), C.accent);
+  trace(P_SR,   atE(7), col);
+  trace(P_BODY, atE(8), col);
+  trace(P_BACK, atE(10), col);
+
+  [G.you, G.srv, G.app].forEach(p => el('circle', {cx:p.x, cy:p.y, r:p.r, fill:'none',
+    stroke:C.sub, 'stroke-width':2}, svg));
+
+  /* Held disc: status and response headers, at rest inside the server. start_response
+     hands them over while the application is STILL RUNNING, and the server keeps them
+     until it constructs the response. This is the one thing in part 2 that is genuinely
+     at rest inside a place for a duration the reader cannot otherwise see. */
+  /* Work, past and present. A place's jobs divide its ring into consecutive arcs: each
+     job starts where the last one stopped, finished arcs stay at 38%, the one in progress
+     sweeps at full strength. ADR 0004. Linear - labour does not accelerate. Always the
+     accent: work carries no outcome, and tinting it by the result made finished arcs
+     change colour retroactively. */
+  for (const key of ['srv', 'app']){
+    const p = G[key], list = JOBS[key], total = list.length;
+    const cur = list.indexOf(step);
+    const done = cur >= 0 ? cur : list.filter(j => j < step).length;
+    if (done === 0 && cur < 0) continue;
+    const r = p.r + 9, CIRC = 2*Math.PI*r, seg = CIRC/total;
+    const ringArc = (len, offset, opacity) => el('circle', {cx:p.x, cy:p.y, r, fill:'none',
+      stroke:C.accent, 'stroke-width':2.5, 'stroke-linecap':'butt', opacity,
+      'stroke-dasharray':len + ' ' + (CIRC - len), 'stroke-dashoffset':-offset,
+      transform:'rotate(-90 '+p.x+' '+p.y+')'}, svg);
+    for (let k = 0; k < done; k++) ringArc(seg, k*seg, .38);
+    if (cur >= 0) ringArc(seg*sub, cur*seg, 1);
+  }
+
+  /* discs, only while travelling. Eased. */
+  const disc = (d, c) => { const q = pointOn(d, ease(sub));
+    el('circle', {cx:q.x, cy:q.y, r:8, fill:c}, svg); };
+  if (step === 2)  disc(P_IN, C.accent);
+  if (step === 5)  disc(P_CALL, C.accent);
+  if (step === 7)  disc(P_SR, col);
+  if (step === 8)  disc(P_BODY, col);
+  if (step === 10) disc(P_BACK, col);
+
+  /* names below marks; values above the mark carrying them (section 4).
+     The middle and right names are the two knobs. */
+  cap(svg, G.you.x, G.you.y + G.you.r + 21, 'you', 'you');
+  cap(svg, G.srv.x, G.srv.y + G.srv.r + 21, shortSrv[srv], 'server', {fill:C.ink});
+  cap(svg, G.app.x, G.app.y + G.app.r + 21, shortApp[app], 'app', {fill:C.ink});
+
+  /* the ring's caption: the job being done, in the article's words */
+  const JOBNAME = {3:'parsing', 4:'building environ', 6:'running', 9:'constructing the response'};
+  if (JOBNAME[step]){
+    const w = JOBS.srv.includes(step) ? G.srv : G.app;
+    cap(svg, w.x, w.y - w.r - 17, JOBNAME[step], 'work' + step, {'font-size':11.5});
+  }
+
+  const NAMEY = 226;
+  if (at(1) > 0) cap(svg, (i0+i1)/2, NAMEY, 'application(environ, start_response)', 'call',
+      {'font-size':11.5, 'font-family':MONO});
+  if (at(2) > 0) cap(svg, (n0+n1)/2, NAMEY, 'a network connection', 'net', {'font-size':11.5});
+
+  /* A value rides the disc while it travels and the trace once it has landed - one
+     caption, one door, for both marks. ADR 0003. */
+  const val = (x, y, s, c, id) => cap(svg, x, y, s, id, {fill:c, 'font-family':MONO, 'font-size':12.5});
+  if (at(2) > 0) val((n0+n1)/2, G.you.y - 48, 'GET /hello', C.accent, 'request');
+  if (at(5) > 0) val((i0+i1)/2, G.srv.y - 48, 'environ', C.accent, 'env');
+  /* the two routes back, labelled apart so neither sits on the other's arc */
+  /* the start_response label sits toward the application, where it came from; the body
+     label sits lower and further left, so neither lands on the other's arc or on a name */
+  /* each return leg gets its own lane: start_response between the two arcs, the body
+     below the lower one, neither on a curve and neither on a name */
+  if (at(7) > 0) val(i0 + (i1-i0)*.66, G.srv.y + 42,
+      R.status + ' · ' + R.appHeaders.length + ' header' +
+      (R.appHeaders.length === 1 ? '' : 's'), col, 'sr');
+  if (at(8) > 0) val(i0 + (i1-i0)*.38, G.srv.y + 96, R.body.trim(), col, 'body');
+  if (at(10) > 0) val((n0+n1)/2, G.you.y + 48, R.statusLine, col, 'response');
+
+  $('#scrub').value = step;
+  if (NARRATION[step]) W.say(lead() + NARRATION[step]());
+  if (FLIGHT[step]){ const q = pointOn(FLIGHT[step], ease(sub)); W.lookAtSvg(q.x, q.y); }
+  else if (GAZE[step]) W.lookAtSvg(GAZE[step].x, GAZE[step].y);
+  else W.setGaze(0, 1.8);
+}
+
+/* what turning a knob changed, for the step you are on */
+/* section 3a: each step runs for its own duration, then rests long enough to be seen */
+/* ---------------- Wink ----------------
+   The controller from the part 1 study, unchanged in behaviour: it breathes, blinks on a
+   random period so it never lands on the breathing beat, nods while speaking, and points
+   its features at whatever is being talked about. A circle has no facing; where the
+   features sit is the only direction it has. */
+const W = (() => {
+  const svg = $('#wink'), bub = $('#bub');
+  let speakTimer = 0;
+  const setGaze = (gx, gy) => {
+    svg.style.setProperty('--gx', gx.toFixed(2) + 'px');
+    svg.style.setProperty('--gy', gy.toFixed(2) + 'px');
+  };
+  function lookAt(clientX, clientY){
+    if (REDUCED) return;
+    const r = svg.getBoundingClientRect();
+    if (!r.width) return;
+    const dx = clientX - (r.left + r.width/2), dy = clientY - (r.top + r.height/2);
+    const L = Math.hypot(dx, dy) || 1, k = Math.min(1, L / 240);
+    setGaze(4.6 * k * dx / L, 3.0 * k * dy / L);
+  }
+  function lookAtSvg(x, y){
+    const r = $('#svg').getBoundingClientRect();
+    if (!r.width) return;
+    const s = r.width / VBW;
+    lookAt(r.left + x * s, r.top + y * s);
+  }
+  function say(t){
+    if (bub.innerHTML === t) return;
+    bub.innerHTML = t;
+    svg.classList.remove('speaking'); void svg.offsetWidth;
+    svg.classList.add('speaking');
+    clearTimeout(speakTimer);
+    speakTimer = setTimeout(() => svg.classList.remove('speaking'),
+      Math.max(900, t.replace(/<[^>]*>/g, '').length * 46));
+  }
+  (function blink(){
+    if (REDUCED) return;
+    setTimeout(() => {
+      svg.classList.add('blink');
+      setTimeout(() => svg.classList.remove('blink'), 160);
+      blink();
+    }, 3000 + Math.random() * 3000);
+  })();
+  return {say, lookAt, lookAtSvg, setGaze};
+})();
+
+/* What Wink says at each step. Its job is the sentence the drawing cannot carry - the
+   drawing names its marks, Wink says what just happened and why it matters. */
+
+const door = (id, text, datum) =>
+  '<button class="door' + (datum ? ' datum' : '') + '" data-door="' + id + '">' + text + '</button>';
+/* a reference to another step is a way of getting there, not just a number */
+const to = n => '<button class="to" data-step="' + n + '">step ' + n + '</button>';
+/* a word the article never explains. Principle 3: assume no foundation. */
+const why = (id, text) => '<button class="why" data-why="' + id + '">' + text + '</button>';
+
+/* Branches: beyond the primary Source, so every claim carries a Citation with a link.
+   The quotes below were taken from the live documents, not from memory. */
+const BRANCHES = {
+  socket: {
+    title: 'What is a socket?',
+    body:
+      '<p>Two programs that want to talk have a problem: they are separate, and they may be ' +
+      'on separate machines. A <b>socket</b> is the thing the operating system gives each of ' +
+      'them to talk through — one end of a pipe between two programs. You write bytes into ' +
+      'your end; they come out of theirs.</p>' +
+      '<div class="quote"><p>“…a <b>“client” socket</b> — an endpoint of a conversation, and a ' +
+      '<b>“server” socket</b>, which is more like a switchboard operator.”</p>' +
+      '<cite><a href="https://docs.python.org/3/howto/sockets.html" target="_blank" ' +
+      'rel="noopener">Python Socket Programming HOWTO</a></cite></div>' +
+      '<p>That is the split you can see in the drawing. The server holds a switchboard socket ' +
+      'waiting for callers; each caller gets a conversation of its own.</p>' +
+      '<p>The kind used here is a <b>TCP</b> socket, which is why the article can treat the ' +
+      'request as plain text arriving in order rather than as packets to reassemble:</p>' +
+      '<div class="quote"><p>“TCP provides a <b>reliable, in-order, byte-stream service</b> to ' +
+      'applications.”</p><cite><a href="https://www.rfc-editor.org/rfc/rfc9293.html#section-2.2" ' +
+      'target="_blank" rel="noopener">RFC 9293 §2.2, Key TCP Concepts</a> — the current TCP ' +
+      'standard</cite></div>' +
+      '<p>In Python that is the two constants at the top of the article\'s server: ' +
+      '<code>AF_INET</code> chooses addressing over the internet, <code>SOCK_STREAM</code> ' +
+      'chooses TCP. The module is a thin wrapper over the interface Unix has had since the ' +
+      'early 1980s.</p>' +
+      '<div class="quote"><p>“This module provides access to the <b>BSD socket interface</b>. ' +
+      'It is available on all modern Unix systems, Windows, MacOS…”</p>' +
+      '<cite><a href="https://docs.python.org/3/library/socket.html" target="_blank" ' +
+      'rel="noopener">Python <code>socket</code> module documentation</a></cite></div>' +
+      '<p><b>What this means for the drawing:</b> the leftmost line is a socket. The line ' +
+      'between the server and the application is not — that is a function call inside one ' +
+      'program, and nothing is sent anywhere.</p>',
+    sources: [
+      ['RFC 9293 — Transmission Control Protocol', 'https://www.rfc-editor.org/rfc/rfc9293.html',
+       'IETF standard, August 2022; obsoletes RFC 793'],
+      ['Python Socket Programming HOWTO', 'https://docs.python.org/3/howto/sockets.html',
+       'the official Python guide to the same API the article uses'],
+      ['Python socket — low-level networking interface',
+       'https://docs.python.org/3/library/socket.html', 'reference for AF_INET and SOCK_STREAM'],
+    ],
+  },
+};
+
+
+/* The article's own wording for the step, then what it means - one sentence, not two
+   lines saying the same thing. Section 3a.1 keeps the source's terms at the front. */
+const NARRATION = [
+  () => 'Nothing yet — three places, nothing joined up, and ' +
+        door('grid', 'twelve combinations') + ' to try',
+  () => 'The server ' + door('loaded', 'loads an <b>application</b> callable') +
+        '. It has <b>none of its own</b>' +
+        (srv === 'webserver2' ? '' : ', and ' + door('beyond', 'this server is not in the article')),
+  () => 'The server <b>reads a request</b> — it crossed a real network, through a ' +
+        why('socket', 'socket') + ', and it is the same request in all twelve runs',
+  () => 'The server <b>parses it</b> — only the ' + door('parse', 'first line') +
+        ', split into method, path, version',
+  () => 'The server <b>builds an environ dictionary</b> — ' +
+        door('env', Object.keys(run().environ).length + ' keys', true) +
+        ' in one plain dictionary, and the server decides how many',
+  () => 'The server <b>calls the application callable</b> — one call, and it looks the same ' +
+        'whichever two you picked',
+  () => '<b>' + shortApp[app] + '</b> works. It is deciding what to send, and the server is ' +
+        'blocked until it answers',
+  () => '<b>' + shortApp[app] + '</b> calls <b>start_response</b> — ' +
+        door('sr', 'status and headers', true) + ' handed back <b>while it is still running</b>. ' +
+        'The server parks them until ' + to(9),
+  () => '<b>' + shortApp[app] + '</b> <b>returns a response body</b> — ' +
+        (run().chunked
+          ? 'with ' + door('chunk', 'no Content-Length') + ', which will cost this server in a moment'
+          : run().appHeaders.length + ' headers came with it: ' +
+            run().appHeaders.map(h => h[0]).join(', ')),
+  () => 'The server <b>constructs an HTTP response</b> — from the body <b>and</b> the headers ' +
+        'held since ' + to(7) +
+        (run().chunked ? ', so it had to ' + door('chunk', 'chunk the body')
+                       : ', plus ' + run().respHeaders.filter(h =>
+                           !run().appHeaders.some(a => a[0] === h[0])).map(h => h[0]).join(' and ')),
+  () => 'The server <b>transmits it back to you</b> — ' +
+        door('response', run().statusLine, true) + ', and it ' + door('real', 'really ran'),
+];
+const lead = () => {
+  const art = STEPS[step][2];
+  return '<span class="lead"><b>' + step + ' / ' + (STEPS.length - 1) + '</b>  ' +
+    (art ? 'the article\'s step ' + art : 'not in the article\'s list') + '</span>';
+};
+
+/* What is behind each word. This is where the notes that used to sit under the drawing
+   went: section 5 says the word is the door, and ADR 0002 says a departure is marked
+   where the reader meets it, never in a footnote. */
+const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const DOORS = {
+  env: () => {
+    const R = run(), extra = new Set(R.extra);
+    return ['environ, as this server built it',
+      '<div class="keys">' + Object.keys(R.environ)
+        .sort((a, b) => (extra.has(a) - extra.has(b)) || a.localeCompare(b))
+        .map(k => '<div class="k ' + (extra.has(k) ? 'extra' : 'floor') + '">' +
+          '<span class="n">' + k + '</span><span class="v">' + esc(R.environ[k]) +
+          '</span></div>').join('') + '</div>' +
+      '<div class="legend"><i><span class="sw"></span> the eleven every server provides</i>' +
+      '<i><span class="sw dim"></span> extra, this server only — a framework cannot rely on it</i></div>' +
+      '<p>The keys present in <b>all twelve runs</b> are exactly the eleven the article\'s ' +
+      '<code>get_environ()</code> sets. Not a subset, not a superset — the article\'s list is ' +
+      'precisely the floor. Gunicorn and Waitress each add thirteen more, and <b>not the same ' +
+      'thirteen</b>.</p>'];
+  },
+  loaded: () => ['how the server got an application',
+    '<pre>$ python webserver2.py ' + app + ':app\nWSGIServer: Serving HTTP on port 8888 ...</pre>' +
+    '<p>The server splits <code>' + app + ':app</code>, imports the module, and keeps the callable. ' +
+    'That is the whole of it:</p>' +
+    '<pre>module, application = app_path.split(\':\')\nmodule = __import__(module)\n' +
+    'application = getattr(module, application)\nhttpd = make_server(SERVER_ADDRESS, application)</pre>' +
+    '<p>Run it with no argument and it will not start: <code>Provide a WSGI application object as ' +
+    'module:callable</code>. The server has no application of its own, and says so.</p>'],
+  parse: () => ['what parsing actually is',
+    '<pre>' + esc(run().environ['REQUEST_METHOD']) + '  ' + esc(run().environ['PATH_INFO']) +
+    '  HTTP/1.1</pre>' +
+    '<p>One line, split on spaces into three: method, path, version. Everything after it — the ' +
+    '<code>Host</code> header and the rest — the article\'s server never looks at. Only two of ' +
+    'the three reach <code>environ</code>, as <code>REQUEST_METHOD</code> and ' +
+    '<code>PATH_INFO</code>.</p>'],
+  sr: () => ['headers_set: what ' + shortApp[app] + ' passed to start_response',
+    '<pre>start_response(\n  ' + JSON.stringify(run().status) + ',\n  [\n' +
+    run().appHeaders.map(h => '    (' + JSON.stringify(h[0]) + ', ' + JSON.stringify(h[1]) + '),')
+      .join('\n') + '\n  ]\n)</pre>' +
+    '<p>Captured from the real call, and handed over <b>while the application was still ' +
+    'running</b> — this is the callback, not the return value.</p>' +
+    '<pre>self.headers_set = [status, response_headers + server_headers]</pre>' +
+    '<p>The server parks them there and does nothing with them until ' + to(9) + '. It appends ' +
+    'two of its own on the way in: <code>Date</code> — hardcoded in the article to ' +
+    '<code>Mon, 15 Jul 2019 5:54:48 GMT</code> — and <code>Server</code>.</p>'],
+  chunk: () => ['why the body had to be chunked',
+    '<p>The bare application is the only one of the four that sets no ' +
+    '<code>Content-Length</code>. Without it this server cannot say how long the body is, so it ' +
+    'falls back to <code>Transfer-Encoding: chunked</code> and sends the length in front of each ' +
+    'piece. Waitress, given the same application, buffers the body and works the length out ' +
+    'instead. Same application, same interface, two different answers.</p>' +
+    '<pre>' + esc((run().wire || '').slice(0, 200)) + '</pre>'],
+  response: () => ['the bytes that came back',
+    '<pre>' + esc(run().statusLine) + '\n' +
+    run().respHeaders.map(h => esc(h[0] + ': ' + h[1])).join('\n') + '\n\n' +
+    esc(run().body) + '</pre>'],
+  grid: () => ['the twelve combinations',
+    '<p>Three servers — the article\'s own <code>webserver2.py</code>, <b>gunicorn 26.2.0</b> and ' +
+    '<b>waitress 3.0.2</b> — against four applications: a bare WSGI app, <b>Pyramid</b>, ' +
+    '<b>Flask 3.1.3</b> and <b>Django 5.2.17</b>. Every pair was really run, and every byte on ' +
+    'this page came back over a socket. All twelve work, which is the point.</p>'],
+  beyond: () => ['beyond the article',
+    '<p>The article <b>names</b> Gunicorn and Waitress but never runs them — it only ever runs ' +
+    'its own <code>webserver2.py</code>. Both were installed and really run here, against the ' +
+    'article\'s own unmodified application files, so the claim it makes in words could be ' +
+    'checked rather than repeated.</p>' +
+    '<p>Under <b>ADR 0002</b>: <b>checked</b> against the article\'s own list of servers, ' +
+    '<b>real</b> — twelve pairs, every byte captured — and <b>marked</b> here, where you meet it. ' +
+    'Without it the server would have exactly one value and would not be something you can turn.</p>'],
+  you: () => ['you',
+    '<p>A browser, or <code>curl</code>, or the socket this capture used. The only part of ' +
+    'this picture that is <b>not</b> inside the server\'s program — everything to the right of ' +
+    'the first line runs in one process.</p>'],
+  server: () => ['the server: ' + srv,
+    srv === 'webserver2'
+      ? '<p>The article\'s own <code>webserver2.py</code>, copied verbatim — just under 150 ' +
+        'lines. It implements the <b>server half</b> of WSGI: read, parse, build ' +
+        '<code>environ</code>, call the application, build the response, send it.</p>' +
+        '<p>It answers one connection at a time, and it has no error handling: an empty ' +
+        'connection makes <code>parse_request(\'\')</code> raise on <code>splitlines()[0]</code> ' +
+        'and the server stops. That is genuinely what the article\'s code does.</p>'
+      : '<p><b>' + srv + '</b>, a production server the article <b>names but never runs</b>. ' +
+        'It was installed and really run here against the article\'s own unmodified application ' +
+        'files. It puts <b>' + Object.keys(run().environ).length + '</b> keys in ' +
+        '<code>environ</code> where the article\'s server puts eleven, and sets ' +
+        '<code>SERVER_SOFTWARE</code> to <code>' +
+        esc(run().environ['SERVER_SOFTWARE'] || '') + '</code>.</p>'],
+  app: () => ['the application: ' + shortApp[app],
+    '<p>The framework half of WSGI. Whatever else it is, to the server it is ' +
+    '<b>one callable</b> taking <code>(environ, start_response)</code> and returning an ' +
+    'iterable of bytes.</p>' +
+    '<p>This one answered with <code>' + esc(run().body.trim()) + '</code> and set ' +
+    run().appHeaders.length + ' header' + (run().appHeaders.length === 1 ? '' : 's') + ': ' +
+    run().appHeaders.map(h => '<code>' + esc(h[0]) + '</code>').join(', ') + '.</p>'],
+  net: () => ['a network connection',
+    '<p>A real TCP ' + why('socket', 'socket') + '. Two separate programs, possibly two separate machines, exchanging ' +
+    'bytes. It opens when you ask and closes when the reply has been sent — the server\'s last ' +
+    'line is <code>client_connection.close()</code>, inside a <code>finally</code>.</p>'],
+  call: () => ['application(environ, start_response)',
+    '<p>Not a network hop. The server and the application are the <b>same running program</b>, ' +
+    'and this is an ordinary Python function call — same process, same call stack.</p>' +
+    '<p>It is drawn with the same line mark as the network connection because the mark means ' +
+    '<b>a channel between two places</b>, and the word underneath says which kind. Three other ' +
+    'ways were built and rejected: a second kind of line, the application drawn inside the ' +
+    'server, and no third place at all.</p>' +
+    '<p>This call is <b>identical in all twelve combinations</b>. It is the thing WSGI is.</p>'],
+  work3: () => ['parsing',
+    '<pre>request_line = text.splitlines()[0]\n' +
+    '(self.request_method,\n self.path,\n self.request_version) = request_line.split()</pre>' +
+    '<p>One line, split on spaces into three. Every header after it is ignored by the ' +
+    'article\'s server.</p>'],
+  work4: () => DOORS.env(),
+  work6: () => ['running',
+    '<p>The server is blocked here. It made one call and is waiting for it to return — which ' +
+    'is why the article ends by asking how you would handle more than one request at a time.</p>' +
+    '<p>Inside this time <b>' + shortApp[app] + '</b> routes the path, runs a view, and calls ' +
+    '<code>start_response</code> before returning anything.</p>'],
+  work9: () => ['constructing the response',
+    '<pre>status, response_headers = self.headers_set\n' +
+    'response = f\'HTTP/1.1 {status}\\r\\n\'\n' +
+    'for header in response_headers:\n    response += \'{0}: {1}\\r\\n\'.format(*header)\n' +
+    'response += \'\\r\\n\'\nfor data in result:\n    response += data.decode(\'utf-8\')</pre>' +
+    '<p>Built from <b>both</b> routes back: the headers parked by <code>start_response</code> at ' +
+    'step 7, and the body returned at step 8. <code>result</code> is iterable, not a string — ' +
+    'which is why the loop is there.</p>'],
+  request: () => ['the request',
+    '<pre>GET /hello HTTP/1.1\nHost: localhost:8888\nConnection: close</pre>' +
+    '<p>The same request in all twelve runs. The article\'s server reads only the first line; ' +
+    'gunicorn and waitress read the rest and put it in <code>environ</code> as ' +
+    '<code>HTTP_HOST</code> and <code>HTTP_CONNECTION</code>.</p>'],
+  body: () => ['the response body',
+    '<pre>' + esc(JSON.stringify(run().body)) + '</pre>' +
+    '<p>The application\'s return value — a list of one bytestring. The server loops over it, ' +
+    'because WSGI says the result is an <b>iterable</b>: an application is free to return it in ' +
+    'pieces.</p>'],
+  real: () => ['where these bytes came from',
+    '<p>One real <code>GET /hello</code> sent over a ' + why('socket', 'socket') +
+    ' to a real running server, twelve ' +
+    'times. The response you are reading is what came back, not a reconstruction.</p>' +
+    '<p>The one thing here the article does not contain is the Django project: it says to clone ' +
+    'its repository rather than printing the files, so the <code>/hello</code> view is ours. ' +
+    'Everything else — the server and all four applications — is the article\'s code, copied ' +
+    'verbatim.</p>'],
+};
+/* where Wink looks: at the place doing the work, or at the dot in flight */
+const GAZE = {0:null, 1:G.app, 3:G.srv, 4:G.srv, 6:G.app, 9:G.srv};
+const FLIGHT = {2:P_IN, 5:P_CALL, 7:P_SR, 8:P_BODY, 10:P_BACK};
+
+const DWELL = 300;
+function stopPlay(){ playing = false; cancelAnimationFrame(rafId);
+  $('#play').setAttribute('aria-pressed','false'); $('#play').textContent = '▶ Play'; }
+function play(fromStart){
+  if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
+  if (openDoor) closeDoor();
+  playing = true; $('#play').setAttribute('aria-pressed','true'); $('#play').textContent = '❚❚ Pause';
+  /* resume picks up where it stopped; only a knob or the end rewinds */
+  if (fromStart || step >= STEPS.length - 1){ step = 0; sub = 1; }
+  draw();
+  let last = performance.now(), rest = sub >= 1 ? DWELL : 0;
+  (function frame(now){
+    if (!playing) return;
+    const dt = now - last; last = now;
+    if (rest > 0){ rest -= dt; draw(); rafId = requestAnimationFrame(frame); return; }
+    if (sub >= 1){
+      if (step >= STEPS.length - 1){ sub = 1; draw(); return stopPlay(); }
+      step++; sub = 0;
+    }
+    sub = Math.min(1, sub + dt / (STEPS[step][1] || 1));
+    if (sub >= 1) rest = DWELL;
+    draw(); rafId = requestAnimationFrame(frame);
+  })(last);
+}
+
+function knob(host, list, get, set){
+  host.innerHTML = '';
+  list.forEach(([id]) => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.type = 'button';
+    b.textContent = (host.id === 'knobSrv' ? shortSrv : shortApp)[id];
+    b.setAttribute('aria-pressed', String(get() === id));
+    b.onclick = () => { set(id); syncKnobs(); stopPlay(); play(true); };
+    host.appendChild(b);
+  });
+}
+function syncKnobs(){
+  knob($('#knobSrv'), D.servers, () => srv, v => srv = v);
+  knob($('#knobApp'), D.apps,    () => app, v => app = v);
+}
+
+/* ---- doors: the word is the door, and opening one stops time (section 5) ---- */
+let openDoor = null, wasPlaying = false;
+function showDoor(id){
+  if (openDoor === id) return closeDoor();
+  wasPlaying = playing || wasPlaying;
+  stopPlay();
+  const [title, body] = DOORS[id]();
+  openDoor = id;
+  $('#popTitle').textContent = title;
+  $('#popBody').innerHTML = body;
+  $('#pop').hidden = false;
+  $('#popClose').focus();
+}
+function closeDoor(){
+  if (!openDoor) return;
+  openDoor = null; $('#pop').hidden = true;
+  if (wasPlaying){ wasPlaying = false; play(false); }   /* same instant, not the start */
+}
+$('#svg').addEventListener('click', e => { if (!e.target.closest('.door-g')) return; });
+function goToStep(n){
+  stopPlay(); wasPlaying = false; closeDoor();
+  step = Math.max(0, Math.min(STEPS.length - 1, n)); sub = 1; draw();
+}
+function showBranch(id){
+  const B = BRANCHES[id];
+  wasPlaying = playing || wasPlaying;
+  stopPlay();
+  $('#branchTitle').textContent = B.title;
+  $('#branchBody').innerHTML = B.body +
+    '<div class="srcs"><h4>SOURCES</h4><ul>' + B.sources.map(([n, u, note]) =>
+      '<li><a href="' + u + '" target="_blank" rel="noopener">' + n + '</a> — ' + note + '</li>')
+      .join('') + '</ul></div>';
+  $('#scrim').hidden = false;
+  $('#branchClose').focus();
+}
+function closeBranch(){
+  if ($('#scrim').hidden) return;
+  $('#scrim').hidden = true;
+  if (wasPlaying && !openDoor){ wasPlaying = false; play(false); }
+}
+$('#branchClose').addEventListener('click', closeBranch);
+$('#scrim').addEventListener('click', e => { if (e.target === $('#scrim')) closeBranch(); });
+
+const onClick = e => {
+  const w = e.target.closest('.why');
+  if (w){ showBranch(w.dataset.why); return; }
+  const t = e.target.closest('.to');
+  if (t){ goToStep(+t.dataset.step); return; }
+  const d = e.target.closest('.door');
+  if (d) showDoor(d.dataset.door);
+};
+$('#bub').addEventListener('click', onClick);
+$('#popBody').addEventListener('click', onClick);
+$('#popClose').addEventListener('click', closeDoor);
+addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('#scrim').hidden) return closeBranch();
+  if (openDoor) closeDoor();
+});
+
+$('#scrub').addEventListener('input', e => {
+  stopPlay(); wasPlaying = false; closeDoor(); step = +e.target.value; sub = 1; draw(); });
+$('#play').addEventListener('click', () => playing ? stopPlay() : play(false));
+
+syncKnobs();
+if (REDUCED){ step = STEPS.length - 1; draw(); } else play(true);
+</script>

@@ -28,6 +28,28 @@ Three interaction modes on one diagram — animate, step, drag the endpoints —
 side-by-side comparison of two algorithms. _Take_: the repeated structure
 *concept → code → interactive figure*, which keeps a long page navigable.
 
+## Foundations the sources do not explain
+
+Cited inside the Visualization itself, in Branches marked **beyond the article**, because
+the primary Source uses these words without ever defining them. Every quote was taken
+from the live document, not from memory.
+
+**[RFC 9293 — Transmission Control Protocol](https://www.rfc-editor.org/rfc/rfc9293.html)**
+The current TCP standard (IETF, August 2022; obsoletes RFC 793). §2.2 is the one-sentence
+definition worth quoting: *"TCP provides a reliable, in-order, byte-stream service to
+applications."* _Take_: why the article can treat a request as text in order, not packets.
+
+**[Python Socket Programming HOWTO](https://docs.python.org/3/howto/sockets.html)**
+The official guide to the same API `webserver2.py` calls. Its client/server split —
+*"an endpoint of a conversation"* versus *"a switchboard operator"* — maps directly onto
+what the drawing shows. _Take_: the plainest accurate definition of a socket in a primary
+source.
+
+**[Python `socket` — low-level networking interface](https://docs.python.org/3/library/socket.html)**
+Reference for `AF_INET` and `SOCK_STREAM`, and for the fact that the module is a thin
+wrapper over the BSD interface. _Take_: ties the article's two constants to something
+older and larger than Python.
+
 ## Framing for a reader with no foundation
 
 **[Wizard Zines](https://wizardzines.com/comics/) / [Julia Evans](https://jvns.ca/)**
