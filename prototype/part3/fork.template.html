@@ -1,0 +1,1956 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Call, Two Returns</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;   /* dark canvas only - the system ships no light theme (DESIGN.md) */
+  --canvas:#010102; --s1:#0f1011; --s2:#141516; --s3:#18191a;
+  --hair:#23252a; --hair-strong:#34343a;
+  --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-tert:#62666d;
+  --accent:#5e6ad2; --accent-hover:#828fff; --accent-focus:#5e69d1;
+  --ok:#27a644; --no:#d95448;
+  --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-pill:9999px;
+  --sp-xs:8px; --sp-sm:12px; --sp-md:16px; --sp-lg:24px; --sp-xl:32px; --sp-xxl:48px;
+  --sans:"Inter",-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.5; letter-spacing:0; -webkit-font-smoothing:antialiased}
+.wrap{max-width:820px; margin:0 auto; padding:0 var(--sp-lg)}
+code{font-family:var(--mono); font-size:13px}
+h1{font-size:31px; font-weight:600; line-height:1.13; letter-spacing:0; margin:0}
+.lede{color:var(--ink-muted); font-size:17px; margin:14px 0 0; max-width:58ch}
+header{padding-block:var(--sp-xxl) 0}
+.eyebrow{font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
+
+/* the two knobs */
+.knobs{display:flex; flex-wrap:wrap; gap:var(--sp-lg); margin:var(--sp-xl) 0 var(--sp-md)}
+.knob{display:flex; flex-direction:column; gap:var(--sp-xs); min-width:0}
+.knob .row{display:flex; flex-wrap:wrap; gap:6px}
+.opt{font-family:var(--sans); font-size:13.5px; font-weight:500; cursor:pointer; white-space:nowrap;
+  color:var(--ink-subtle); background:var(--s1); border:1px solid var(--hair);
+  border-radius:var(--r-md); padding:7px 12px}
+.opt:hover{border-color:var(--hair-strong); color:var(--ink)}
+.opt:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.opt[aria-pressed=true]{border-color:var(--accent); color:var(--ink); background:var(--s2)}
+
+.panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
+svg.draw{display:block; width:100%; height:auto}
+#svg .door-g{cursor:pointer}
+#svg .door-g:hover text{opacity:.72}
+#svg .door-g:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.steps{margin:var(--sp-md) 0 0}
+#scrub{width:100%; cursor:pointer; -webkit-appearance:none; appearance:none; background:transparent}
+#scrub:focus-visible{outline:2px solid var(--accent-focus); outline-offset:4px}
+#scrub::-webkit-slider-runnable-track{height:4px; border-radius:var(--r-pill); background:var(--hair-strong)}
+#scrub::-moz-range-track{height:4px; border-radius:var(--r-pill); background:var(--hair-strong)}
+#scrub::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:14px; height:14px;
+  margin-top:-5px; border-radius:50%; background:var(--accent); border:0}
+#scrub::-moz-range-thumb{width:14px; height:14px; border-radius:50%; background:var(--accent); border:0}
+/* where the reader is, so a reference to "step 9" points at something they can see */
+.bub .lead{display:block; font-family:var(--mono); font-size:11px; letter-spacing:.3px;
+  color:var(--ink-tert); margin:0 0 4px}
+.bub .lead b{color:var(--ink-subtle); font-weight:500}
+.bub .to{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit;
+  white-space:nowrap}
+.bub .to:hover, .pop .to:hover{color:var(--accent-hover)}
+.pop .to{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
+.ctl{display:flex; align-items:center; gap:var(--sp-sm); margin:var(--sp-md) 0 0}
+.btn{font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; color:var(--ink);
+  background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-md); padding:8px 14px}
+.btn:hover{border-color:var(--hair-strong)}
+.btn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.btn[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
+
+/* ---------------- doors (section 5) ----------------
+   The word is the door. Marks are never buttons. Every door uses the same accent so the
+   interaction vocabulary stays visible and predictable. Opening one stops time. */
+.door{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
+.door:hover{color:var(--accent-hover)}
+.door:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px; border-radius:2px}
+.door.datum{color:var(--accent)}
+
+.pop{position:relative; margin:var(--sp-md) 0 0; background:var(--s2);
+  border:1px solid var(--hair-strong); border-radius:var(--r-lg); padding:var(--sp-md)}
+.pop h4{margin:0 0 10px; font-size:12px; font-weight:500; letter-spacing:.5px;
+  color:var(--ink-subtle); padding-right:32px}
+.pop .close{position:absolute; top:8px; right:8px; width:28px; height:28px;
+  border-radius:var(--r-sm); background:transparent; border:1px solid transparent;
+  color:var(--ink-subtle); cursor:pointer; font-size:15px; line-height:1; font-family:var(--sans)}
+.pop .close:hover{background:var(--s3); border-color:var(--hair); color:var(--ink)}
+.pop .close:focus-visible{outline:2px solid var(--accent-focus); outline-offset:1px}
+.pop p{margin:0 0 8px; font-size:13.5px; line-height:1.5; color:var(--ink-muted)}
+.pop p:last-child{margin-bottom:0}
+.pop b{color:var(--ink); font-weight:500}
+.pop code, .pop pre{font-family:var(--mono); font-size:12.5px}
+.pop ul{margin:0 0 10px; padding-left:18px}
+.pop li{margin:0 0 5px; font-size:13px; line-height:1.45; color:var(--ink-muted)}
+.pop pre{margin:0; padding:10px 12px; background:var(--canvas); border:1px solid var(--hair);
+  border-radius:var(--r-md); overflow-x:auto; color:var(--ink-muted); line-height:1.55}
+
+.keys{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:1px var(--sp-lg); margin:0 0 10px}
+.k{display:flex; gap:8px; align-items:baseline; font-family:var(--mono); font-size:12px;
+  padding:3px 0; min-width:0}
+.k .n{color:var(--ink-muted); flex:none}
+.k .v{color:var(--ink-tert); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0}
+.k.floor .n{color:var(--ink)}
+.k.extra{opacity:.62}
+.k.extra .n{color:var(--ink-subtle)}
+.legend{display:flex; gap:var(--sp-md); flex-wrap:wrap; font-size:12px; color:var(--ink-tert);
+  margin:0 0 10px}
+.legend i{font-style:normal; display:inline-flex; align-items:center; gap:6px}
+.legend .sw{width:10px; height:2px; background:var(--ink); display:inline-block}
+.legend .sw.dim{background:var(--ink-subtle); opacity:.62}
+
+/* ---------------- a Branch, in front of the screen ----------------
+   CONTEXT.md: a Branch is an opt-in note that goes further than the primary Source and
+   carries its tier openly. The main line opens in place, under the drawing; a Branch
+   comes in front, because it is a detour rather than the next thing. Every claim in one
+   carries a Citation with a link, so a reader can check it rather than trust it. */
+.scrim{position:fixed; inset:0; background:rgba(1,1,2,.72); z-index:40;
+  display:flex; align-items:center; justify-content:center; padding:var(--sp-lg)}
+.branch{position:relative; width:min(620px,100%); max-height:82vh; overflow-y:auto;
+  background:var(--s2); border:1px solid var(--hair-strong); border-radius:var(--r-xl);
+  padding:var(--sp-lg); box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.branch .tier{display:inline-block; font-size:11px; font-weight:500; letter-spacing:.5px;
+  color:var(--ink-tert); border:1px solid var(--hair-strong); border-radius:var(--r-pill);
+  padding:3px 10px; margin:0 0 12px}
+.branch h3{margin:0 0 10px; font-size:19px; font-weight:600; letter-spacing:0}
+.branch p{margin:0 0 10px; font-size:14.5px; line-height:1.55; color:var(--ink-muted)}
+.branch b{color:var(--ink); font-weight:500}
+.branch code{font-family:var(--mono); font-size:12.5px; background:var(--canvas);
+  border:1px solid var(--hair); border-radius:var(--r-xs); padding:1px 5px}
+.branch .quote{margin:0 0 10px; padding:10px 14px; border-left:2px solid var(--hair-strong);
+  background:var(--canvas); border-radius:0 var(--r-md) var(--r-md) 0}
+.branch .quote p{margin:0 0 6px; color:var(--ink); font-size:14px}
+.branch .quote cite{display:block; font-style:normal; font-size:12px; color:var(--ink-tert)}
+.branch .quote cite a{color:var(--accent); text-decoration:none;
+  border-bottom:1px dotted currentColor}
+.branch .quote cite a:hover{color:var(--accent-hover)}
+.branch .srcs{margin:14px 0 0; padding:12px 0 0; border-top:1px solid var(--hair)}
+.branch .srcs h4{margin:0 0 8px; font-size:11px; font-weight:500; letter-spacing:.5px;
+  color:var(--ink-subtle)}
+.branch .srcs li{font-size:13px; line-height:1.5; color:var(--ink-tert); margin:0 0 6px}
+.branch .srcs ul{margin:0; padding-left:18px}
+.branch .srcs a{color:var(--accent); text-decoration:none; border-bottom:1px dotted currentColor}
+.branch .srcs a:hover{color:var(--accent-hover)}
+.branch .close{position:absolute; top:12px; right:12px; width:30px; height:30px;
+  border-radius:var(--r-sm); background:transparent; border:1px solid transparent;
+  color:var(--ink-subtle); cursor:pointer; font-size:16px; line-height:1; font-family:var(--sans)}
+.branch .close:hover{background:var(--s3); border-color:var(--hair); color:var(--ink)}
+.branch .close:focus-visible{outline:2px solid var(--accent-focus); outline-offset:1px}
+.bub .why, .pop .why{color:var(--accent); border-bottom:1px dashed currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
+.bub .why:hover, .pop .why:hover{color:var(--accent-hover)}
+
+/* ---------------- Wink, the mascot ---------------- */
+.experience{position:relative; min-height:390px}
+.briefing{min-height:390px; display:grid; place-items:center; text-align:center}
+.briefing-inner{display:grid; justify-items:center; width:min(520px,100%); padding:38px 20px}
+.briefing-copy{margin:14px 0 18px; color:var(--ink-muted); font-size:15px; line-height:1.55}
+.briefing-copy strong{color:var(--ink); font-weight:600}
+.term-form{width:100%; text-align:left}
+.term-form fieldset{margin:0; padding:0; border:0}
+.term-form legend{width:100%; margin:0 0 4px; color:var(--ink); text-align:center;
+  font-size:14px; font-weight:600}
+.term-help{margin:0 0 14px; color:var(--ink-subtle); text-align:center; font-size:12px}
+.term-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px 12px;
+  margin:0 0 18px}
+.term-choice{display:flex; align-items:center; gap:9px; min-width:0; padding:7px 8px;
+  color:var(--ink-muted); font-size:13px; cursor:pointer}
+.term-choice:hover{color:var(--ink)}
+.term-choice input{flex:none; width:15px; height:15px; margin:0; accent-color:var(--accent)}
+.term-choice code{font-size:12px}
+.term-actions{text-align:center}
+.invite{display:inline-flex; align-items:center; gap:8px; padding:9px 14px; color:#fff;
+  background:var(--accent); border:0; border-radius:var(--r-md); cursor:pointer;
+  font:600 13px var(--sans); box-shadow:0 5px 18px #5e6ad238}
+.invite:hover{background:var(--accent-hover)}
+.invite:focus-visible{outline:2px solid var(--accent-hover); outline-offset:3px}
+.briefing.leaving{position:absolute; inset:0; z-index:4; pointer-events:none;
+  animation:briefingOut .36s ease forwards}
+.exchange{opacity:0; transform:translateY(18px) scale(.985)}
+.exchange.entering{animation:exchangeIn .75s cubic-bezier(.2,.8,.2,1) forwards}
+.exchange.ready{opacity:1; transform:none}
+@keyframes briefingOut{to{opacity:0; transform:translateY(-8px)}}
+@keyframes exchangeIn{to{opacity:1; transform:none}}
+
+#winkHost{position:relative; display:flex; align-items:center; gap:var(--sp-sm);
+  margin:var(--sp-md) 0 0; min-width:0}
+.wink{position:relative; z-index:2; flex:none; display:grid; place-items:center; width:44px;
+  height:44px; padding:0; border:0; border-radius:50%; background:transparent; cursor:pointer;
+  opacity:.5; touch-action:none; -webkit-tap-highlight-color:transparent;
+  transition:opacity .45s ease}
+.briefing .wink{width:72px; height:72px; opacity:1}
+.wink:focus-visible{outline:2px solid var(--accent-hover); outline-offset:4px}
+.wink-svg{display:block; width:100%; height:100%; overflow:visible;
+  transition:transform .16s cubic-bezier(.2,.8,.2,1)}
+.wink.speaking{opacity:1}
+.wink.speaking .wink-svg{animation:wkNod .42s cubic-bezier(.22,.9,.3,1)}
+.wink.pop .wink-svg{animation:wkPop .48s cubic-bezier(.18,.9,.2,1.25)}
+.wink.squish .wink-svg{transform:scale(1.12,.84)}
+.wk-body{fill:#F5F0FF}
+.wk-eye,.eye-fill{fill:#4B3869}
+.face-line{fill:none; stroke:#4B3869; stroke-width:3.2; stroke-linecap:round}
+.wk-spark{fill:#B491F5}
+.wk-breathe{transform-box:view-box; transform-origin:50px 50px; animation:wkBreathe 3.1s ease-in-out infinite}
+.wk-bob{transform-box:view-box; transform-origin:50px 50px; animation:wkBob 4.3s ease-in-out infinite}
+.wk-spark{transform-box:fill-box; transform-origin:center; animation:wkTwinkle 1.7s ease-in-out infinite}
+.face{opacity:0; transform:translate(var(--gx,0px),var(--gy,0px));
+  transition:opacity .16s ease,transform .3s cubic-bezier(.22,.9,.3,1)}
+.face-rest{opacity:1}
+.wink[data-expression="curious"] .face-curious,
+.wink[data-expression="delighted"] .face-delighted,
+.wink[data-expression="focused"] .face-focused{opacity:1}
+.wink[data-expression]:not([data-expression="rest"]) .face-rest{opacity:0}
+.wk-eye{transform-box:fill-box; transform-origin:center}
+.wink.blink .face-rest .wk-eye{animation:wkBlink .14s ease-in-out}
+.wink-burst{position:absolute; left:22px; top:22px; pointer-events:none}
+.wink-particle{position:absolute; width:5px; height:5px; border-radius:2px;
+  background:#B491F5; animation:wkBurst .65s ease-out forwards}
+@keyframes wkBreathe{0%,100%{transform:scale(1)} 50%{transform:scale(1.02)}}
+@keyframes wkBob{0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.2px)}}
+@keyframes wkTwinkle{0%,100%{opacity:.6; transform:scale(.9)} 50%{opacity:1; transform:scale(1.1)}}
+@keyframes wkBlink{0%,100%{transform:scaleY(1)} 50%{transform:scaleY(.08)}}
+@keyframes wkNod{0%{transform:translateY(0) scale(1,1)}
+  32%{transform:translateY(1.4px) scale(1.05,.95)} 100%{transform:translateY(0) scale(1,1)}}
+@keyframes wkPop{35%{transform:translateY(-7px) scale(.92,1.1)}
+  65%{transform:translateY(1px) scale(1.05,.96)}}
+@keyframes wkBurst{to{transform:translate(var(--x),var(--y)) rotate(160deg); opacity:0}}
+.bub{position:relative; background:var(--s2); border:1px solid var(--hair-strong);
+  border-radius:var(--r-lg); padding:9px 14px; font-size:14px; line-height:1.45;
+  color:var(--ink-muted); max-width:52ch; min-height:20px}
+.bub b{color:var(--ink); font-weight:500}
+.bub code{font-family:var(--mono); font-size:12.5px}
+.source-bridge{display:block; margin:0 0 5px; color:var(--ink-subtle); font-size:11px;
+  line-height:1.35; letter-spacing:.15px}
+.source-bridge strong{color:var(--ink-muted); font-weight:500}
+.source-bridge.excerpt{padding-left:8px; border-left:2px solid var(--accent); font-style:italic}
+.source-map{display:flex; align-items:center; gap:4px}
+.source-map i{width:5px; height:5px; border-radius:50%; background:var(--hair-strong)}
+.source-map i.done{background:var(--ink-tert)}
+.source-map i.now{width:7px; height:7px; background:var(--accent)}
+
+/* The validated Code Lens brings the article's tiny framework into the exchange. */
+.framework-study{margin:var(--sp-md) 0 0; padding:var(--sp-md) 0 2px;
+  border-top:1px solid var(--hair)}
+.study-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  margin:0 0 12px}
+.study-head strong{font-size:13px; font-weight:600}
+.study-head span{font-size:11px; color:var(--ink-tert)}
+.code-lines{margin:0; padding:10px 12px; background:var(--canvas); border:1px solid var(--hair);
+  border-radius:var(--r-md); overflow-x:auto; font:12px/1.65 var(--mono); color:var(--ink-subtle)}
+.code-line{display:block; padding:0 5px; border-left:2px solid transparent; white-space:pre}
+.code-line.active{color:var(--ink); background:var(--s3); border-left-color:var(--accent)}
+.lens-layout{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(180px,.7fr); gap:18px}
+.lens-note{margin:0; color:var(--ink-muted); font-size:13px; line-height:1.5}
+.lens-note b{color:var(--ink); font-weight:500}
+.bub:empty{display:none}
+.bub::before{content:""; position:absolute; width:9px; height:9px; background:var(--s2);
+  border-left:1px solid var(--hair-strong); border-bottom:1px solid var(--hair-strong);
+  left:-6px; top:calc(50% - 5px); transform:rotate(45deg)}
+@media (prefers-reduced-motion:reduce){
+  .wk-breathe,.wk-bob,.wk-spark,.wink.blink .wk-eye,.wink.speaking .wink-svg,
+  .wink.pop .wink-svg,.wink-particle,.briefing.leaving,.exchange.entering{animation:none}
+  .face,.wink,.wink-svg{transition:none}
+}
+[hidden]{display:none!important}
+@media (max-width:560px){
+  h1{font-size:25px} .lede{font-size:16px}
+  .experience,.briefing{min-height:520px}
+  .briefing-inner{padding:30px 8px}
+  .term-grid{grid-template-columns:1fr; gap:4px}
+  .lens-layout{grid-template-columns:1fr}
+}
+</style>
+
+<style>
+/* ---------------- part 3 additions ----------------
+   The readout is the Metric (CONTEXT.md): the single readable outcome the knobs
+   produce. It sits under the drawing because it is what the drawing is FOR, and it
+   is what the rung above plots. */
+.readout{display:flex; flex-wrap:wrap; gap:var(--sp-lg); margin:var(--sp-md) 0 0;
+  padding:var(--sp-md) 0 0; border-top:1px solid var(--hair)}
+.metric{display:flex; flex-direction:column; gap:2px; min-width:0}
+.metric .mk{font-size:11px; letter-spacing:.4px; color:var(--ink-tert)}
+.metric .mv{font:500 15px var(--mono); color:var(--ink)}
+.metric .mv.good{color:var(--ok)} .metric .mv.bad{color:var(--no)}
+.metric .mv .mark{font-family:var(--sans); margin-right:5px}
+
+/* The rung above the ground. Not a plot: the two knobs are unordered in the way a
+   number is ordered, so the six servers x six client counts are PARTITIONED into
+   regions that share an outcome (MISSION principle 4). Every cell steps back down. */
+.rung{margin:var(--sp-xl) 0 0}
+.rung h2{margin:0 0 4px; font-size:18px; font-weight:600}
+.rung .sub{margin:0 0 var(--sp-md); color:var(--ink-subtle); font-size:13.5px; max-width:62ch}
+.grid-scroll{overflow-x:auto; margin:0 -2px}
+table.grid{border-collapse:collapse; font-size:12.5px; min-width:520px}
+table.grid th{font-weight:500; color:var(--ink-subtle); text-align:center; padding:5px 6px;
+  font-size:11px; letter-spacing:.3px; white-space:nowrap}
+table.grid th.rowh{text-align:left; font-family:var(--mono); font-size:11.5px;
+  color:var(--ink-muted); padding-right:var(--sp-sm)}
+table.grid td{padding:2px}
+.cellbtn{width:100%; min-width:62px; display:flex; flex-direction:column; align-items:center;
+  gap:1px; padding:7px 4px; cursor:pointer; background:var(--s1);
+  border:1px solid var(--hair); border-radius:var(--r-sm); color:var(--ink-subtle); font:inherit}
+.cellbtn:hover{border-color:var(--hair-strong)}
+.cellbtn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.cellbtn[aria-current=true]{border-color:var(--accent); background:var(--s2)}
+.cellbtn .glyph{font-size:14px; line-height:1.1}
+.cellbtn .z{font:500 10.5px var(--mono); letter-spacing:.2px}
+.cellbtn.ok .glyph{color:var(--ok)} .cellbtn.bad .glyph{color:var(--no)}
+.cellbtn .z.bad{color:var(--no)} .cellbtn .z.ok{color:var(--ink-tert)}
+.gridkey{display:flex; flex-wrap:wrap; gap:var(--sp-md); margin:var(--sp-sm) 0 0;
+  font-size:12px; color:var(--ink-tert)}
+.gridkey i{font-style:normal; display:inline-flex; align-items:center; gap:6px}
+.drawn{font-size:12px; color:var(--ink-tert); margin:var(--sp-sm) 0 0}
+.pop table.rec{border-collapse:collapse; font:12px var(--mono); width:100%}
+.pop table.rec th{text-align:left; font-weight:400; color:var(--ink-subtle); padding:2px 10px 2px 0}
+.pop table.rec td{padding:2px 10px 2px 0; color:var(--ink-muted); white-space:nowrap}
+.pop table.rec td.bad{color:var(--no)} .pop table.rec td.ok{color:var(--ok)}
+.warn{border-left:2px solid var(--no); padding-left:10px; margin:0 0 10px}
+@media (max-width:560px){ .readout{gap:var(--sp-md)} }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">PROTOTYPE · PART 3 · FORK</span>
+  <h1 id="pageTitle">One call. Two returns.</h1>
+  <p class="lede" id="lede">Turn the number of people asking at once, and watch what the
+    server's design does to them.</p>
+</header>
+
+<div class="experience" id="experience">
+  <section class="briefing" id="briefing" aria-label="Introduction to the exchange">
+    <div class="briefing-inner">
+      <div id="briefingWink">
+        <button class="wink" id="wink" type="button" data-expression="rest"
+                aria-label="Interact with Wink">
+          <svg class="wink-svg" id="winkSvg" viewBox="0 0 100 100" aria-hidden="true">
+            <g class="wk-bob"><g class="wk-breathe">
+              <circle class="wk-body" cx="50" cy="50" r="46"/>
+              <g class="face face-rest">
+                <g transform="rotate(-10 38.04 45.4)">
+                  <ellipse class="wk-eye" cx="38.04" cy="45.4" rx="5.98" ry="9.2"/>
+                </g>
+                <path class="face-line" d="M59.2 42.6 Q67 54.6 74.8 42.6"/>
+              </g>
+              <g class="face face-curious">
+                <circle class="eye-fill" cx="37" cy="45" r="6"/>
+                <circle class="eye-fill" cx="66" cy="45" r="6"/>
+                <circle class="face-line" cx="52" cy="65" r="4"/>
+              </g>
+              <g class="face face-delighted">
+                <path class="face-line" d="M29 48 Q37 38 45 48 M58 48 Q66 38 74 48 M39 64 Q52 76 65 64"/>
+              </g>
+              <g class="face face-focused">
+                <path class="face-line" d="M29 43 L44 47 M59 47 L74 43 M43 65 L61 65"/>
+              </g>
+              <g transform="translate(76.2 16.9)">
+                <path class="wk-spark" d="M0,-6.2 Q0.9,-1.5 5.2,0 Q0.9,1.5 0,6.2 Q-0.9,1.5 -5.2,0 Q-0.9,-1.5 0,-6.2 Z"/>
+              </g>
+            </g></g>
+          </svg>
+        </button>
+      </div>
+      <p class="briefing-copy"><strong>Six servers, one request each, really run.</strong><br>
+        First, tell me which ideas you want unpacked along the way.</p>
+      <form class="term-form" id="termForm">
+        <fieldset>
+          <legend>Which terms are new to you?</legend>
+          <p class="term-help">Check anything you want explained at the moment it matters.</p>
+          <div class="term-grid">
+            <label class="term-choice"><input type="checkbox" name="term" value="process"> Process, PID and PPID</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="fd"> File descriptor</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="socket"> Socket and TCP</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="fork"> <code>fork()</code></label>
+            <label class="term-choice"><input type="checkbox" name="term" value="zombie"> Zombie process</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="signal"> Signal and <code>SIGCHLD</code></label>
+            <label class="term-choice"><input type="checkbox" name="term" value="backlog"> The listen backlog</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="concurrent"> Concurrent vs. one at a time</label>
+          </div>
+          <div class="term-actions">
+            <button class="invite" id="reveal" type="submit">Build my explanation <span aria-hidden="true">↓</span></button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </section>
+
+  <div class="exchange" id="exchange" hidden>
+    <div class="knobs">
+      <div class="knob"><span class="eyebrow" id="serverLabel">THE SERVER</span>
+        <div class="row" id="knobSrv"></div></div>
+      <div class="knob"><span class="eyebrow">CLIENTS AT ONCE</span>
+        <div class="row" id="knobN"></div></div>
+    </div>
+
+    <div class="panel">
+      <svg id="svg" class="draw" viewBox="0 0 740 392" role="img"
+           aria-label="Clients on the left, the parent server in the middle, and the child processes it forks on the right"></svg>
+      <div class="steps">
+        <input type="range" id="scrub" min="0" max="10" step="1" value="0"
+               aria-label="Step through the run">
+      </div>
+      <div class="readout" id="readout"></div>
+      <div id="winkHost">
+        <span class="wink-burst" id="winkBurst" aria-hidden="true"></span>
+        <p class="bub" id="bub" role="status" aria-live="polite"></p>
+      </div>
+      <div class="scrim" id="scrim" hidden>
+        <div class="branch" id="branch" role="dialog" aria-modal="true" aria-labelledby="branchTitle">
+          <button class="close" id="branchClose" aria-label="Close and carry on">✕</button>
+          <span class="tier">BEYOND THE ARTICLE</span>
+          <h3 id="branchTitle"></h3>
+          <div id="branchBody"></div>
+        </div>
+      </div>
+      <div class="pop" id="pop" hidden>
+        <button class="close" id="popClose" aria-label="Close and carry on">✕</button>
+        <h4 id="popTitle"></h4>
+        <div id="popBody"></div>
+      </div>
+      <div class="ctl">
+        <button class="btn" id="play" aria-pressed="false">▶ Play</button>
+      </div>
+    </div>
+
+    <section class="rung" aria-labelledby="rungTitle">
+      <h2 id="rungTitle">Every server, every crowd size</h2>
+      <p class="sub" id="rungSub"></p>
+      <div class="grid-scroll"><table class="grid" id="grid"></table></div>
+      <div class="gridkey">
+        <i><span style="color:var(--ok)">●</span> every client finished</i>
+        <i><span style="color:var(--no)">✕</span> a client was left hanging or never served</i>
+        <i>the number under each is the zombies still there at the end</i>
+      </div>
+      <p class="drawn" id="drawnNote"></p>
+    </section>
+  </div>
+</div>
+
+</div>
+
+<script>
+const D = /*__DATA__*/ null;
+if (D === null) {
+  const runnable = new URL('fork.html', location.href);
+  runnable.search = location.search; runnable.hash = location.hash;
+  location.replace(runnable.href);
+  throw new DOMException('Opening the runnable prototype.', 'AbortError');
+}
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const C = {accent:'#5e6ad2', ok:'#27a644', no:'#d95448', ink:'#f7f8f8',
+           sub:'#8a8f98', tert:'#62666d', hair:'#34343a'};
+const MONO = 'JetBrains Mono, ui-monospace, monospace';
+const SANS = 'Inter, system-ui, sans-serif';
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function el(t, a, p){ const e = document.createElementNS(NS, t);
+  for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+function txt(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anchor':'middle',
+  fill:C.sub, 'font-size':12.5, 'font-family':SANS}, o||{}), p); e.textContent = s; return e; }
+/* Section 5: the mark is never the button - its caption is. */
+function cap(p, x, y, s, id, o){
+  const g = el('g', {class:'door-g', tabindex:'0', role:'button'}, p);
+  const t = txt(g, x, y, s, o);
+  if (!o || !o.fill || o.fill === C.sub || o.fill === C.tert || o.fill === C.ink)
+    t.setAttribute('fill', C.accent);
+  const col = t.getAttribute('fill');
+  const w = (t.getComputedTextLength ? t.getComputedTextLength() : s.length * 6) / 2;
+  el('line', {x1:x - w, y1:y + 4, x2:x + w, y2:y + 4, stroke:col, 'stroke-width':1,
+    'stroke-dasharray':'2 2', opacity:.7}, g);
+  g.setAttribute('aria-label', DOORS[id] ? DOORS[id]()[0] : s);
+  const go = ev => { ev.stopPropagation(); showDoor(id); };
+  g.addEventListener('click', go);
+  g.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); go(ev); } });
+  return g;
+}
+const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---------------- the two knobs ----------------
+   The server: the article's own six programs, in the article's own order, each one
+   fixing the previous one's bug. The crowd: an ordered number.
+   Only 1, 2 and 3 can be DRAWN - three circles is what fits honestly. The larger
+   counts were really run and live on the rung above, where the difference between
+   os.wait() and waitpid(WNOHANG) is the only place it can be seen. */
+let srv = 'webserver3b', n = 3;
+const DRAWABLE = [1, 2, 3];
+const cell = (s, k) => D.cells[(s || srv) + '|' + (k || n)];
+
+const SRV = {
+  webserver3b:{fork:false, closes:true,  reap:'none',    short:'3b iterative'},
+  webserver3c:{fork:true,  closes:true,  reap:'none',    short:'3c fork'},
+  webserver3d:{fork:true,  closes:false, reap:'none',    short:'3d no close'},
+  webserver3e:{fork:true,  closes:true,  reap:'wait',    short:'3e wait()'},
+  webserver3f:{fork:true,  closes:true,  reap:'wait',    short:'3f + EINTR'},
+  webserver3g:{fork:true,  closes:true,  reap:'waitpid', short:'3g waitpid'},
+};
+
+let unfamiliar = new Set();
+const isNew = c => unfamiliar.has(c);
+const W_PROC = () => isNew('process') ? 'running copy of the program' : 'process';
+const W_FD   = () => isNew('fd') ? 'handle on an open thing' : 'file descriptor';
+
+/* ---------------- the Model ----------------
+   Everything drawn is a function of this. Each step stores the state AFTER it, because
+   section 3a.3 says landing on a step shows its completed state. */
+function build(server, k){
+  const S = SRV[server], R = cell(server, k);
+  const zLeft = R ? Math.round(median(R.zombiesLeft)) : 0;
+  const st = {listen:false, pListen:false,
+              conn:Array(k).fill('none'),      /* none | open | closed */
+              pHold:Array(k).fill(false),      /* the parent's descriptor for it */
+              cHold:Array(k).fill(false),      /* the child's copy of it */
+              cListen:Array(k).fill(false),    /* the child's copy of the LISTENING socket */
+              child:Array(k).fill('none'),     /* none | alive | gone | reaped */
+              got:Array(k).fill(false)};
+  const steps = [];
+  const push = (name, ms, extra) => steps.push(Object.assign(
+    {name, ms, state:JSON.parse(JSON.stringify(st))}, extra || {}));
+
+  push('Nothing yet', 0, {art:0});
+  st.listen = true; st.pListen = true;
+  push('The server creates a TCP/IP socket, binds it, and listens', 700, {art:1, door:'listen'});
+  for (let i = 0; i < k; i++) st.conn[i] = 'open';
+  push(k === 1 ? 'One client connects' : 'All ' + k + ' clients connect at once', 800,
+       {art:2, door:'backlog'});
+
+  if (!S.fork){
+    for (let i = 0; i < k; i++){
+      st.pHold[i] = true;
+      push('accept() returns a connected socket for client ' + (i+1), 700,
+           {art:3, focus:i, door:'accept'});
+      st.got[i] = true;
+      push('The server reads the request and sends the reply itself', 800,
+           {art:4, focus:i, travel:{from:'p', to:i}, door:'handle'});
+      push('It sleeps — and while it sleeps it cannot accept anyone', 1300,
+           {art:5, focus:i, ring:{who:'p', job:i, of:k}, door:'sleep'});
+      st.pHold[i] = false; st.conn[i] = 'closed';
+      push('It closes the connection and loops over', 600, {art:6, focus:i, door:'close'});
+    }
+    return steps;
+  }
+
+  st.pHold[0] = true;
+  push('accept() returns a connected socket', 700, {art:3, focus:0, door:'accept'});
+  st.child[0] = 'alive'; st.cHold[0] = true; st.cListen[0] = true;
+  push('os.fork() — you call it once, and it returns twice', 900,
+       {art:7, focus:0, fork:0, door:'fork'});
+  push('Parent and child now hold the same ' + W_FD() + 's', 800,
+       {art:8, focus:0, door:'refcount'});
+  st.cListen[0] = false;
+  push('The child closes its copy of the listening socket', 600, {art:9, focus:0, door:'childclose'});
+  if (S.closes){
+    st.pHold[0] = false;
+    push('The parent closes its copy of the connection', 600, {art:10, focus:0, door:'parentclose'});
+  } else {
+    push('The parent does not close its copy — that line is commented out', 700,
+         {art:10, focus:0, door:'parentclose'});
+  }
+  for (let i = 1; i < k; i++){
+    st.conn[i] = 'open'; st.child[i] = 'alive'; st.cHold[i] = true;
+    if (!S.closes) st.pHold[i] = true;
+    push('The parent loops over: it accepts connection ' + (i+1) + ' and forks child ' + (i+1),
+         800, {art:11, focus:i, fork:i, door:'loop'});
+  }
+  for (let i = 0; i < k; i++) st.got[i] = true;
+  push(k === 1 ? 'The child reads the request and sends the reply'
+                : 'Each child reads its request and sends its reply', 900,
+       {art:4, travel:'all', door:'handle'});
+  push(k === 1 ? 'The child sleeps. The parent is already back in accept(), doing nothing'
+                : 'The ' + k + ' children sleep at the same time. The parent is already back '
+                  + 'in accept(), doing nothing', 1300,
+       {art:5, ring:{who:'c', job:0, of:1}, door:'concurrent'});
+  for (let i = 0; i < k; i++){
+    st.cHold[i] = false; st.child[i] = 'gone';
+    st.conn[i] = st.pHold[i] ? 'open' : 'closed';
+  }
+  push(S.closes
+    ? 'Each child closes the connection and exits — the last ' + W_FD() +
+      ' is gone, so the kernel really closes it'
+    : 'Each child closes the connection and exits — but the parent still holds a ' +
+      W_FD() + ', so the kernel does not close anything', 1100,
+    {art:12, door:'exit'});
+  push('The kernel keeps each exited child as a zombie and sends SIGCHLD', 800,
+       {art:13, sig:true, door:'zombie'});
+
+  /* How many zombies are left is NOT decided by the design in the abstract - it is
+     the number that was really left behind in this cell, median of the runs. At three
+     clients os.wait() keeps up and waitpid has nothing more to do; the difference
+     between them only appears further along the crowd knob, which is what the rung
+     above is for. */
+  const survive = Math.min(k, zLeft);
+  for (let i = 0; i < k; i++) st.child[i] = (i < k - survive) ? 'reaped' : 'gone';
+  push(
+    S.reap === 'none'
+      ? 'Nobody ever waits for them. ' + (k === 1 ? 'The zombie stays.' : 'The zombies stay.')
+      : S.reap === 'wait'
+        ? 'The SIGCHLD handler calls os.wait() — once for each signal it is given'
+        : 'The SIGCHLD handler loops on waitpid(WNOHANG) until there are none left',
+    900, {art:14, reap:true, door:'reap'});
+  return steps;
+}
+const median = a => { const s = [...a].sort((x, y) => x - y); return s[s.length >> 1]; };
+
+/* ---------------- geometry (section 4) ----------------
+   One horizontal axis per KIND of place - you on the left, the parent in the middle,
+   its children on the right - and instances of a kind stack downwards. ADR 0005. */
+const VBW = 740, VBH = 392, R = 32, ROW = 122, MIDY = 186;
+const XC = 72, XP = 356, XK = 640;
+const rowY = (i, k) => MIDY + (i - (k - 1) / 2) * ROW;
+const ease = f => f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2)/2;   /* travel eases */
+
+let steps = [], step = 0, sub = 1, playing = false, looping = false, rafId = 0;
+
+const measure = (() => { const m = el('path', {}, $('#svg')); m.style.display = 'none';
+  return d => { m.setAttribute('d', d); return m; }; })();
+const pointOn = (d, f) => measure(d).getPointAtLength(
+  Math.max(.001, f) * measure(d).getTotalLength());
+const partial = d => { const L = measure(d).getTotalLength(); return L; };
+
+/* a channel between two places, trimmed to their rims */
+function link(ax, ay, bx, by){
+  const dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy) || 1;
+  const ux = dx / L, uy = dy / L, pad = R + 8;
+  return [ax + ux*pad, ay + uy*pad, bx - ux*pad, by - uy*pad];
+}
+const seg = a => 'M' + a[0] + ' ' + a[1] + ' L' + a[2] + ' ' + a[3];
+/* A channel that has to get past the parent bows around it. Drawn straight, a
+   connection from a client to a child in the middle row runs through the middle of
+   the parent circle and reads as going THROUGH the parent, which is the one thing it
+   does not do: after the fork this connection is the child's. */
+function chan(ax, ay, bx, by, bend){
+  const a = link(ax, ay, bx, by);
+  if (!bend) return seg(a);
+  const lift = ay <= MIDY ? -52 : 52;
+  const mx = (a[0] + a[2]) / 2, my = (a[1] + a[3]) / 2 + lift;
+  return 'M' + a[0] + ' ' + a[1] + ' Q' + mx + ' ' + my + ' ' + a[2] + ' ' + a[3];
+}
+/* bent only when the channel would otherwise cross the parent's circle */
+const crosses = (ay, bx) => bx === XK && Math.abs(ay - MIDY) < R + 30;
+
+function draw(){
+  const svg = $('#svg'), S = SRV[srv], k = n, cur = steps[step], f = cur.state;
+  [...svg.children].forEach(c => { if (c.style.display !== 'none') c.remove(); });
+  const t = ease(sub);
+
+  /* --- the channels, and what is left of the ones that have closed --- */
+  for (let i = 0; i < k; i++){
+    const cy = rowY(i, k);
+    const anchor = f.conn[i] !== 'open' ? null
+      : f.cHold[i] ? {x:XK, y:cy} : {x:XP, y:MIDY};
+    if (anchor){
+      el('path', {d:chan(XC, cy, anchor.x, anchor.y, crosses(cy, anchor.x)), fill:'none',
+        stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
+    } else if (f.conn[i] === 'closed'){
+      /* a trace: history, not structure. It outlives the channel it used. ADR 0003.
+         It ends where the channel ended - at the child, if a child handled it. */
+      const fx = f.child[i] === 'none' ? XP : XK, fy = f.child[i] === 'none' ? MIDY : cy;
+      el('path', {d:chan(XC, cy, fx, fy, crosses(cy, fx)), fill:'none', stroke:C.ok,
+        'stroke-width':1.5, opacity:.45, 'stroke-linecap':'round',
+        'stroke-dasharray':'3 4'}, svg);
+    }
+  }
+
+  /* --- the parent-child relationship: a real thing the kernel records, and the line
+         SIGCHLD travels up. It lasts exactly as long as the kernel's entry does. --- */
+  for (let i = 0; i < k; i++){
+    if (f.child[i] === 'none' || f.child[i] === 'reaped') continue;
+    const a = link(XP, MIDY, XK, rowY(i, k));
+    const born = cur.fork === i ? t : 1;
+    el('path', {d:seg(a), fill:'none', stroke:C.hair, 'stroke-width':2,
+      'stroke-linecap':'round', 'stroke-dasharray':(born) + ' 1',
+      pathLength:1}, svg);
+  }
+
+  /* --- the places --- */
+  const place = (x, y, o) => el('circle', Object.assign({cx:x, cy:y, r:R, fill:'none',
+    stroke:C.sub, 'stroke-width':2}, o || {}), svg);
+  for (let i = 0; i < k; i++) place(XC, rowY(i, k));
+  if (f.listen) place(XP, MIDY);
+
+  /* A child is a place that BEGINS. A cross where one stood is a zombie: the process is
+     absent - which is what a cross has always meant - and the drawing still spending a
+     position on it is the whole problem. ADR 0005. */
+  for (let i = 0; i < k; i++){
+    const y = rowY(i, k), s = f.child[i];
+    if (s === 'none') continue;
+    if (s === 'alive'){
+      const grow = cur.fork === i ? t : 1;
+      place(XK, y, {r:R * (0.35 + 0.65 * grow), opacity:grow});
+    } else if (s === 'gone'){
+      const arm = R * 0.42;
+      const g = el('g', {opacity:cur.reap ? 1 : (cur.sig ? 1 : Math.min(1, t * 1.6))}, svg);
+      el('line', {x1:XK-arm, y1:y-arm, x2:XK+arm, y2:y+arm, stroke:C.no,
+        'stroke-width':2, 'stroke-linecap':'round'}, g);
+      el('line', {x1:XK+arm, y1:y-arm, x2:XK-arm, y2:y+arm, stroke:C.no,
+        'stroke-width':2, 'stroke-linecap':'round'}, g);
+    }
+  }
+
+  /* --- what each place is holding. Fixed radius, so quantity is number, never size --- */
+  const held = (x, y, count) => {
+    if (!count) return;
+    const gap = 17, x0 = x - (count - 1) * gap / 2;
+    for (let j = 0; j < count; j++){
+      el('circle', {cx:x0 + j*gap, cy:y, r:7, fill:C.sub, 'fill-opacity':.22,
+        stroke:C.sub, 'stroke-width':2}, svg);
+    }
+  };
+  held(XP, MIDY, (f.pListen ? 1 : 0) + f.pHold.filter(Boolean).length);
+  for (let i = 0; i < k; i++)
+    if (f.child[i] === 'alive')
+      held(XK, rowY(i, k), (f.cListen[i] ? 1 : 0) + (f.cHold[i] ? 1 : 0));
+
+  /* --- work taking time. Consecutive arcs, linear, always the accent (ADR 0004) --- */
+  const ring = (x, y, frac, offset, total) => {
+    const rr = R + 9, CIRC = 2 * Math.PI * rr, one = CIRC / total;
+    el('circle', {cx:x, cy:y, r:rr, fill:'none', stroke:C.accent, 'stroke-width':2.5,
+      'stroke-linecap':'butt', 'stroke-dasharray':(one * frac) + ' ' + (CIRC - one * frac),
+      'stroke-dashoffset':-(offset * one), transform:'rotate(-90 ' + x + ' ' + y + ')'}, svg);
+  };
+  if (cur.ring && cur.ring.who === 'p'){
+    for (let j = 0; j < cur.ring.job; j++) ring(XP, MIDY, 1, j, cur.ring.of);
+    ring(XP, MIDY, sub, cur.ring.job, cur.ring.of);
+  }
+  if (cur.ring && cur.ring.who === 'c')
+    for (let i = 0; i < k; i++) ring(XK, rowY(i, k), sub, 0, 1);
+
+  /* --- discs, only while travelling --- */
+  const flight = (x1, y1, x2, y2, col, bend) => {
+    const q = pointOn(chan(x1, y1, x2, y2, bend), t);
+    el('circle', {cx:q.x, cy:q.y, r:8, fill:col}, svg);
+  };
+  if (cur.travel === 'all')
+    for (let i = 0; i < k; i++)
+      flight(XK, rowY(i, k), XC, rowY(i, k), C.ok, crosses(rowY(i, k), XK));
+  else if (cur.travel && cur.travel.from === 'p')
+    flight(XP, MIDY, XC, rowY(cur.travel.to, k), C.ok);
+  if (cur.sig)
+    for (let i = 0; i < k; i++)
+      if (f.child[i] === 'gone') flight(XK, rowY(i, k), XP, MIDY, C.sub);
+
+  /* The reference count rides the channel it belongs to (section 4: values ride above
+     the mark carrying them). This is the number the kernel is actually keeping. */
+  for (let i = 0; i < k; i++){
+    const holders = (f.pHold[i] ? 1 : 0) + (f.cHold[i] ? 1 : 0);
+    if (f.conn[i] !== 'open') continue;
+    const cy = rowY(i, k);
+    const fx = f.cHold[i] ? XK : XP, fy = f.cHold[i] ? cy : MIDY;
+    const q = pointOn(chan(XC, cy, fx, fy, crosses(cy, fx)), .3);
+    /* Nobody holding it does not mean it is not there: the kernel finished the
+       handshake and is keeping it in the accept queue. That is why a client can
+       connect to a server that is fast asleep and then get nothing. */
+    cap(svg, q.x, q.y - 11,
+        holders ? holders + ' holder' + (holders === 1 ? '' : 's') : 'queued',
+        holders ? 'refcount' : 'backlog',
+        {'font-family':MONO, 'font-size':11});
+  }
+
+  /* --- a close that never came: the cross replaces the disc that would have carried it --- */
+  for (let i = 0; i < k; i++){
+    if (!(f.child[i] !== 'none' && f.child[i] !== 'alive' && f.pHold[i] && f.got[i])) continue;
+    const cy = rowY(i, k), arm = 9;
+    const q = pointOn(chan(XC, cy, XP, MIDY, crosses(cy, XP)), .12);
+    const x = q.x, y = q.y;
+    el('line', {x1:x-arm, y1:y-arm, x2:x+arm, y2:y+arm, stroke:C.no, 'stroke-width':2,
+      'stroke-linecap':'round'}, svg);
+    el('line', {x1:x+arm, y1:y-arm, x2:x-arm, y2:y+arm, stroke:C.no, 'stroke-width':2,
+      'stroke-linecap':'round'}, svg);
+  }
+
+  /* --- names below marks, values above them (section 4). Every one is a door. --- */
+  const rec = (cell() || {}).clientRecords || [];
+  for (let i = 0; i < k; i++){
+    const y = rowY(i, k);
+    cap(svg, XC, y + R + 19, k === 1 ? 'a client' : 'client ' + (i+1), 'client',
+        {'font-size':11.5});
+    if (f.got[i]){
+      const r0 = rec[i] || {};
+      const done = f.conn[i] === 'closed';
+      /* "still waiting" is only true once the child has gone and the parent is still
+         holding on. Before that the connection being open is not a failure, it is the
+         exchange still happening - and saying otherwise would be a lie on every server. */
+      const stuck = !done && f.child[i] === 'gone' && f.pHold[i];
+      cap(svg, XC, y - R - 13,
+          done ? 'finished · ' + Math.round(r0.eof || 0) + 'ms'
+               : stuck ? 'still waiting'
+               : 'reply in ' + Math.round(r0.firstByte || 0) + 'ms',
+          done ? 'finished' : stuck ? 'waiting' : 'reply',
+          {fill:done ? C.ok : stuck ? C.no : C.sub, 'font-family':MONO, 'font-size':11.5});
+    }
+  }
+  if (f.listen){
+    cap(svg, XP, MIDY + R + 19, SRV[srv].fork ? 'the parent' : 'the server', 'parent',
+        {fill:C.ink, 'font-size':11.5});
+    const holds = (f.pListen ? 1 : 0) + f.pHold.filter(Boolean).length;
+    cap(svg, XP, MIDY - R - 13, holds + ' open', 'fds',
+        {'font-family':MONO, 'font-size':11.5});
+  }
+  for (let i = 0; i < k; i++){
+    const s = f.child[i], y = rowY(i, k);
+    if (s === 'none' || s === 'reaped') continue;
+    cap(svg, XK, y + R + 19, s === 'gone' ? 'zombie' : 'child ' + (i+1),
+        s === 'gone' ? 'zombie' : 'child',
+        {fill:s === 'gone' ? C.no : C.ink, 'font-size':11.5});
+  }
+
+  $('#scrub').value = step;
+  renderReadout();
+  if (NARRATION()) W.say(bridge() + NARRATION());
+  W.lookAtSvg(cur.fork != null ? XK : (cur.ring && cur.ring.who === 'c' ? XK : XP),
+              cur.fork != null ? rowY(cur.fork, k) : MIDY);
+}
+
+/* ---------------- the Metric: the single readable outcome the knobs produce -------- */
+function renderReadout(){
+  const R = cell(), f = steps[step].state, k = n;
+  const finished = f.conn.filter(c => c === 'closed').length;
+  const waiting = f.got.filter((g, i) =>
+    g && f.conn[i] !== 'closed' && f.child[i] === 'gone' && f.pHold[i]).length;
+  const zom = f.child.filter(c => c === 'gone').length;
+  const fds = (f.pListen ? 1 : 0) + f.pHold.filter(Boolean).length;
+  const box = (key, val, cls, mark) =>
+    '<div class="metric"><span class="mk">' + key + '</span><span class="mv ' +
+    (cls || '') + '">' + (mark ? '<span class="mark">' + mark + '</span>' : '') +
+    val + '</span></div>';
+  $('#readout').innerHTML =
+    box('CLIENTS FINISHED', finished + ' of ' + k,
+        finished === k ? 'good' : '', finished === k ? '●' : '') +
+    box('LEFT HANGING', String(waiting), waiting ? 'bad' : '', waiting ? '✕' : '') +
+    box('ZOMBIES', String(zom), zom ? 'bad' : '', zom ? '✕' : '') +
+    box((isNew('fd') ? 'HANDLES' : 'DESCRIPTORS') + ' THE PARENT HOLDS', String(fds)) +
+    box('LAST CLIENT RELEASED',
+        !R ? '—'
+        : median(R.finished) === 0 ? 'never'
+        : Math.round(median(R.lastMs)) + ' ms'
+          + (median(R.finished) < n ? ' · ' + (n - median(R.finished)) + ' never were' : ''),
+        median(R.finished) === 0 ? 'bad' : '');
+}
+
+/* ---------------- Wink's line for the step ----------------
+   Its job is the sentence the drawing cannot carry: the drawing names its marks,
+   Wink says what just happened and why it matters. */
+const door = (id, text, datum) =>
+  '<button class="door' + (datum ? ' datum' : '') + '" data-door="' + id + '">' + text + '</button>';
+const to = m => '<button class="to" data-step="' + m + '">step ' + (m + 1) + '</button>';
+const why = (id, text) => '<button class="why" data-why="' + id + '">' + text + '</button>';
+const glossary = (c, text) => door('term' + c, text);
+
+const ART = ['', 'the listening socket', 'clients connect', 'accept()', 'the reply',
+  'the sleep', 'close and loop', 'fork()', 'shared descriptors', 'the child closes its copy',
+  "the parent's copy", 'accept, fork, loop', 'the child exits', 'SIGCHLD', 'waiting for it'];
+
+function bridge(){
+  const a = steps[step].art || 0;
+  const dots = ART.map((_, i) => i === 0 ? '' : '<i class="' +
+    (i === a ? 'now' : i < a ? 'done' : '') + '"></i>').join('');
+  return '<span class="source-bridge source-map">' + dots +
+    '<strong>' + (ART[a] || 'before it starts') + '</strong></span>';
+}
+
+function NARRATION(){
+  const S = SRV[srv], cur = steps[step], R = cell(), k = n;
+  const zLeft = R ? median(R.zombiesLeft) : 0;
+  const a = cur.art;
+  if (a === 0) return 'Nothing yet. ' + door('grid', 'Six servers') + ', and a number of ' +
+    'people asking at once — every pair really run';
+  if (a === 1) return 'The server makes a socket, binds it to port 8888 and ' +
+    door('listen', 'listens') + '. It is one ' +
+    (isNew('process') ? why('process', 'process') : 'process') + ', holding one ' +
+    (isNew('fd') ? why('fd', 'file descriptor') : 'file descriptor');
+  if (a === 2) return k === 1
+    ? 'One client connects. The kernel put it in the ' + door('backlog', 'accept queue')
+    : 'All ' + k + ' connect <b>at once</b>. They fit because the kernel holds a ' +
+      door('backlog', 'queue of waiting connections') + ' — nothing has been accepted yet';
+  if (a === 3) return '<b>accept()</b> hands back a second ' +
+    (isNew('fd') ? 'handle' : 'descriptor') + ' — one ' + door('accept', 'connected socket') +
+    ' for talking to that client';
+  if (a === 7) return '<b>os.fork()</b> — ' + door('fork', 'one call, two returns') +
+    '. There are now two ' + (isNew('process') ? 'copies of this program' : 'processes') +
+    ' running the same line of code, and the number it returns is the only way to tell ' +
+    'which one you are in';
+  if (a === 8) return 'Every ' + (isNew('fd') ? 'handle' : 'descriptor') +
+    ' the parent had, the child now has too. The connection has ' +
+    door('refcount', '<b>two</b> holders', true) + ', and the kernel will not close it ' +
+    'until there are none';
+  if (a === 9) return 'The child drops its copy of the <b>listening</b> socket — ' +
+    door('childclose', 'it is not the one accepting new callers');
+  if (a === 10) return S.closes
+    ? 'The parent drops its copy of the connection. Down to one holder — the child — ' +
+      'and the client is still perfectly connected. ' + door('parentclose', 'Why that works')
+    : '<b>' + door('parentclose', 'One line, commented out') + '.</b> The parent keeps ' +
+      'its copy. Watch what that costs at ' + to(steps.findIndex(s => s.art === 12));
+  if (a === 11) return 'Again, and again. ' + door('loop', "The parent's whole job now") +
+    ' is accept, fork, loop — it never handles a request itself';
+  if (a === 4) return S.fork
+    ? (k === 1 ? 'The child' : 'Every child') + ' answers its own client. ' +
+      door('handle', 'The same four lines') + ' as part 1'
+    : 'The server answers client ' + (cur.focus + 1) + ' itself. ' +
+      door('handle', 'The same four lines') + ' as part 1';
+  if (a === 5) return S.fork
+    ? (k === 1 ? 'The child sleeps' : 'They sleep at the same time') + ' — and the parent ' +
+      'is <b>not</b> waiting for them. ' + (k > 1 ? door('concurrent', 'That is what concurrent means')
+        : door('concurrent', 'It is free to accept the next caller'))
+    : 'And here is the whole problem: while it sleeps it is <b>not in accept()</b>. ' +
+      (cur.focus + 1 < k ? 'Client ' + (cur.focus + 2) + ' is connected and getting nothing. '
+                         : '') + door('sleep', 'Measured, end to end');
+  if (a === 6) return 'Closed, and round the loop. Client ' + (cur.focus + 1) +
+    ' is finished after <b>' + Math.round(((cell().clientRecords[cur.focus] || {}).eof) || 0) +
+    ' ms</b>' + (cur.focus + 1 < k ? ' — and client ' + (cur.focus + 2) + ' has been waiting all of it' : '');
+  if (a === 12) return S.closes
+    ? 'The last holder lets go, so the kernel closes the connection for real and ' +
+      (k === 1 ? 'the client' : 'every client') + ' finishes. ' + door('exit', 'The count reached zero')
+    : 'The ' + (k === 1 ? 'child lets go' : 'children let go') + ' — but the parent is ' +
+      'still holding on, so the count never reaches zero, no ' +
+      door('exit', 'close is ever sent') + ', and ' +
+      (k === 1 ? 'the client waits forever' : 'all ' + k + ' clients wait forever') +
+      '. They have their reply. They just cannot tell it is over';
+  if (a === 13) return 'The ' + (k === 1 ? 'child is' : 'children are') + ' gone, but the ' +
+    'kernel still has ' + (k === 1 ? 'an entry' : 'entries') + ': ' +
+    (isNew('zombie') ? glossary('zombie', 'a zombie') : door('zombie', 'a zombie', true)) +
+    (k === 1 ? '' : ' each') + '. SIGCHLD goes up to the parent to say so';
+  if (a === 14) return S.reap === 'none'
+    ? 'Nothing reaps them, so they stay. ' + door('reap', 'You cannot kill a zombie') +
+      ' — someone has to wait for it'
+    : zLeft === 0
+      ? 'Reaped — ' + door('reap', 'nothing left behind', true) + '. At ' + k +
+        ' client' + (k === 1 ? '' : 's') + ' <b>3e, 3f and 3g all look identical</b>. ' +
+        'Turn the crowd up in the ' + door('grid', 'grid below') + ' to find where they stop being'
+      : door('reap', zLeft + ' still there', true) + ' after the handler ran. ' +
+        'Not enough signals arrived for the number of children that died';
+  return cur.name;
+}
+
+/* ---------------- what is behind each word ----------------
+   Section 5 says the word is the door, and ADR 0002 says a departure is marked where
+   the reader meets it, never in a footnote. */
+const shortSrv = {webserver3b:'webserver3b.py', webserver3c:'webserver3c.py',
+  webserver3d:'webserver3d.py', webserver3e:'webserver3e.py',
+  webserver3f:'webserver3f.py', webserver3g:'webserver3g.py'};
+const fmt = a => a.every(v => v === a[0]) ? String(a[0])
+  : median(a) + ' (runs: ' + a.join(', ') + ')';
+
+const DOORS = {
+  termprocess: () => ['process, PID and PPID',
+    '<p>A <b>process</b> is one running copy of a program. Start the same program twice ' +
+    'and there are two processes, each with its own memory.</p>' +
+    '<p>The kernel gives each one a number, its <b>PID</b>, and remembers which process ' +
+    'started it — the <b>PPID</b>, or parent process ID. That relationship is drawn here ' +
+    'as the line between the middle circle and the ones on the right.</p>'],
+  termfd: () => ['file descriptor',
+    '<p>A <b>file descriptor</b> is a small number the kernel gives a process when it ' +
+    'opens something: a file, or — as here — a socket.</p>' +
+    '<p>The article\'s sentence is the one to keep: <i>"in UNIX everything is a file."</i> ' +
+    'A socket has a descriptor exactly as a file does, and that is why forking a process ' +
+    'has anything to do with networking at all.</p>' +
+    '<p>Each small disc inside a circle on this page is one open descriptor.</p>'],
+  termzombie: () => ['zombie process',
+    '<p>A <b>zombie</b> is a process that has finished running but that nobody has ' +
+    'collected yet. The kernel keeps its exit status around in case its parent asks.</p>' +
+    '<p>So it uses no processor time and no memory of its own — but it still occupies an ' +
+    'entry in the kernel\'s table of processes, and there is a limit on those.</p>' +
+    '<p>The article puts it plainly: <b>you cannot kill a zombie, you have to wait for ' +
+    'it.</b></p>'],
+  termsignal: () => ['signal and SIGCHLD',
+    '<p>A <b>signal</b> is the kernel interrupting a process to tell it something ' +
+    'happened. The process can name a function to run when one arrives.</p>' +
+    '<p><b>SIGCHLD</b> is the one that means "a child of yours has just ended." It is ' +
+    'how a parent finds out without having to sit and wait.</p>'],
+  termbacklog: () => ['the listen backlog',
+    '<p>When a program calls <code>listen(5)</code>, the 5 is how many finished ' +
+    'connections the kernel will hold for it while it is busy elsewhere.</p>' +
+    '<p>That is why a client can connect to a server that is not accepting: the kernel ' +
+    'accepted it, not the program.</p>'],
+  termconcurrent: () => ['concurrent, exactly',
+    '<p>The article gives the strict definition, and it is worth having:</p>' +
+    '<div class="quote"><p>"Two events are concurrent if you cannot tell by looking at ' +
+    'the program which will happen first."</p></div>' +
+    '<p>That cuts both ways. It is why a forking server can serve everyone at once — and ' +
+    'why the exact order of the events captured on this page is not reproducible, and is ' +
+    'not claimed to be.</p>'],
+
+  listen: () => ['the four calls that make a listening socket',
+    '<pre>listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n' +
+    'listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\n' +
+    'listen_socket.bind(SERVER_ADDRESS)\n' +
+    'listen_socket.listen(REQUEST_QUEUE_SIZE)</pre>' +
+    '<p>Parts 1 and 2 skipped this sequence — they were making a different point. Part 3 ' +
+    'is making this one: the article gives it a figure of its own.</p>' +
+    '<p><code>listen</code> is the call only servers make. In the article\'s words, ' +
+    '<i>"It tells the kernel that it should accept incoming connection requests for this ' +
+    'socket."</i> <code>SO_REUSEADDR</code> is the optional one, and the article says why ' +
+    'it is there: so you can kill the server and restart it straight away.</p>' +
+    '<p>This process now holds exactly one socket descriptor. Your shell already gave it ' +
+    'three — 0, 1 and 2, standard input, output and error — so this one is number 3, ' +
+    'which is what the article\'s Python shell shows too.</p>'],
+  backlog: () => ['why they can all connect to a server that is busy',
+    '<p><code>REQUEST_QUEUE_SIZE</code> is the article\'s name for the <b>backlog</b>: the ' +
+    'size of a queue <b>inside the kernel</b> for connections that are established but not ' +
+    'yet accepted by the program.</p>' +
+    '<p>It is why, in the article\'s demonstration, the second <code>curl</code> connects ' +
+    'happily to a server that is fast asleep — and then gets nothing. The kernel took the ' +
+    'call; the program has not picked up.</p>' +
+    '<p>The article is careful about what it does not do: <i>"While increasing the BACKLOG ' +
+    'argument does not magically turn your server into a server that can handle multiple ' +
+    'client requests at a time…"</i></p>' +
+    '<p><b>What we measured.</b> ' + backlogEvidence() + '</p>'],
+  accept: () => ['accept() returns a second socket',
+    '<pre>client_connection, client_address = listen_socket.accept()</pre>' +
+    '<p>The listening socket is not the one you talk on. <code>accept</code> takes a ' +
+    'waiting connection off the kernel\'s queue and returns a <b>new</b> socket, with its ' +
+    'own descriptor, for that one conversation. The listening socket carries on listening.</p>' +
+    '<p>So the process now holds two: the switchboard, and one call.</p>'],
+  fork: () => ['one call, two returns',
+    '<pre>pid = os.fork()\nif pid == 0:   # child\n    ...\nelse:          # parent\n    ...</pre>' +
+    '<p>This is the whole of it, and it is genuinely strange the first time. ' +
+    '<code>os.fork()</code> is called once, in one process. It returns <b>twice</b>, in ' +
+    'two processes — the original, and a copy of it that did not exist a moment ago.</p>' +
+    '<p>The copy has everything: the same code, the same variables, the same open ' +
+    'descriptors, resuming from the same line. The <b>only</b> way it can tell it is the ' +
+    'copy is the number it gets back. The child gets <code>0</code>. The parent gets the ' +
+    'child\'s PID.</p>' + realPids()],
+  fds: () => {
+    const f = steps[step].state;
+    const open = (f.pListen ? 1 : 0) + f.pHold.filter(Boolean).length;
+    return ['what this process has open right now',
+      '<p>Every socket a process has open costs it one ' + W_FD() + '. Right now this one ' +
+      'holds <b>' + open + '</b>: ' + (f.pListen ? 'the listening socket' : 'no listening socket') +
+      (f.pHold.filter(Boolean).length
+        ? ', and ' + f.pHold.filter(Boolean).length + ' client connection' +
+          (f.pHold.filter(Boolean).length === 1 ? '' : 's')
+        : ', and no client connections') + '.</p>' +
+      '<p>There is a ceiling on this number, and the article tells you to go and hit it:</p>' +
+      '<pre>$ ulimit -n\n1024</pre>' +
+      '<p>A server that closes its copies sits at 2 forever, however many clients it has ' +
+      'served. One that does not climbs by one per client, and then stops working ' +
+      'altogether — ' + door('limit', 'which we ran') + '.</p>' + fdEvidence()];
+  },
+  refcount: () => ['the count the kernel is keeping',
+    '<p>The article spends four paragraphs here, and it is the load-bearing idea:</p>' +
+    '<div class="quote"><p>"The kernel uses descriptor reference counts to decide whether ' +
+    'to close a socket or not. It closes the socket only when its descriptor reference ' +
+    'count becomes 0."</p></div>' +
+    '<p>After the fork, <b>two</b> processes hold a descriptor for the same connection. ' +
+    'That is why the parent can close its copy without cutting the child off — it takes ' +
+    'the count from 2 to 1, and 1 is not 0.</p>' +
+    '<p>Every small disc drawn inside a circle on this page is one of those holders. ' +
+    'Count them, and you know whether the connection can close.</p>'],
+  childclose: () => ['close child copy',
+    '<pre>if pid == 0:  # child\n    listen_socket.close()  # close child copy</pre>' +
+    '<p>The child inherited the <b>listening</b> socket as well. It has no use for it — ' +
+    'in the article\'s words, <i>"the child doesn\'t care about accepting new client ' +
+    'connections, it cares only about processing requests from the established client ' +
+    'connection."</i></p>' +
+    '<p>So it drops it. One fewer disc in the child.</p>'],
+  parentclose: () => SRV[srv].closes
+    ? ['close parent copy and loop over',
+      '<pre>else:  # parent\n    client_connection.close()  # close parent copy and loop over</pre>' +
+      '<p>The parent has no use for this connection either — its child is handling it. It ' +
+      'closes its copy, which takes the reference count from 2 to 1.</p>' +
+      '<p>Nothing breaks, because 1 is not 0. The socket stays open, the child keeps ' +
+      'talking, and the parent is free.</p>' +
+      '<p>Turn the server knob to <b>' + shortSrv.webserver3d + '</b> to see the same ' +
+      'program with this one line commented out.</p>']
+    : ['the line that is commented out',
+      '<pre>else:  # parent\n    # client_connection.close()\n    print(len(clients))</pre>' +
+      '<p>That is the entire difference between <code>webserver3c.py</code> and ' +
+      '<code>webserver3d.py</code>. One line, disabled.</p>' +
+      '<p>The <code>clients</code> list above it is there on purpose: without a reference ' +
+      'kept somewhere, Python would garbage-collect the socket and close it for you, ' +
+      'undoing the demonstration.</p>' +
+      '<p>The cost arrives two steps later, and it arrives twice — once for the client, ' +
+      'once for the server.</p>'],
+  loop: () => ['the parent has one job now',
+    '<div class="quote"><p>"the sole role of the server parent process now is to accept a ' +
+    'new client connection, fork a new child process to handle that client request, and ' +
+    'loop over to accept another client connection, and nothing more."</p></div>' +
+    '<p>Compare the rings. On <code>webserver3b.py</code> the long arc is on the middle ' +
+    'circle, because the server does the work. Here the long arcs are all on the right, ' +
+    'and the middle circle is idle almost the whole time.</p>'],
+  handle: () => ['handle_request, which has not changed since part 1',
+    '<pre>request = client_connection.recv(1024)\nprint(request.decode())\n' +
+    'http_response = b"""\\\nHTTP/1.1 200 OK\n\nHello, World!\n"""\n' +
+    'client_connection.sendall(http_response)</pre>' +
+    '<p>Read, print, answer. Whatever else changes between the article\'s six servers, ' +
+    'this does not — which is the point: <b>the concurrency is not in the request ' +
+    'handling.</b></p>' +
+    '<p>What really came back, this run:</p><pre>' + esc((cell().body || '').trim()) + '</pre>'],
+  sleep: () => ['what one at a time costs, measured',
+    '<p>The sleep is the article\'s own instrument: it makes the blocking long enough to ' +
+    'see. Its own words are <i>"sleep and block the process for 60 seconds."</i></p>' +
+    '<p><b>Marked departure (ADR 0002):</b> every server on this page sleeps the same ' +
+    '<b>' + D.delay + ' s</b> instead — the article uses 60 s in 3b and 3c, 3 s in 3e, and ' +
+    'nothing at all in 3d, 3f and 3g. Turning the server knob would otherwise change the ' +
+    'clock as well as the design, and no comparison would mean anything.</p>' +
+    '<p>What one client at a time costs, from the runs:</p>' + iterativeTable()],
+  close: () => ['the close that part 1 forgot',
+    '<pre>client_connection.close()</pre>' +
+    '<p>The connection ends, and the client\'s <code>curl</code> finally exits. The dashed ' +
+    'line left behind is the exchange that happened — history, not structure.</p>'],
+  concurrent: () => ['concurrent, and what it is not',
+    '<div class="quote"><p>"Two events are concurrent if you cannot tell by looking at the ' +
+    'program which will happen first."</p></div>' +
+    '<p>Nothing in this server runs faster than in the iterative one. Each child still ' +
+    'takes the same ' + D.delay + ' s. What changed is that <b>nobody is waiting in ' +
+    'line</b> — and that is visible in the wall clock below the drawing, which stops ' +
+    'growing with the number of clients.</p>' + concurrencyTable()],
+  exit: () => ['os._exit(0), and what has to happen first',
+    '<pre>handle_request(client_connection)\nclient_connection.close()\nos._exit(0)  # child exits here</pre>' +
+    (SRV[srv].closes
+      ? '<p>The child drops the last descriptor, the count reaches <b>0</b>, and only now ' +
+        'does the kernel actually close the connection and send the client the packet that ' +
+        'says it is over — <b>FIN</b>, in the article\'s words.</p>'
+      : '<p>The child drops its descriptor and the count goes to <b>1</b>, not 0, because ' +
+        'the parent never let go. So the kernel does not close the socket, and never sends ' +
+        'the FIN packet. In the article\'s words, the client <i>"stayed on the line, so to ' +
+        'speak."</i></p>' +
+        '<p><b>Really measured:</b> ' + hangEvidence() + '</p>' +
+        '<p>The second cost is slower and worse: the parent holds one more descriptor for ' +
+        'every client it ever served, and never gives one back. ' + fdEvidence() + '</p>')],
+  zombie: () => ['a process that has ended and not been collected',
+    '<div class="quote"><p>"A zombie is a process that has terminated, but its parent has ' +
+    'not waited for it and has not received its termination status yet."</p></div>' +
+    '<p>The kernel keeps the exit status, the PID and the resource usage, in case the ' +
+    'parent asks for them. Until it does, the entry stays.</p>' +
+    '<p>This is why a cross is drawn where the child was, rather than nothing at all: the ' +
+    'process is gone, and the space it takes up is not.</p>' + psEvidence()],
+  reap: () => reapDoor(),
+  client: () => ['the client',
+    '<p>One TCP connection from a separate program. In the article it is <code>curl</code>; ' +
+    'here it is a small Python client that does the same three things — ' +
+    '<code>socket</code>, <code>connect</code>, <code>sendall</code> — and additionally ' +
+    '<b>writes down</b> when the first byte arrived and whether the connection was ever ' +
+    'closed.</p>' +
+    '<p><b>Marked departure (ADR 0002):</b> the article\'s <code>client3.py</code> prints ' +
+    'a counter and exits, which cannot show the thing its own next paragraph is about — a ' +
+    'reply that arrives and a connection that never ends.</p>' + clientTable()],
+  finished: () => ['what "finished" means here',
+    '<p>The connection was closed by the server, so the client knows there is no more to ' +
+    'come. Without that it cannot tell the difference between "done" and "slow".</p>' +
+    clientTable()],
+  waiting: () => ['still waiting',
+    '<p>This client has its reply. <code>Hello, World!</code> arrived, in full, ' +
+    'milliseconds in. It is still sitting there because nothing ever told it the ' +
+    'conversation was over.</p>' +
+    '<p>That is what the article\'s hanging <code>curl</code> is.</p>' + clientTable()],
+  parent: () => ['the server process',
+    '<p><code>' + shortSrv[srv] + '</code> — ' +
+    (D.servers.find(s => s[0] === srv) || ['', ''])[1] + '.</p>' +
+    (SRV[srv].fork
+      ? '<p>After the first fork this circle is the <b>parent</b>. It stops handling ' +
+        'requests entirely; it accepts, forks, and loops.</p>'
+      : '<p>There is only ever this one process. Everything the server does, it does ' +
+        'here, one thing at a time.</p>') +
+    '<p>What it printed, this run:</p><pre>' +
+    esc((cell().stdout || '').split('\n').slice(0, 6).join('\n')) + '</pre>'],
+  child: () => ['a forked child',
+    '<p>A process that did not exist one step ago. It is a copy of the parent, resuming ' +
+    'from the same line of code, with the same descriptors open.</p>' +
+    '<p>It handles exactly one connection and then ends. It never accepts anything.</p>'],
+  grid: () => ['what is on the page, and what was run',
+    '<p>Six servers — the article\'s own <code>webserver3b.py</code> through ' +
+    '<code>webserver3g.py</code>, copied from the article — against <b>' +
+    D.clients.join(', ') + '</b> simultaneous clients. Each pair was run <b>' + D.repeats +
+    ' times</b>, on Python ' + D.python + ', and every number on this page is the median ' +
+    'of those runs rather than the best of them.</p>' +
+    '<p>Only 1, 2 and 3 clients are <b>drawn</b>: three circles is as many as can be shown ' +
+    'without the picture starting to lie about what it is showing. The larger crowds are ' +
+    'in the grid below, and stepping down from any cell there opens what really happened ' +
+    'in that run.</p>'],
+  real: () => ['where these numbers came from',
+    '<p>The article\'s own six programs, run for real. While each one ran, ' +
+    '<code>/proc</code> was polled 400 times a second to see which children existed, when ' +
+    'each turned into a zombie, when each was reaped, and how many descriptors the parent ' +
+    'was holding.</p>' +
+    '<p>The one thing changed in the article\'s code is the sleep constant (' +
+    door('sleep', 'marked here') + '). The client is ours, because the article\'s cannot ' +
+    'record what the article asks you to look at.</p>'],
+};
+
+/* ---------------- evidence: every one of these reads the capture ----------------
+   Nothing below composes a sentence the runs do not support. Where a run did not
+   happen, it says so rather than filling the gap. */
+function clientTable(){
+  const recs = (cell() || {}).clientRecords || [];
+  if (!recs.length) return '';
+  const row = r => '<tr><td>client ' + (r.i + 1) + '</td><td>' +
+    (r.firstByte == null ? '—' : Math.round(r.firstByte) + ' ms') + '</td><td class="' +
+    (r.kind === 'finished' ? 'ok' : 'bad') + '">' +
+    (r.eof == null ? 'never closed' : Math.round(r.eof) + ' ms') + '</td></tr>';
+  return '<table class="rec"><tr><th></th><th>reply arrived</th><th>connection closed</th>' +
+    '</tr>' + recs.slice(0, 8).map(row).join('') + '</table>' +
+    (recs.length > 8 ? '<p>First 8 of ' + recs.length + '.</p>' : '');
+}
+function realPids(){
+  const ev = ((cell() || {}).events || []).filter(e => e.kind === 'fork');
+  if (!ev.length) return '';
+  return '<p>The children this run really produced, and the millisecond each first ' +
+    'appeared in <code>/proc</code>:</p><pre>' +
+    ev.slice(0, 6).map(e => 'PID ' + e.pid + '   +' + e.t + ' ms').join('\n') + '</pre>';
+}
+function psEvidence(){
+  const ev = ((cell() || {}).events || []).filter(e => e.kind === 'zombie');
+  if (!ev.length) return '<p>No zombie was ever observed in this run — every child was ' +
+    'collected before <code>/proc</code> was polled again.</p>';
+  return '<p>Polled straight out of <code>/proc</code> while it ran — the same thing ' +
+    '<code>ps</code> shows as <code>Z+</code> and <code>&lt;defunct&gt;</code>:</p><pre>' +
+    ev.slice(0, 6).map(e => 'PID ' + e.pid + '   state Z   +' + e.t + ' ms').join('\n') +
+    (ev.length > 6 ? '\n… ' + ev.length + ' in total' : '') + '</pre>';
+}
+function hangEvidence(){
+  const R = cell();
+  if (!R) return '';
+  const m = median(R.neverClosed);
+  return m + ' of ' + n + ' client' + (n === 1 ? '' : 's') + ' received the full reply and ' +
+    'never saw the connection close, in the median of ' + D.repeats + ' runs.';
+}
+function fdEvidence(){
+  const R = cell();
+  if (!R || R.fdsEnd[R.rep] == null) return '';
+  const other = D.clients.map(k => [k, D.cells[srv + '|' + k]])
+    .filter(([, c]) => c && c.fdsEnd[c.rep] != null)
+    .map(([k, c]) => k + ' clients → ' + c.fdsEnd[c.rep] + ' descriptors');
+  return 'Measured at the end of each run: <code>' + other.join('</code>, <code>') +
+    '</code>. It only ever goes up.';
+}
+function iterativeTable(){
+  const rows = D.clients.map(k => {
+    const c = D.cells['webserver3b|' + k];
+    if (!c) return null;
+    return '<tr><td>' + k + ' client' + (k === 1 ? '' : 's') + '</td><td>' +
+      Math.round(median(c.lastMs)) + ' ms</td><td>' + median(c.finished) + ' finished</td></tr>';
+  }).filter(Boolean);
+  return '<table class="rec"><tr><th>webserver3b.py</th><th>last client done</th><th></th>' +
+    '</tr>' + rows.join('') + '</table>' +
+    '<p>Up to 8 clients it is a straight line: every extra client costs another full ' +
+    D.delay + ' s, because there is nowhere else for the work to go. Beyond that the ' +
+    'backlog of 5 starts refusing the burst, and the numbers stop being about the sleep ' +
+    'at all — ' + door('backlog', 'which is its own lesson') + '.</p>';
+}
+function concurrencyTable(){
+  const rows = D.clients.map(k => {
+    const a = D.cells['webserver3b|' + k], b = D.cells['webserver3g|' + k];
+    if (!a || !b) return null;
+    return '<tr><td>' + k + '</td><td>' + Math.round(median(a.lastMs)) + ' ms</td><td>' +
+      Math.round(median(b.lastMs)) + ' ms</td></tr>';
+  }).filter(Boolean);
+  return '<table class="rec"><tr><th>clients</th><th>3b, one at a time</th>' +
+    '<th>3g, forking</th></tr>' + rows.join('') + '</table>';
+}
+function backlogEvidence(){
+  const a = D.cells['webserver3b|8'], b = D.cells['webserver3b|128'];
+  if (!a || !b) return 'Not measured.';
+  return 'With <code>listen(5)</code> and 8 clients, all ' + median(a.finished) +
+    ' were served. With 128 arriving in the same instant, only <b>' + median(b.finished) +
+    '</b> had been served when the measurement window closed: the rest had their ' +
+    'connection attempts dropped by a full queue and were still backing off. ' +
+    'A bigger backlog would not have made the server any faster — it would have stopped ' +
+    'it sitting idle while clients waited to retry, which is exactly the reason the ' +
+    'article gives for wanting one.';
+}
+function reapDoor(){
+  const R = cell(), S = SRV[srv], zLeft = R ? median(R.zombiesLeft) : 0;
+  if (S.reap === 'none') return ['nobody is waiting for them',
+    '<p>There is no <code>wait</code> anywhere in this program. Every child that ends ' +
+    'stays in the kernel\'s table as a zombie for as long as the parent lives.</p>' +
+    '<p><b>Really measured, ' + n + ' client' + (n === 1 ? '' : 's') + ':</b> ' +
+    fmt(R.zombiesLeft) + ' left behind. At 128 clients: <b>' +
+    median(D.cells[srv + '|128'].zombiesLeft) + '</b>.</p>' +
+    '<p>The article says what this costs: a limit on processes, reached, and then ' +
+    '<code>OSError: Resource temporarily unavailable</code> when the server tries to fork ' +
+    'the next one.</p>'];
+  const wait = '<pre>def grim_reaper(signum, frame):\n    pid, status = os.wait()</pre>';
+  const nohang = '<pre>def grim_reaper(signum, frame):\n    while True:\n        try:\n' +
+    '            pid, status = os.waitpid(-1, os.WNOHANG)\n        except OSError:\n' +
+    '            return\n        if pid == 0:  # no more zombies\n            return</pre>';
+  const counts = D.clients.map(k => {
+    const c = D.cells[srv + '|' + k];
+    return c ? '<tr><td>' + k + '</td><td class="' + (median(c.zombiesLeft) ? 'bad' : 'ok') +
+      '">' + fmt(c.zombiesLeft) + '</td></tr>' : '';
+  }).join('');
+  const table = '<table class="rec"><tr><th>clients at once</th><th>zombies left</th></tr>' +
+    counts + '</table>';
+  if (S.reap === 'wait') return ['os.wait(), once per signal',
+    wait +
+    '<p>SIGCHLD arrives, the handler runs, one child is collected. That is enough when ' +
+    'children end one at a time.</p>' +
+    '<p>It stops being enough when several end at once, and the article says why: ' +
+    '<i>"the signals are not queued and your server process missed several signals."</i> ' +
+    'One signal, one <code>wait</code>, several dead children.</p>' + table +
+    '<p><b>There is a second hazard the article does not mention.</b> ' +
+    '<code>os.wait()</code> <i>blocks</i> when there is no child to collect — the article ' +
+    'says so itself, as its reason for not calling <code>wait</code> in the main loop — ' +
+    'and the handler calls it anyway. ' + waitBlockEvidence() + '</p>'];
+  return ['waitpid(WNOHANG), in a loop', nohang +
+    '<p>Two changes, and both matter. <b>WNOHANG</b> means "and if there is nothing to ' +
+    'collect, say so rather than waiting" — so the handler can never block the parent. ' +
+    'The <b>loop</b> means one signal can collect any number of children, which is what ' +
+    'makes missed signals harmless.</p>' + table +
+    '<p>The article\'s own comment on <code>WNOHANG</code> says it will <i>"return ' +
+    'EWOULDBLOCK error"</i>. It does not — it returns <code>(0, 0)</code>, which is ' +
+    'exactly what the next line, <code>if pid == 0</code>, is written to catch. The code ' +
+    'is right and the comment beside it is not.</p>'];
+}
+function waitBlockEvidence(){
+  /* Said carefully, because the runs do not all agree. One run of webserver3e at 128
+     clients served only 107 of them and forked 114 children - a parent stuck inside
+     os.wait() is not in accept(). Across three runs that did not repeat. So the hazard
+     is reported as a hazard, with the one run that showed it named, and not as a
+     measured rule. MISSION: say what is unverified. */
+  const e = D.cells['webserver3e|128'];
+  if (!e) return '';
+  return 'Across ' + D.repeats + ' runs at 128 clients it did not visibly cost this ' +
+    'server anything — ' + fmt(e.finished) + ' clients finished. An earlier single run ' +
+    'stalled at 107 of 128 and has not repeated, so this is named as a hazard in the ' +
+    'code rather than claimed as a measured effect.';
+}
+
+/* ---------------- Branches: beyond the primary Source ----------------
+   Every claim carries a Citation with a link. The quotes below were taken from the
+   live documents, not from memory. */
+const BRANCHES = {
+  process: {
+    title: 'What is a process?',
+    body:
+      '<p>A program is a file on disk. A <b>process</b> is one running copy of it, with its ' +
+      'own memory. Run the same program twice and you have two processes that share ' +
+      'nothing.</p>' +
+      '<p>The article\'s own definition is the short one:</p>' +
+      '<div class="quote"><p>"A process is just an instance of an executing program."</p>' +
+      '<cite>Let\'s Build A Web Server, Part 3</cite></div>' +
+      '<p>The kernel numbers every one of them — its <b>PID</b> — and remembers which ' +
+      'process created it, the <b>PPID</b>. That parent-child link is not a metaphor; it ' +
+      'is a real entry in a real table, and it is the reason this article can talk about ' +
+      '"waiting for a child" at all.</p>' +
+      '<p><b>What this means for the drawing:</b> the middle circle is one process. Each ' +
+      'circle on the right is another. The lines between them are the PPID relationship, ' +
+      'and they last exactly as long as the kernel\'s entry does — which is why a zombie ' +
+      'still has one.</p>',
+    sources: [
+      ['The Linux Programming Interface, ch. 6 — Processes',
+       'https://man7.org/linux/man-pages/man2/fork.2.html',
+       'the fork(2) manual page, the primary description of what fork does'],
+      ['Python os.fork()', 'https://docs.python.org/3/library/os.html#os.fork',
+       'the call the article uses, and its Python-specific caveats'],
+    ],
+  },
+  fd: {
+    title: 'What is a file descriptor?',
+    body:
+      '<p>When a process opens something — a file, a pipe, a socket — the kernel hands ' +
+      'back a small non-negative integer. That number is the <b>file descriptor</b>, and ' +
+      'from then on it is how the process names the thing.</p>' +
+      '<div class="quote"><p>"A file descriptor is a non-negative integer that the kernel ' +
+      'returns to a process when it opens an existing file, creates a new file or when it ' +
+      'creates a new socket."</p><cite>Let\'s Build A Web Server, Part 3</cite></div>' +
+      '<p>Your shell has already used up 0, 1 and 2 before your program starts — standard ' +
+      'input, output and error — which is why the first socket a fresh Python process ' +
+      'opens comes back as <b>3</b>.</p>' +
+      '<p>The part that matters here: a descriptor is a <b>reference</b>, not the thing ' +
+      'itself. Several processes can hold descriptors for one socket, and the kernel ' +
+      'counts them:</p>' +
+      '<div class="quote"><p>"If the same file is opened … or is duplicated … then ' +
+      'separate file descriptors refer to the same open file description."</p>' +
+      '<cite><a href="https://man7.org/linux/man-pages/man2/open.2.html" target="_blank" ' +
+      'rel="noopener">open(2), Linux manual pages</a></cite></div>' +
+      '<p><b>What this means for the drawing:</b> every small disc inside a circle is one ' +
+      'descriptor. The connection closes when, and only when, the last one is gone.</p>',
+    sources: [
+      ['open(2) — Linux manual pages', 'https://man7.org/linux/man-pages/man2/open.2.html',
+       'on file descriptors, open file descriptions, and what duplication means'],
+      ['Python Socket Programming HOWTO', 'https://docs.python.org/3/howto/sockets.html',
+       'the official guide to the same API the article calls'],
+    ],
+  },
+  socket: {
+    title: 'What is a socket?',
+    body:
+      '<p>Two programs that want to talk have a problem: they are separate, and may be on ' +
+      'separate machines. A <b>socket</b> is what the operating system gives each of them ' +
+      'to talk through — one end of a pipe between two programs.</p>' +
+      '<div class="quote"><p>"…a <b>"client" socket</b> — an endpoint of a conversation, ' +
+      'and a <b>"server" socket</b>, which is more like a switchboard operator."</p>' +
+      '<cite><a href="https://docs.python.org/3/howto/sockets.html" target="_blank" ' +
+      'rel="noopener">Python Socket Programming HOWTO</a></cite></div>' +
+      '<p>That split is visible here as two different descriptors: the <b>listening</b> ' +
+      'socket, which only ever accepts new callers, and the <b>connected</b> socket that ' +
+      '<code>accept()</code> returns for one conversation.</p>' +
+      '<p>The kind used here is <b>TCP</b>, which is why the article can treat a request ' +
+      'as text arriving in order rather than packets to reassemble:</p>' +
+      '<div class="quote"><p>"TCP provides a <b>reliable, in-order, byte-stream service</b> ' +
+      'to applications."</p><cite><a href="https://www.rfc-editor.org/rfc/rfc9293.html#section-2.2" ' +
+      'target="_blank" rel="noopener">RFC 9293 §2.2</a> — the current TCP standard</cite></div>' +
+      '<p>And TCP is why closing matters so much on this page. A connection is only over ' +
+      'when one side says so, with a packet the article names: <b>FIN</b>. A client that ' +
+      'never receives one waits, correctly, forever.</p>',
+    sources: [
+      ['RFC 9293 — Transmission Control Protocol', 'https://www.rfc-editor.org/rfc/rfc9293.html',
+       'IETF standard, August 2022; obsoletes RFC 793'],
+      ['Python Socket Programming HOWTO', 'https://docs.python.org/3/howto/sockets.html',
+       'the client/server split, in a primary source'],
+    ],
+  },
+  eintr: {
+    title: 'The article fixes a bug that no longer happens',
+    body:
+      '<p>Between <code>webserver3e.py</code> and <code>webserver3f.py</code> the article ' +
+      'adds this, and gives it several paragraphs and three figures:</p>' +
+      '<pre>try:\n    client_connection, client_address = listen_socket.accept()\n' +
+      'except IOError as e:\n    code, msg = e.args\n    # restart \'accept\' if it was ' +
+      'interrupted\n    if code == errno.EINTR:\n        continue\n    else:\n        raise</pre>' +
+      '<p>The problem it solves is real: a signal arriving while the parent is blocked in ' +
+      '<code>accept()</code> used to make that call fail with <code>EINTR</code>. The ' +
+      'article was written in May 2015 and tested, as its own header says, on Python 2.7.9 ' +
+      'and 3.4.</p>' +
+      '<p>Python changed four months later.</p>' +
+      '<div class="quote"><p>"System call wrappers provided in the standard library should ' +
+      'be <b>retried automatically</b> when they fail with <code>EINTR</code>, to relieve ' +
+      'application code from the burden of doing so."</p>' +
+      '<cite><a href="https://peps.python.org/pep-0475/" target="_blank" rel="noopener">' +
+      'PEP 475 — Retry system calls failing with EINTR</a>, Final, Python 3.5. ' +
+      '<code>socket.accept()</code> is named in its list of affected functions.</cite></div>' +
+      '<p><b>What we measured.</b> Across <b>109 runs</b> of the article\'s six servers on ' +
+      'Python ' + D.python + ', including <code>webserver3e.py</code> — which has no ' +
+      '<code>EINTR</code> guard at all — with up to 128 children ending at once: ' +
+      '<b>not one <code>EINTR</code>, and not one crash.</b> The only traceback any server ' +
+      'produced in the whole capture was <code>webserver3d.py</code> running out of file ' +
+      'descriptors, which is a different lesson and a true one.</p>' +
+      '<p>So on a current Python the article\'s <code>3e → 3f</code> step changes nothing ' +
+      'it claims to change. It does change something else, silently: ' +
+      '<code>REQUEST_QUEUE_SIZE</code> goes from 5 to 1024 in the same edit, and the ' +
+      'article never mentions it. We ran one-line variants to see which of the two ' +
+      'accounted for the difference.</p>' + diagTable() +
+      '<p><b>Neither.</b> Both servers leak zombies at 128 clients whichever backlog they ' +
+      'have, because both call <code>os.wait()</code> once per signal. The fix that ' +
+      'matters is the next one the article makes — and that one is entirely correct.</p>' +
+      '<p>This is not a mistake on the article\'s part. It is a ten-year-old article that ' +
+      'was right when it was written. It is here because a reader retyping this code today ' +
+      'will not see the error the article tells them to expect, and would reasonably ' +
+      'conclude they had done something wrong.</p>',
+    sources: [
+      ['PEP 475 — Retry system calls failing with EINTR', 'https://peps.python.org/pep-0475/',
+       'Final, implemented in Python 3.5; names socket.accept() among the affected calls'],
+      ['Python signal — handlers and re-entrancy',
+       'https://docs.python.org/3/library/signal.html',
+       'on when handlers run and what they may not assume'],
+      ["Let's Build A Web Server, Part 3", 'https://ruslanspivak.com/lsbaws-part3/',
+       'the primary source, tested on Python 2.7.9 and 3.4'],
+    ],
+  },
+  zombie: {
+    title: 'Why a dead process is still in the way',
+    body:
+      '<p>When a process ends, the kernel cannot throw everything away immediately: its ' +
+      'parent may still want to know how it went. So it keeps a small record — the PID, ' +
+      'the exit status, the resources used — and marks the process <b>zombie</b>.</p>' +
+      '<div class="quote"><p>"A zombie is a process that has terminated, but its parent ' +
+      'has not waited for it and has not received its termination status yet."</p>' +
+      '<cite>Let\'s Build A Web Server, Part 3</cite></div>' +
+      '<p>The record is tiny. The problem is not its size — it is that the PID and the ' +
+      'process-table slot stay taken, and there is a hard limit on those. A server that ' +
+      'forks a child per request and never waits will, eventually, be unable to fork at ' +
+      'all.</p>' +
+      '<div class="quote"><p>"A child that terminates, but has not been waited for becomes ' +
+      'a \\"zombie\\". The kernel maintains a minimal set of information about the zombie ' +
+      'process … in order to allow the parent to later perform a wait to obtain ' +
+      'information about the child."</p>' +
+      '<cite><a href="https://man7.org/linux/man-pages/man2/wait.2.html" target="_blank" ' +
+      'rel="noopener">wait(2), Linux manual pages</a></cite></div>' +
+      '<p>And the sentence the article gets exactly right: <b>you cannot kill a zombie.</b> ' +
+      'It is already dead. <code>kill -9</code> has nothing to act on. The only thing that ' +
+      'removes it is its parent calling <code>wait</code>.</p>',
+    sources: [
+      ['wait(2) — Linux manual pages', 'https://man7.org/linux/man-pages/man2/wait.2.html',
+       'on zombies, and on what wait and waitpid actually collect'],
+      ['Python os.waitpid', 'https://docs.python.org/3/library/os.html#os.waitpid',
+       'including WNOHANG, which returns (0, 0) rather than raising'],
+    ],
+  },
+};
+function diagTable(){
+  const rows = Object.entries(D.diagnostics || {}).map(([k, v]) =>
+    '<tr><td>' + esc(k) + '</td><td class="' + (median(v.zombiesLeft) ? 'bad' : 'ok') + '">' +
+    fmt(v.zombiesLeft) + '</td></tr>').join('');
+  const base = ['webserver3e', 'webserver3f'].map(s => {
+    const c = D.cells[s + '|128'];
+    return c ? '<tr><td>' + s + '.py, unmodified</td><td class="' +
+      (median(c.zombiesLeft) ? 'bad' : 'ok') + '">' + fmt(c.zombiesLeft) + '</td></tr>' : '';
+  }).join('');
+  return '<table class="rec"><tr><th>128 clients at once</th><th>zombies left</th></tr>' +
+    base + rows + '</table>';
+}
+
+/* ---------------- the rung above the ground ----------------
+   MISSION principle 5: every abstract view must offer a way back down to the concrete
+   instance behind any point in it. The server knob has no order a number has, so this
+   is a partition into Regions rather than a plot (principle 4): the cells that work,
+   and the cells that do not. Clicking one steps down - to the drawing where the crowd
+   can be drawn, and to the run itself where it cannot. */
+function renderGrid(){
+  const t = $('#grid');
+  let html = '<tr><th></th>' + D.clients.map(k =>
+    '<th>' + k + '</th>').join('') + '</tr>';
+  for (const [id, blurb] of D.servers){
+    html += '<tr><th class="rowh" title="' + esc(blurb) + '">' + SRV[id].short + '</th>';
+    for (const k of D.clients){
+      const c = D.cells[id + '|' + k];
+      if (!c){ html += '<td></td>'; continue; }
+      const fin = median(c.finished), z = median(c.zombiesLeft);
+      const bad = fin < k;
+      html += '<td><button class="cellbtn ' + (bad ? 'bad' : 'ok') + '" data-srv="' + id +
+        '" data-n="' + k + '" aria-current="' + (id === srv && k === n) + '" ' +
+        'aria-label="' + SRV[id].short + ', ' + k + ' clients: ' + fin + ' of ' + k +
+        ' finished, ' + z + ' zombies left"><span class="glyph">' + (bad ? '✕' : '●') +
+        '</span><span class="z ' + (z ? 'bad' : 'ok') + '">' + z + '</span></button></td>';
+    }
+    html += '</tr>';
+  }
+  t.innerHTML = html;
+  $('#rungSub').innerHTML = 'Each cell is ' + D.repeats + ' real runs; the number shown is ' +
+    'the median, not the best of them. <b>Click any cell</b> — the three drawable crowds ' +
+    'set the knobs above, and the larger ones open what actually happened in that run.';
+  $('#drawnNote').innerHTML = 'Only ' + DRAWABLE.join(', ') + ' clients can be drawn. ' +
+    'Everything else here was measured the same way and is one click from its evidence. ' +
+    door('real', 'How it was measured');
+}
+function cellDoor(id, k){
+  const c = D.cells[id + '|' + k];
+  const fin = median(c.finished), nc = median(c.neverClosed), ns = median(c.neverServed);
+  const rows = [
+    ['clients finished', fmt(c.finished) + (c.finished.every(v => v === k) ? ' — all' : ' of ' + k)],
+    ['got the reply, never saw it close', fmt(c.neverClosed)],
+    ['never served at all', fmt(c.neverServed)],
+    ['children forked', fmt(c.forked)],
+    ['zombies still there at the end', fmt(c.zombiesLeft)],
+    ['descriptors the parent held', c.fdsEnd[c.rep] == null ? '—' : c.fdsEnd[c.rep]],
+    ['last client done', Math.round(median(c.lastMs)) + ' ms'],
+  ];
+  return ['<code>' + id + '.py</code> · ' + k + ' client' + (k === 1 ? '' : 's') + ' at once',
+    (c.died ? '<p class="warn"><b>The server process died during this run.</b> The ' +
+      'traceback it printed is below — this is the article\'s own prediction, reproduced.</p>' : '') +
+    '<table class="rec">' + rows.map(r =>
+      '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>').join('') + '</table>' +
+    '<p>Median of ' + D.repeats + ' runs; each cell shows every run in brackets where they ' +
+    'disagreed. They disagree because ' + why('concurrent', 'concurrent events have no order') +
+    ' you can count on.</p>' +
+    (ns ? '<p><b>' + ns + ' client' + (ns === 1 ? '' : 's') + ' never got a reply at all.</b> ' +
+      'That is not this server\'s design failing — it is the ' + door('backlog', 'backlog') +
+      ' being too small for the burst.</p>' : '') +
+    (nc ? '<p><b>' + nc + ' client' + (nc === 1 ? '' : 's') + ' got the whole reply and were ' +
+      'never released.</b> ' + door('exit', 'The reference count never reached zero') +
+      '.</p>' : '') +
+    (DRAWABLE.includes(k)
+      ? '<p>This one can be drawn: <button class="to" data-goto="' + id + '|' + k +
+        '">open it in the drawing above</button>.</p>'
+      : '<p>Too many to draw honestly. What the server printed:</p><pre>' +
+        esc((c.stdout || '').split('\n').slice(0, 10).join('\n')) + '</pre>')];
+}
+
+/* ---------------- the limit the article tells you to go and hit ---------------- */
+function limitDoor(){
+  const L = (D.limit || [])[0];
+  if (!L) return ['not run', '<p>Not run.</p>'];
+  return ['the article\'s own experiment, reproduced',
+    '<p>The article tells you to lower the file-descriptor ceiling and then flood the ' +
+    'server that never closes its copies:</p><pre>$ ulimit -n 256\n$ python webserver3d.py\n' +
+    '$ python client3.py --max-clients=300</pre>' +
+    '<p>Done here with a ceiling of <b>' + L.nofile + '</b> and 128 clients. The server ' +
+    'accepted <b>' + (L.stdout.match(/^\d+$/gm) || []).length + '</b> connections, holding ' +
+    'on to every one, and then:</p>' +
+    '<pre>' + esc(L.stdout.slice(-260).trim()) + '</pre>' +
+    '<p>That is the article\'s figure, live. It is also the only traceback produced ' +
+    'anywhere in this capture.</p>'];
+}
+DOORS.limit = limitDoor;
+DOORS.eintrnote = () => ['about that EINTR fix', '<p>See ' +
+  why('eintr', 'the whole finding') + '.</p>'];
+
+/* ---------------- Wink, carried over from part 2 unchanged ----------------
+   Direct press/release owns expression and gaze briefly. Pointer proximity comes next;
+   playback narration and step gaze follow; the resting wink is the final fallback. */
+const W = (() => {
+  const mascot = $('#wink'), svg = $('#winkSvg'), bub = $('#bub');
+  let speakTimer = 0, expressionTimer = 0, directUntil = 0, playbackUntil = 0;
+  let pointerOwnsGaze = false, docked = false;
+  const rawGaze = (gx, gy) => {
+    mascot.style.setProperty('--gx', gx.toFixed(2) + 'px');
+    mascot.style.setProperty('--gy', gy.toFixed(2) + 'px');
+  };
+  const directActive = () => performance.now() < directUntil;
+  const setGaze = (gx, gy) => { if (!pointerOwnsGaze && !directActive()) rawGaze(gx, gy); };
+  const setExpression = name => { mascot.dataset.expression = name; };
+  function restoreExpression(){
+    const now = performance.now();
+    if (now < directUntil) return;
+    if (pointerOwnsGaze) setExpression('curious');
+    else if (now < playbackUntil) setExpression('focused');
+    else setExpression('rest');
+  }
+  function lookAt(clientX, clientY){
+    if (REDUCED || pointerOwnsGaze || directActive()) return;
+    const r = mascot.getBoundingClientRect();
+    if (!r.width) return;
+    const dx = clientX - (r.left + r.width/2), dy = clientY - (r.top + r.height/2);
+    const L = Math.hypot(dx, dy) || 1, k = Math.min(1, L / 240);
+    rawGaze(4.6 * k * dx / L, 3.0 * k * dy / L);
+  }
+  function lookAtSvg(x, y){
+    const r = $('#svg').getBoundingClientRect();
+    if (!r.width) return;
+    const s = r.width / VBW;
+    lookAt(r.left + x * s, r.top + y * s);
+  }
+  function say(t){
+    if (bub.innerHTML === t) return;
+    bub.innerHTML = t;
+    if (!docked) return;
+    playbackUntil = performance.now() + 900;
+    if (performance.now() >= directUntil && !pointerOwnsGaze) setExpression('focused');
+    mascot.classList.remove('speaking'); void mascot.offsetWidth;
+    mascot.classList.add('speaking');
+    clearTimeout(speakTimer);
+    speakTimer = setTimeout(() => { mascot.classList.remove('speaking'); restoreExpression(); }, 900);
+  }
+  function pointerLook(clientX, clientY){
+    if (!docked || REDUCED) return;
+    pointerOwnsGaze = true;
+    const r = mascot.getBoundingClientRect();
+    const dx = Math.max(-4, Math.min(4, (clientX - (r.left + r.width/2)) / 30));
+    const dy = Math.max(-3, Math.min(3, (clientY - (r.top + r.height/2)) / 35));
+    rawGaze(dx, dy);
+    if (performance.now() >= directUntil && performance.now() >= playbackUntil)
+      setExpression('curious');
+  }
+  function pointerLeave(){
+    pointerOwnsGaze = false;
+    rawGaze(0, 1.8);
+    restoreExpression();
+  }
+  function press(){
+    if (!docked) return false;
+    directUntil = Infinity;
+    clearTimeout(expressionTimer);
+    mascot.classList.remove('pop');
+    mascot.classList.add('squish');
+    setExpression('focused');
+    return true;
+  }
+  function release(){
+    if (!docked) return false;
+    mascot.classList.remove('squish', 'pop'); void svg.offsetWidth;
+    mascot.classList.add('pop');
+    directUntil = performance.now() + 900;
+    setExpression('delighted');
+    clearTimeout(expressionTimer);
+    expressionTimer = setTimeout(() => {
+      mascot.classList.remove('pop');
+      directUntil = 0;
+      restoreExpression();
+      if (!pointerOwnsGaze) draw();
+    }, 900);
+    return true;
+  }
+  function cancel(){
+    mascot.classList.remove('squish');
+    directUntil = 0;
+    restoreExpression();
+  }
+  (function blink(){
+    if (REDUCED) return;
+    setTimeout(() => {
+      if (mascot.dataset.expression === 'rest') {
+        mascot.classList.add('blink');
+        setTimeout(() => mascot.classList.remove('blink'), 160);
+      }
+      blink();
+    }, 3000 + Math.random() * 3000);
+  })();
+  return {
+    say, lookAt, lookAtSvg, setGaze, pointerLook, pointerLeave, press, release, cancel,
+    setDocked(value){ docked = value; if (!value) pointerLeave(); },
+  };
+})();
+
+/* ---------------- time: playable, scrubbable, and stopped by every door ----------- */
+const DWELL = 320;
+function rebuild(keepStep){
+  steps = build(srv, n);
+  $('#scrub').max = steps.length - 1;
+  step = keepStep ? Math.min(step, steps.length - 1) : 0;
+  sub = 1;
+}
+function stopPlay(){ playing = false; looping = false; cancelAnimationFrame(rafId);
+  $('#play').setAttribute('aria-pressed', 'false'); $('#play').textContent = '▶ Play'; }
+function play(fromStart){
+  if (REDUCED){ step = steps.length - 1; sub = 1; return draw(); }
+  stopPlay();
+  if (openDoor) closeDoor();
+  playing = true;
+  $('#play').setAttribute('aria-pressed', 'true'); $('#play').textContent = '❚❚ Pause';
+  if (fromStart || step >= steps.length - 1){ step = 0; sub = 1; }
+  draw();
+  let last = performance.now(), rest = sub >= 1 ? DWELL : 0;
+  (function frame(now){
+    if (!playing) return;
+    const dt = now - last; last = now;
+    if (rest > 0){ rest -= dt; draw(); rafId = requestAnimationFrame(frame); return; }
+    if (sub >= 1){
+      if (step >= steps.length - 1){ sub = 1; draw(); return stopPlay(); }
+      step++; sub = 0;
+    }
+    sub = Math.min(1, sub + dt / (steps[step].ms || 1));
+    if (sub >= 1) rest = DWELL;
+    draw(); rafId = requestAnimationFrame(frame);
+  })(last);
+}
+/* Scrubbing chooses one moment to study, so keep that moment alive rather than
+   freezing it or carrying on into the next one. */
+function loopStep(m){
+  stopPlay();
+  step = Math.max(0, Math.min(steps.length - 1, m));
+  if (REDUCED || !steps[step].ms){ sub = 1; return draw(); }
+  looping = true; sub = 0;
+  let last = performance.now(), rest = 0;
+  (function frame(now){
+    if (!looping) return;
+    const dt = now - last; last = now;
+    if (rest > 0) rest -= dt;
+    else { sub = Math.min(1, sub + dt / steps[step].ms); if (sub >= 1) rest = DWELL * 2; }
+    if (rest <= 0 && sub >= 1) sub = 0;
+    draw(); rafId = requestAnimationFrame(frame);
+  })(last);
+}
+
+/* ---------------- the knobs ---------------- */
+function syncKnobs(){
+  const srvHost = $('#knobSrv'); srvHost.innerHTML = '';
+  for (const [id, blurb] of D.servers){
+    const b = document.createElement('button');
+    b.className = 'opt'; b.type = 'button'; b.textContent = SRV[id].short;
+    b.title = blurb;
+    b.setAttribute('aria-pressed', String(id === srv));
+    b.onclick = () => { srv = id; syncKnobs(); renderGrid(); rebuild(); play(true); };
+    srvHost.appendChild(b);
+  }
+  const nHost = $('#knobN'); nHost.innerHTML = '';
+  for (const k of DRAWABLE){
+    const b = document.createElement('button');
+    b.className = 'opt'; b.type = 'button';
+    b.textContent = k + (k === 1 ? ' client' : ' clients');
+    b.setAttribute('aria-pressed', String(k === n));
+    b.onclick = () => { n = k; syncKnobs(); renderGrid(); rebuild(); play(true); };
+    nHost.appendChild(b);
+  }
+  const more = document.createElement('button');
+  more.className = 'opt'; more.type = 'button'; more.textContent = '8, 32, 128 ↓';
+  more.title = 'More than three cannot be drawn honestly — they are in the grid below';
+  more.onclick = () => { $('#rungTitle').scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth',
+    block:'start'}); };
+  nHost.appendChild(more);
+}
+
+/* ---------------- doors: the word is the door, and opening one stops time --------- */
+let openDoor = null, wasPlaying = false, wasLooping = false;
+function showDoor(id){
+  if (openDoor === id) return closeDoor();
+  if (!DOORS[id]) return;
+  wasPlaying = playing || wasPlaying;
+  wasLooping = looping || wasLooping;
+  stopPlay();
+  const [title, body] = DOORS[id]();
+  openDoor = id;
+  $('#popTitle').innerHTML = title;
+  $('#popBody').innerHTML = body;
+  $('#pop').hidden = false;
+  $('#popClose').focus();
+}
+function closeDoor(){
+  if (!openDoor) return;
+  openDoor = null; $('#pop').hidden = true;
+  if (wasLooping){ wasLooping = false; loopStep(step); }
+  else if (wasPlaying){ wasPlaying = false; play(false); }
+}
+function goToStep(m){
+  stopPlay(); wasPlaying = false; closeDoor();
+  step = Math.max(0, Math.min(steps.length - 1, m)); sub = 1; draw();
+}
+function showBranch(id){
+  const B = BRANCHES[id];
+  if (!B) return;
+  wasPlaying = playing || wasPlaying;
+  wasLooping = looping || wasLooping;
+  stopPlay();
+  $('#branchTitle').textContent = B.title;
+  $('#branchBody').innerHTML = B.body +
+    '<div class="srcs"><h4>SOURCES</h4><ul>' + B.sources.map(([nm, u, note]) =>
+      '<li><a href="' + u + '" target="_blank" rel="noopener">' + nm + '</a> — ' + note +
+      '</li>').join('') + '</ul></div>';
+  $('#scrim').hidden = false;
+  $('#branchClose').focus();
+}
+function closeBranch(){
+  if ($('#scrim').hidden) return;
+  $('#scrim').hidden = true;
+  if (wasLooping && !openDoor){ wasLooping = false; loopStep(step); }
+  else if (wasPlaying && !openDoor){ wasPlaying = false; play(false); }
+}
+const onClick = e => {
+  const w = e.target.closest('.why');
+  if (w){ showBranch(w.dataset.why); return; }
+  const g = e.target.closest('[data-goto]');
+  if (g){
+    const [s, k] = g.dataset.goto.split('|');
+    srv = s; n = +k; closeDoor(); syncKnobs(); renderGrid(); rebuild(); play(true);
+    $('#svg').scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth', block:'center'});
+    return;
+  }
+  const t = e.target.closest('.to');
+  if (t && t.dataset.step){ goToStep(+t.dataset.step); return; }
+  const d = e.target.closest('.door');
+  if (d) showDoor(d.dataset.door);
+};
+$('#bub').addEventListener('click', onClick);
+$('#popBody').addEventListener('click', onClick);
+$('#drawnNote').addEventListener('click', onClick);
+$('#branchBody').addEventListener('click', onClick);
+$('#popClose').addEventListener('click', closeDoor);
+$('#branchClose').addEventListener('click', closeBranch);
+$('#scrim').addEventListener('click', e => { if (e.target === $('#scrim')) closeBranch(); });
+addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('#scrim').hidden) return closeBranch();
+  if (openDoor) closeDoor();
+});
+$('#grid').addEventListener('click', e => {
+  const b = e.target.closest('.cellbtn');
+  if (!b) return;
+  const id = b.dataset.srv, k = +b.dataset.n;
+  if (DRAWABLE.includes(k)){
+    srv = id; n = k; syncKnobs(); renderGrid(); rebuild(); play(true);
+    $('#svg').scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth', block:'center'});
+  } else {
+    DOORS.cellrun = () => cellDoor(id, k);
+    showDoor('cellrun');
+    $('#pop').scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth', block:'center'});
+  }
+});
+$('#scrub').addEventListener('input', e => {
+  stopPlay(); wasPlaying = false; wasLooping = false; closeDoor(); loopStep(+e.target.value); });
+$('#play').addEventListener('click', () => (playing || looping) ? stopPlay() : play(false));
+
+/* ---------------- the briefing, and the move into the drawing ---------------- */
+function updateVocabulary(){
+  $('#serverLabel').textContent = unfamiliar.size ? 'THE PROGRAM' : 'THE SERVER';
+  $('#lede').textContent = unfamiliar.size
+    ? 'Change how many people ask at once, and watch what each design does to them.'
+    : "Six servers from the article, every one really run. Turn either knob and watch "
+      + 'what breaks — and how long it stays broken.';
+}
+let exchangeReady = false, tapCount = 0, lastTap = 0, tapResetTimer = 0;
+const mascot = $('#wink');
+
+function celebrateWink(){
+  if (REDUCED) return;
+  const burst = $('#winkBurst');
+  for (let i = 0; i < 10; i++) {
+    const particle = document.createElement('i');
+    const angle = i * Math.PI * 2 / 10;
+    particle.className = 'wink-particle';
+    particle.style.setProperty('--x', Math.cos(angle) * 48 + 'px');
+    particle.style.setProperty('--y', Math.sin(angle) * 48 + 'px');
+    burst.appendChild(particle);
+    setTimeout(() => particle.remove(), 700);
+  }
+}
+
+function registerWinkTap(){
+  const now = performance.now();
+  tapCount = now - lastTap < 1800 ? tapCount + 1 : 1;
+  lastTap = now;
+  clearTimeout(tapResetTimer);
+  if (tapCount === 3) { celebrateWink(); tapCount = 0; }
+  tapResetTimer = setTimeout(() => { tapCount = 0; }, 1800);
+}
+
+function revealExchange(){
+  if (exchangeReady) return;
+  unfamiliar = new Set(new FormData($('#termForm')).getAll('term'));
+  updateVocabulary();
+  syncKnobs();
+  renderGrid();
+  rebuild();
+  exchangeReady = true;
+  const briefing = $('#briefing'), exchange = $('#exchange'), host = $('#winkHost');
+  const first = mascot.getBoundingClientRect();
+  $('#reveal').disabled = true;
+  briefing.classList.add('leaving');
+  exchange.hidden = false;
+  host.insertBefore(mascot, $('#winkBurst'));
+  draw();
+
+  if (REDUCED) {
+    briefing.hidden = true;
+    exchange.classList.add('ready');
+    document.body.classList.add('exchange-ready');
+    W.setDocked(true);
+    play(true);
+    mascot.focus();
+    return;
+  }
+
+  exchange.classList.add('entering');
+  const last = mascot.getBoundingClientRect();
+  mascot.animate([
+    {transform:'translate(' + (first.left-last.left) + 'px,' + (first.top-last.top) +
+      'px) scale(' + (first.width/last.width) + ')'},
+    {transform:'translate(0,0) scale(1)'},
+  ], {duration:760, easing:'cubic-bezier(.2,.8,.2,1)'});
+  setTimeout(() => {
+    briefing.hidden = true;
+    exchange.classList.remove('entering');
+    exchange.classList.add('ready');
+    document.body.classList.add('exchange-ready');
+    W.setDocked(true);
+    play(true);
+    mascot.focus();
+  }, 760);
+}
+
+$('#termForm').addEventListener('submit', e => { e.preventDefault(); revealExchange(); });
+$('#winkHost').addEventListener('pointermove', e => W.pointerLook(e.clientX, e.clientY));
+$('#winkHost').addEventListener('pointerleave', () => { W.pointerLeave(); draw(); });
+mascot.addEventListener('pointerdown', e => {
+  if (!W.press()) return;
+  mascot.setPointerCapture?.(e.pointerId);
+});
+mascot.addEventListener('pointerup', e => {
+  if (!W.release()) return;
+  if (mascot.hasPointerCapture?.(e.pointerId)) mascot.releasePointerCapture(e.pointerId);
+  registerWinkTap();
+});
+mascot.addEventListener('pointercancel', () => W.cancel());
+mascot.addEventListener('keydown', e => {
+  if (!exchangeReady || e.repeat || (e.key !== 'Enter' && e.key !== ' ')) return;
+  e.preventDefault(); W.press();
+});
+mascot.addEventListener('keyup', e => {
+  if (!exchangeReady || (e.key !== 'Enter' && e.key !== ' ')) return;
+  e.preventDefault();
+  if (W.release()) registerWinkTap();
+});
+
+rebuild();
+syncKnobs();
+renderGrid();
+</script>
