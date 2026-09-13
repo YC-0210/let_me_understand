@@ -50,6 +50,19 @@ Reference for `AF_INET` and `SOCK_STREAM`, and for the fact that the module is a
 wrapper over the BSD interface. _Take_: ties the article's two constants to something
 older and larger than Python.
 
+**[PEP 475 — Retry system calls failing with EINTR](https://peps.python.org/pep-0475/)**
+Final, implemented in **Python 3.5**. *"System call wrappers provided in the standard
+library should be retried automatically when they fail with `EINTR`."* Names
+`socket.accept()` among the affected functions. _Take_: the reason part 3's `webserver3f.py`
+fixes nothing on a current interpreter — the finding the part 3 page is built to state
+honestly rather than repeat.
+
+**[wait(2) — Linux manual pages](https://man7.org/linux/man-pages/man2/wait.2.html)** ([fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html) · [open(2)](https://man7.org/linux/man-pages/man2/open.2.html))
+The primary descriptions of the three calls part 3 is about. `wait(2)` on zombies: *"A
+child that terminates, but has not been waited for becomes a “zombie”. The kernel
+maintains a minimal set of information about the zombie process."* _Take_: why a dead
+process is still in the way, from the source rather than from the article's retelling.
+
 ## Framing for a reader with no foundation
 
 **[Wizard Zines](https://wizardzines.com/comics/) / [Julia Evans](https://jvns.ca/)**
@@ -81,6 +94,8 @@ vocabulary, and geometry written down rather than eyeballed.
 - Nicky Case, [How I Make Explorable Explanations](https://blog.ncase.me/how-i-make-an-explorable-explanation/) — process rather than example.
 - [awesome-explanations](https://github.com/BHSPitMonkey/awesome-explanations) — a broader list to browse.
 
-## The primary source for the current work
+## The primary sources
 
-- Ruslan Spivak, [Let's Build A Web Server, Part 1](https://ruslanspivak.com/lsbaws-part1/), with [Part 3](https://ruslanspivak.com/lsbaws-part3/) as the onward link for sockets.
+- Ruslan Spivak, [Let's Build A Web Server, Part 1](https://ruslanspivak.com/lsbaws-part1/) — `prototype/part1/ask.html`
+- [Part 2](https://ruslanspivak.com/lsbaws-part2/) — WSGI — `prototype/part2/mix.html`
+- [Part 3](https://ruslanspivak.com/lsbaws-part3/) — `fork()`, descriptors, zombies — `prototype/part3/fork.html`
