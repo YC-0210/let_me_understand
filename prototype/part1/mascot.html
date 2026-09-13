@@ -1,0 +1,670 @@
+<title>Four Places For A Face</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Tokens from DESIGN.md (linear.app). Dark canvas only - the system ships no light theme. */
+:root{
+  --canvas:#010102; --s1:#0f1011; --s2:#141516; --s3:#18191a;
+  --hair:#23252a; --hair-strong:#34343a;
+  --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-tert:#62666d;
+  --accent:#5e6ad2; --accent-hover:#828fff; --accent-focus:#5e69d1;
+  --ok:#27a644; --no:#d95448;
+  --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-pill:9999px;
+  --sp-xs:8px; --sp-sm:12px; --sp-md:16px; --sp-lg:24px; --sp-xl:32px; --sp-xxl:48px;
+  --sans:"Inter",-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.5; letter-spacing:-.05px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:680px; margin:0 auto; padding:0 var(--sp-lg)}
+code{font-family:var(--mono); font-size:13px}
+h1{font-size:34px; font-weight:600; line-height:1.12; letter-spacing:-1px; margin:0}
+.lede{color:var(--ink-muted); font-size:18px; line-height:1.5; letter-spacing:-.1px; margin:14px 0 0; max-width:50ch}
+header{padding-block:var(--sp-xxl) 0}
+.eyebrow{font-size:13px; font-weight:500; letter-spacing:.4px; color:var(--ink-subtle)}
+
+/* control row */
+.ctl{display:flex; align-items:center; gap:var(--sp-sm); flex-wrap:wrap; margin:var(--sp-xl) 0 var(--sp-md)}
+.pn{font-family:var(--mono); font-size:14px; font-weight:500; cursor:pointer; color:var(--accent);
+  background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-md); padding:8px 14px}
+.pn:hover{border-color:var(--hair-strong); color:var(--accent-hover)}
+.pn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.pn::after{content:"↻"; font-size:11px; opacity:.6; margin-left:8px}
+.btn{font-family:var(--sans); font-size:14px; font-weight:500; line-height:1.2; cursor:pointer;
+  color:var(--ink); background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-md); padding:8px 14px}
+.btn:hover{border-color:var(--hair-strong)}
+.btn:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.ctl .btn.last{margin-left:auto}
+#pause{display:inline-flex; align-items:center; gap:8px}
+#pauseGlyph{font-size:10px; color:var(--ink-subtle); letter-spacing:1px}
+#pause[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
+#pause[aria-pressed=true] #pauseGlyph{color:var(--accent)}
+
+/* the drawing panel */
+.panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
+#svg{display:block; width:100%; height:auto; cursor:pointer}
+#svg [data-mark]{cursor:pointer}
+.mark{display:block; flex:none}
+.phase b{color:var(--ink); font-weight:500}
+.phase i{font-style:normal; color:var(--ink-tert)}
+
+/* the popover that opens from a mark */
+.panel{position:relative}
+.caret{position:absolute; top:-7px; width:12px; height:12px; background:var(--s2);
+  border-left:1px solid var(--hair-strong); border-top:1px solid var(--hair-strong);
+  transform:rotate(45deg); transition:left .18s ease}
+.pop{margin-top:var(--sp-lg); position:relative; background:var(--s2); border:1px solid var(--hair-strong);
+  border-radius:var(--r-lg); padding:var(--sp-lg)}
+.pop .close{position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:var(--r-sm);
+  background:transparent; border:1px solid transparent; color:var(--ink-subtle); cursor:pointer;
+  font-size:16px; line-height:1; font-family:var(--sans)}
+.pop .close:hover{background:var(--s3); border-color:var(--hair); color:var(--ink)}
+.pop .close:focus-visible{outline:2px solid var(--accent-focus); outline-offset:1px}
+.piece{padding:0}
+.phead{display:flex; align-items:center; gap:var(--sp-sm); margin:0 0 var(--sp-sm)}
+.pname{font-size:16px; font-weight:500; letter-spacing:-.2px}
+.phead .sp{flex:1}
+.plain{font-size:14px; color:var(--ink-muted); margin:0; padding-left:36px}
+
+.anat{display:flex; flex-wrap:wrap; gap:2px 20px; padding-left:36px}
+.part{display:flex; flex-direction:column; align-items:flex-start; min-width:0}
+.part .tok{font-family:var(--mono); font-size:14px; color:var(--ink); padding:0 2px}
+.part .tick{display:block; width:100%; height:5px; border:1px solid var(--hair-strong); border-top:0;
+  border-radius:0 0 var(--r-xs) var(--r-xs)}
+.part em{font-style:normal; font-size:12px; color:var(--ink-tert); margin-top:4px; white-space:nowrap}
+.part.is-path .tok{color:var(--accent)}
+.part.miss .tok{color:var(--no)}
+.rows{padding-left:36px}
+.rw{display:grid; grid-template-columns:1fr auto; gap:var(--sp-md); align-items:end; padding:6px 0}
+.rw + .rw{border-top:1px solid var(--hair)}
+.rw .lab{font-size:12px; color:var(--ink-tert); white-space:nowrap; padding-bottom:2px}
+.rw .dotline{border-bottom:1px dashed var(--hair-strong); height:10px; margin-bottom:4px}
+.rw .txt{font-family:var(--mono); font-size:14px; padding:1px 2px 0}
+
+/* notes - distinguished by surface lift and eyebrow, not by a second accent */
+.notes{margin:var(--sp-md) 0 0 36px; border:1px solid var(--hair); border-radius:var(--r-lg); overflow:hidden}
+.note{padding:var(--sp-md); font-size:14px; line-height:1.5; color:var(--ink-muted); background:var(--canvas)}
+.note + .note{border-top:1px solid var(--hair)}
+.note.beyond{background:var(--s1); border-left:2px solid var(--hair-strong)}
+.note h4{margin:0 0 8px; font-size:13px; font-weight:500; letter-spacing:.4px; color:var(--ink-subtle)}
+.note p{margin:0 0 8px} .note p:last-child{margin-bottom:0}
+.note b{color:var(--ink); font-weight:500}
+.note a{color:var(--accent); font-weight:500}
+.note a:hover{color:var(--accent-hover)}
+.note code{background:var(--s2); border:1px solid var(--hair); border-radius:var(--r-xs); padding:1px 5px}
+.foot{padding-block:var(--sp-xl) 64px; color:var(--ink-tert); font-size:12px; line-height:1.4}
+.foot b{color:var(--ink-subtle); font-weight:500}
+
+/* ---------------- the mascot ---------------- */
+/* Wink is chrome, not a mark. VISUAL-LANGUAGE §1 closes the drawing at seven
+   marks and §3.3 forbids idle drift; both hold inside the panel only. The
+   "on the drawing" placement below breaks them on purpose, to be felt. */
+.stage{position:relative}
+.under{min-height:44px; margin:var(--sp-sm) 0 0}
+.phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-sm) 2px 0}
+
+#winkHost{display:flex; align-items:center; gap:var(--sp-sm)}
+.wink{flex:none; width:var(--wk, 40px); height:var(--wk, 40px); overflow:visible;
+  opacity:.5; transition:opacity .45s ease}
+.wink.speaking{opacity:1}
+.wink.speaking{animation:wkNod .42s cubic-bezier(.22,.9,.3,1)}
+body.nodim .wink{opacity:1}
+.wk-body{fill:#F5F0FF}
+.wk-eye{fill:#4B3869}
+.wk-wink{stroke:#4B3869; stroke-width:3.2; fill:none; stroke-linecap:round}
+.wk-spark{fill:#B491F5}
+
+/* idle loops - three periods, none a multiple of another (3.1s / 4.3s / 1.7s) */
+.wk-breathe{transform-box:view-box; transform-origin:50px 50px; animation:wkBreathe 3.1s ease-in-out infinite}
+.wk-bob{transform-box:view-box; transform-origin:50px 50px; animation:wkBob 4.3s ease-in-out infinite}
+.wk-spark{transform-box:fill-box; transform-origin:center; animation:wkTwinkle 1.7s ease-in-out infinite}
+.wk-face{transform:translate(var(--gx,0px), var(--gy,0px)); transition:transform .5s cubic-bezier(.22,.9,.3,1)}
+.wk-eye{transform-box:fill-box; transform-origin:center}
+.wink.blink .wk-eye{animation:wkBlink .14s ease-in-out}
+.wink.react .wk-eye{animation:wkDouble .42s cubic-bezier(.34,1.56,.64,1)}
+.wink.react .wk-spark{animation:wkBurst .5s ease-out}
+
+@keyframes wkBreathe{0%,100%{transform:scale(1)} 50%{transform:scale(1.02)}}
+@keyframes wkBob{0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.2px)}}
+@keyframes wkTwinkle{0%,100%{opacity:.6; transform:scale(.9)} 50%{opacity:1; transform:scale(1.1)}}
+@keyframes wkBlink{0%,100%{transform:scaleY(1)} 50%{transform:scaleY(.08)}}
+@keyframes wkDouble{0%,100%{transform:scaleY(1)} 22%{transform:scaleY(.08)} 44%{transform:scaleY(1.06)}
+  66%{transform:scaleY(.08)} 85%{transform:scaleY(1.04)}}
+@keyframes wkNod{0%{transform:translateY(0) scale(1,1)}
+  32%{transform:translateY(1.4px) scale(1.05,.95)} 100%{transform:translateY(0) scale(1,1)}}
+@keyframes wkBurst{0%{transform:scale(1); opacity:1} 55%{transform:scale(1.35); opacity:1}
+  100%{transform:scale(1); opacity:.6}}
+
+/* the bubble - surface lift + hairline, per DESIGN.md. No new hue. */
+.bub{position:relative; background:var(--s2); border:1px solid var(--hair-strong);
+  border-radius:var(--r-lg); padding:9px 14px; font-size:14px; line-height:1.45;
+  color:var(--ink-muted); max-width:46ch; min-height:20px}
+.bub b{color:var(--ink); font-weight:500}
+.bub i{font-style:normal; color:var(--ink-tert)}
+.bub:empty{display:none}
+.bub::before{content:""; position:absolute; width:9px; height:9px; background:var(--s2);
+  border-left:1px solid var(--hair-strong); border-bottom:1px solid var(--hair-strong);
+  left:-6px; top:calc(50% - 5px); transform:rotate(45deg)}
+
+/* ---- placements ---- */
+body[data-place="strip"] #winkHost{display:none}
+body:not([data-place="strip"]) .phase{display:none}
+
+body[data-place="below"] #winkHost{--wk:46px}
+
+/* hangs off the panel's bottom-right corner, overlapping its edge */
+body[data-place="corner"] #stage{padding-bottom:34px}
+body[data-place="corner"] #mountCorner{position:absolute; right:18px; bottom:-24px;
+  display:flex; align-items:center; gap:var(--sp-sm); flex-direction:row-reverse; z-index:3}
+body[data-place="corner"] #winkHost{--wk:50px; flex-direction:row-reverse}
+body[data-place="corner"] .bub{max-width:36ch}
+body[data-place="corner"] .bub::before{left:auto; right:-6px;
+  border-left:0; border-bottom:0; border-right:1px solid var(--hair-strong);
+  border-top:1px solid var(--hair-strong)}
+
+/* on the drawing surface - the deliberate violation */
+body[data-place="inside"] #mountInside{position:absolute; right:20px; top:16px;
+  display:flex; align-items:center; gap:var(--sp-sm); flex-direction:row-reverse; z-index:3}
+body[data-place="inside"] #winkHost{--wk:44px; flex-direction:row-reverse}
+body[data-place="inside"] .bub{background:var(--s2); max-width:30ch}
+body[data-place="inside"] .bub::before{left:auto; right:-6px;
+  border-left:0; border-bottom:0; border-right:1px solid var(--hair-strong);
+  border-top:1px solid var(--hair-strong)}
+
+/* switcher */
+.places{display:flex; gap:var(--sp-xs); flex-wrap:wrap; margin:var(--sp-lg) 0 var(--sp-xs)}
+.pl{font-family:var(--sans); font-size:13px; font-weight:500; cursor:pointer; color:var(--ink-subtle);
+  background:var(--canvas); border:1px solid var(--hair); border-radius:var(--r-pill); padding:6px 14px}
+.pl:hover{border-color:var(--hair-strong); color:var(--ink)}
+.pl[aria-pressed=true]{background:var(--s2); color:var(--ink); border-color:var(--hair-strong)}
+.pl:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
+.verdict{font-size:13px; color:var(--ink-tert); margin:0 0 var(--sp-lg); min-height:38px; max-width:62ch}
+.verdict b{color:var(--ink-subtle); font-weight:500}
+.opt{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-subtle);
+  cursor:pointer; user-select:none; margin-left:auto}
+.opt input{accent-color:var(--accent); width:14px; height:14px; cursor:pointer}
+
+/* §3.4 - reduced motion renders the final state, it does not animate faster */
+@media (prefers-reduced-motion:reduce){
+  .wk-breathe,.wk-bob,.wk-spark,.wink.blink .wk-eye,.wink.react .wk-eye,.wink.react .wk-spark,
+  .wink.speaking{animation:none}
+  .wk-face,.wink{transition:none}
+}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:520px){ h1{font-size:28px; letter-spacing:-.7px} .lede{font-size:16px} }
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Four places for a face</h1>
+  <p class="lede">The same drawing, the same words, the same timing. The only thing that moves is
+  where the narrator stands — and whether there is one at all.</p>
+</header>
+
+<div class="places" id="places">
+  <button class="pl" data-place="strip">No face</button>
+  <button class="pl" data-place="below">Under the drawing</button>
+  <button class="pl" data-place="corner">Corner of the panel</button>
+  <button class="pl" data-place="inside">On the drawing</button>
+  <label class="opt"><input type="checkbox" id="nodim"> stay bright between lines</label>
+</div>
+<p class="verdict" id="verdict"></p>
+
+<div class="ctl">
+  <span class="eyebrow">ASKING FOR</span>
+  <button class="pn" id="pn"></button>
+  <button class="btn last" id="pause" aria-pressed="false">
+    <span id="pauseGlyph">❙❙</span> <span id="pauseWord">Pause</span></button>
+  <button class="btn" id="replay">Replay</button>
+</div>
+
+<div class="stage" id="stage">
+  <div class="panel">
+    <svg id="svg" viewBox="0 0 620 200" role="img" aria-label="A dot carrying a page name between two circles"></svg>
+    <div id="mountInside"></div>
+    <div id="mountCorner"></div>
+    <div class="pop" id="pop" hidden>
+      <button class="close" id="popClose" aria-label="Close and carry on">✕</button>
+      <span class="caret" id="caret"></span>
+      <div id="popBody"></div>
+    </div>
+  </div>
+  <div class="under" id="mountBelow"></div>
+  <p class="phase" id="phase"></p>
+</div>
+
+<div id="winkHost">
+  <svg class="wink" id="wink" viewBox="0 0 100 100" aria-hidden="true">
+    <g class="wk-bob"><g class="wk-breathe">
+      <circle class="wk-body" cx="50" cy="50" r="46"/>
+      <g class="wk-face">
+        <g transform="rotate(-10 38.04 45.4)">
+          <ellipse class="wk-eye" cx="38.04" cy="45.4" rx="5.98" ry="9.2"/>
+        </g>
+        <path class="wk-wink" d="M59.2 42.6 Q67 54.6 74.8 42.6"/>
+      </g>
+      <g transform="translate(76.2 16.9)">
+        <path class="wk-spark" d="M0,-6.2 Q0.9,-1.5 5.2,0 Q0.9,1.5 0,6.2 Q-0.9,1.5 -5.2,0 Q-0.9,-1.5 0,-6.2 Z"/>
+      </g>
+    </g></g>
+  </svg>
+  <div class="bub" id="bub" aria-live="polite"></div>
+</div>
+
+<div id="library" hidden>
+  <div class="piece" id="pTcp">
+    <p class="phead">
+      <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
+        <line x1="2" y1="7" x2="24" y2="7" stroke="#34343a" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <span class="pname">The line — a TCP connection</span></p>
+    <p class="plain">It opens before anything is sent, and both dots travel along it.</p>
+    <div class="notes" id="nTcp">
+      <div class="note"><h4>FROM THE ARTICLE</h4>
+        “Before your browser can send a HTTP request though, it first needs to establish a TCP connection
+        with the Web server.” <b>— all it says.</b></div>
+      <div class="note beyond"><h4>BEYOND THE ARTICLE</h4>
+        <p>TCP gives two programs an <b>ordered, reliable stream of bytes</b>: whatever one side writes comes
+        out the other side in the same order.</p>
+        <p>Four things identify a connection — both addresses and both port numbers. Your browser never chose
+        its own port; the operating system handed it one.</p>
+        <p>The programming interface for this is a <b>socket</b>.
+        <a href="https://ruslanspivak.com/lsbaws-part3/" target="_blank" rel="noopener">Part 3 of this
+        series</a> takes sockets apart properly.</p></div>
+    </div>
+  </div>
+
+  <div class="piece" id="pReq">
+    <p class="phead">
+      <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
+        <circle cx="7" cy="7" r="5.5" fill="#5e6ad2"/>
+        <path d="M15 3l5 4-5 4" stroke="#5e6ad2" stroke-width="2.2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="pname">The dot going out — the HTTP request</span></p>
+    <div class="anat">
+      <span class="part"><span class="tok">GET</span><i class="tick"></i><em>method</em></span>
+      <span class="part is-path"><span class="tok" id="reqPath"></span><i class="tick"></i><em>path</em></span>
+      <span class="part"><span class="tok">HTTP/1.1</span><i class="tick"></i><em>version</em></span>
+    </div>
+    <div class="notes" id="nReq">
+      <div class="note"><h4>FROM THE ARTICLE</h4>
+        “The HTTP request consists of the line indicating the HTTP method (<b>GET</b>, because we are asking
+        our server to return us something), the path <b>/hello</b> that indicates a “page” on the server we
+        want and the protocol version.”</div>
+      <div class="note beyond"><h4>BEYOND THE ARTICLE — THE OTHER PAGE NAMES</h4>
+        The article only ever asks for <code>/hello</code>. The others are ours, but not invented: each was
+        really sent to the server behind this page, and the reply you see is the one that really came back.</div>
+      <div class="note beyond"><h4>BEYOND THE ARTICLE — OTHER METHODS</h4>
+        <code>GET</code> asks for something. <code>POST</code> sends data, <code>PUT</code> replaces,
+        <code>DELETE</code> removes, <code>HEAD</code> asks for the top part only.</div>
+    </div>
+  </div>
+
+  <div class="piece" id="pRes">
+    <p class="phead">
+      <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true" id="markRes">
+        <circle cx="19" cy="7" r="5.5" fill="#27a644"/>
+        <path d="M11 3L6 7l5 4" stroke="#27a644" stroke-width="2.2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="pname">The dot coming back — the HTTP response</span></p>
+    <div class="rows">
+      <div class="rw"><div class="anat" style="padding:0">
+        <span class="part"><span class="tok">HTTP/1.1</span><i class="tick"></i><em>version</em></span>
+        <span class="part" id="pCode"><span class="tok" id="rCode">200</span><i class="tick"></i><em>status code</em></span>
+        <span class="part" id="pReason"><span class="tok" id="rReason">OK</span><i class="tick"></i><em>reason phrase</em></span>
+      </div><span class="lab">status line</span></div>
+      <div class="rw"><div class="dotline"></div><span class="lab">empty line, required</span></div>
+      <div class="rw"><div class="txt" id="rBody"></div><span class="lab">body</span></div>
+    </div>
+    <div class="notes" id="nRes">
+      <div class="note"><h4>FROM THE ARTICLE</h4>
+        “The response consists of a status line <b>HTTP/1.1 200 OK</b>, followed by a required empty line,
+        and then the HTTP response body.”</div>
+      <div class="note beyond"><h4>BEYOND THE ARTICLE — OTHER STATUS CODES</h4>
+        <p>The first digit gives the family: <b>1xx</b> information, <b>2xx</b> it worked, <b>3xx</b> look
+        elsewhere, <b>4xx</b> the request was wrong, <b>5xx</b> the server broke.</p>
+        <p>You have produced two of them. RFC 9110 says <code>200</code> means the request succeeded and a
+        representation of the resource is included; <code>404</code> means the server “cannot find a current
+        representation for the target resource”.</p></div>
+    </div>
+  </div>
+  <div class="piece" id="pSrv">
+    <p class="phead">
+      <svg class="mark" width="26" height="14" viewBox="0 0 26 14" aria-hidden="true">
+        <circle cx="13" cy="7" r="5.5" fill="none" stroke="#8a8f98" stroke-width="2"/></svg>
+      <span class="pname">The circle on the right — the web server</span></p>
+    <p class="plain">A program waiting on port 8888. It reads the request, prints it to its own terminal,
+    and sends a response back down the same line.</p>
+    <div class="notes">
+      <div class="note beyond"><h4>BEYOND THE ARTICLE — THIS SERVER WAS CHANGED</h4>
+        <p>The article's own <code>webserver1.py</code> answers <b>“Hello, World!” to everything</b>. Its
+        reply is a fixed string in the code and the path is never looked at — checked by really sending it
+        24 different page names, which produced one reply, byte for byte, every time.</p>
+        <p>The server here has <b>one line added</b>: it looks up the path before answering, so the page
+        name can decide something. That is what a path is for — MDN calls it “the path to the resource on
+        the Web server”, and RFC 9110 says “the target of an HTTP request is called a resource”.</p></div>
+    </div>
+  </div>
+</div>
+
+<p class="foot"><b>What this study is for.</b> The mascot is chrome, not an eighth mark.
+<code>VISUAL-LANGUAGE.md</code> §1 closes the drawing at seven marks and §3.3 forbids idle drift
+inside it, so Wink may breathe anywhere except on the drawing surface — which is what
+<b>On the drawing</b> lets you feel. Its eyes track the dot's real screen position, because a circle
+carries no orientation of its own: where the features sit is the only direction it has.<br><br>
+Every reply here really came back: each page name was sent over a real connection to a real
+running server — the article's <code>webserver1.py</code> with one line added so the path decides the
+answer. Notes headed <b>BEYOND THE ARTICLE</b> go further than it does.</p>
+</div>
+
+<script>
+const D = {"runs":[{"path":"/hello","request":"GET /hello HTTP/1.1\r\n\r\n","response":"HTTP/1.1 200 OK\n\nHello, World!\n"},{"path":"/goodbye","request":"GET /goodbye HTTP/1.1\r\n\r\n","response":"HTTP/1.1 200 OK\n\nGoodbye, World!\n"},{"path":"/greeting","request":"GET /greeting HTTP/1.1\r\n\r\n","response":"HTTP/1.1 200 OK\n\nNice to meet you!\n"},{"path":"/about","request":"GET /about HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/cats","request":"GET /cats HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/index.html","request":"GET /index.html HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/home","request":"GET /home HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/banana","request":"GET /banana HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/login","request":"GET /login HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/hello.html","request":"GET /hello.html HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/Hello","request":"GET /Hello HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/hello/","request":"GET /hello/ HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/hi","request":"GET /hi HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/goodby","request":"GET /goodby HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/greetings","request":"GET /greetings HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/contact","request":"GET /contact HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/help","request":"GET /help HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/search","request":"GET /search HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/admin","request":"GET /admin HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/favicon.ico","request":"GET /favicon.ico HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/robots.txt","request":"GET /robots.txt HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/style.css","request":"GET /style.css HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/api","request":"GET /api HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/users/1","request":"GET /users/1 HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/a/b/c","request":"GET /a/b/c HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/hello?x=1","request":"GET /hello?x=1 HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/404","request":"GET /404 HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/HELLO","request":"GET /HELLO HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/greeting/","request":"GET /greeting/ HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"},{"path":"/dog","request":"GET /dog HTTP/1.1\r\n\r\n","response":"HTTP/1.1 404 Not Found\n\nNo such page\n"}]};
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const NAMES = ['/hello','/goodbye','/greeting','/about','/cats','/index.html'];
+const C = {accent:'#5e6ad2', ok:'#27a644', no:'#d95448', ink:'#f7f8f8',
+           sub:'#8a8f98', tert:'#62666d', hair:'#34343a'};
+const runOf = p => D.runs.find(r => r.path === p);
+const st = p => runOf(p).response.split('\n')[0].split(' ');
+const bodyOf = p => runOf(p).response.split('\n\n').slice(1).join('\n\n').trim();
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let sel = '/hello', token = 0, paused = false, openMark = null;
+
+const NS = 'http://www.w3.org/2000/svg';
+function el(t, a, p){ const e = document.createElementNS(NS, t);
+  for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+function label(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anchor':'middle',
+  fill:C.sub, 'font-size':13, 'font-family':'Inter, system-ui, sans-serif'}, o||{}), p);
+  e.textContent = s; return e; }
+const MONO = {'font-family':'JetBrains Mono, monospace', 'font-size':13};
+const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
+const linear = t => t;
+
+/* pause-aware tween: elapsed time only accumulates while running */
+function tween(ms, step, my, easing){
+  return new Promise(res => {
+    if (REDUCED){ step(1); return res(); }
+    let last = performance.now(), acc = 0;
+    const f2 = easing || ease;
+    (function frame(now){
+      if (token !== my) return res();
+      const dt = now - last; last = now;
+      if (!paused) acc += dt;
+      const t = Math.min(1, acc / ms);
+      step(f2(t));
+      t < 1 ? requestAnimationFrame(frame) : res();
+    })(last);
+  });
+}
+const wait = ms => tween(ms, () => {}, token, linear);
+const head = (x, y, dir) => 'M'+(x-9*dir)+' '+(y-6)+'L'+(x-dir)+' '+y+'L'+(x-9*dir)+' '+(y+6);
+
+/* ---------- marks you can click ---------- */
+const VB = 620;
+function makeHit(g, name, cx, cy, r){
+  const h = el('circle', {cx, cy, r, fill:'transparent', 'data-mark':name}, g);
+  h.style.cursor = 'pointer';
+  h.addEventListener('click', ev => { ev.stopPropagation(); openPop(name, cx); });
+  return h;
+}
+const PIECE = {tcp:'pTcp', req:'pReq', srv:'pSrv', res:'pRes'};
+
+/* a faint ring on every clickable mark, but only while stopped */
+function syncRings(){
+  const svg = $('#svg');
+  const old = svg.querySelector('#rings');
+  if (old) old.remove();
+  if (!paused) return;
+  const g = el('g', {id:'rings', 'pointer-events':'none'}, svg);
+  svg.querySelectorAll('[data-mark]').forEach(m => {
+    const on = m.getAttribute('data-mark') === openMark;
+    const a = {fill:'none', stroke: on ? C.accent : C.sub,
+      'stroke-width': on ? 1.8 : 1.4, opacity: on ? .85 : .34};
+    if (m.tagName === 'circle')
+      el('circle', Object.assign({cx:m.getAttribute('cx'), cy:m.getAttribute('cy'),
+        r:m.getAttribute('r')}, a), g);
+    else
+      el('rect', Object.assign({x:m.getAttribute('x'), y:m.getAttribute('y'),
+        width:m.getAttribute('width'), height:m.getAttribute('height'), rx:16}, a), g);
+  });
+}
+function updateChrome(){
+  const btn = $('#pause');
+  btn.setAttribute('aria-pressed', String(paused));
+  $('#pauseWord').textContent = paused ? 'Play' : 'Pause';
+  $('#pauseGlyph').textContent = paused ? '▶' : '❙❙';
+  syncRings();
+}
+function openPop(name, svgX){
+  if (openMark === name) return closePop();
+  if (openMark) putBack();
+  paused = true;
+  openMark = name;
+  updateChrome();
+  $('#popBody').appendChild($('#' + PIECE[name]));
+  $('#pop').hidden = false;
+  $('#caret').style.left = Math.max(14, Math.min(94, svgX / VB * 100)) + '%';
+  const t = '<i>stopped — close this to carry on</i>';
+  $('#phase').innerHTML = t; W.say(t); W.lookAt(0, 0); W.setGaze(0, 2.2);
+  $('#popClose').focus();
+}
+function putBack(){ if (openMark) $('#library').appendChild($('#' + PIECE[openMark])); }
+function closePop(){
+  putBack(); openMark = null; paused = false;
+  $('#pop').hidden = true;
+  updateChrome();
+  $('#phase').innerHTML = lastSaid; W.say(lastSaid);
+}
+function setPaused(v){
+  if (openMark) return closePop();
+  paused = v;
+  updateChrome();
+  const t = paused ? '<i>stopped — click any ringed mark to see what it is</i>' : lastSaid;
+  $('#phase').innerHTML = t; W.say(t);
+  if (paused) W.setGaze(0, 2.2);
+}
+let lastSaid = '';
+const say = t => { lastSaid = t; if (!openMark){ $('#phase').innerHTML = t; W.say(t); } };
+
+/* ---------- Wink ---------- */
+const W = (() => {
+  const host = $('#winkHost'), svg = $('#wink'), bub = $('#bub');
+  let speakTimer = 0, blinkTimer = 0;
+
+  const setGaze = (gx, gy) => {
+    svg.style.setProperty('--gx', gx.toFixed(2) + 'px');
+    svg.style.setProperty('--gy', gy.toFixed(2) + 'px');
+  };
+
+  /* A circle has no facing. All of it comes from where the features sit,
+     so point the feature cluster at whatever is being talked about. */
+  function lookAt(clientX, clientY){
+    if (REDUCED) return;
+    const r = svg.getBoundingClientRect();
+    if (!r.width) return;
+    const dx = clientX - (r.left + r.width/2), dy = clientY - (r.top + r.height/2);
+    const L = Math.hypot(dx, dy) || 1;
+    const k = Math.min(1, L / 240);
+    setGaze(4.6 * k * dx / L, 3.0 * k * dy / L);
+  }
+  function lookAtSvg(x, y){
+    const r = $('#svg').getBoundingClientRect();
+    if (!r.width) return;
+    const s = r.width / VB;
+    lookAt(r.left + x * s, r.top + y * s);
+  }
+
+  function say(t){
+    bub.innerHTML = t;
+    svg.classList.remove('speaking'); void svg.offsetWidth;
+    svg.classList.add('speaking');
+    clearTimeout(speakTimer);
+    speakTimer = setTimeout(() => svg.classList.remove('speaking'),
+      Math.max(900, t.replace(/<[^>]*>/g, '').length * 46));
+  }
+
+  function react(ok){
+    if (REDUCED) return;
+    svg.classList.remove('react'); void svg.offsetWidth;
+    if (ok) svg.classList.add('react');
+  }
+
+  /* randomised, so it never lands on the breathing beat */
+  (function blink(){
+    if (REDUCED) return;
+    blinkTimer = setTimeout(() => {
+      svg.classList.add('blink');
+      setTimeout(() => svg.classList.remove('blink'), 160);
+      blink();
+    }, 3000 + Math.random() * 3000);
+  })();
+
+  const MOUNT = {strip:'#mountBelow', below:'#mountBelow', corner:'#mountCorner', inside:'#mountInside'};
+  const VERDICT = {
+    strip: 'The baseline. Fourteen-pixel grey under the drawing \u2014 easy to miss, easy to ignore, ' +
+      'and it never asks for anything. Read a line, then read it again with a face attached.',
+    below: '<b>Costs nothing, gains a gaze.</b> Same row the caption already owned, so no layout moves. ' +
+      'The eyes point at the dot, which is the one thing a caption could never do.',
+    corner: '<b>Always present, always slightly in the way.</b> Reads as an assistant rather than a ' +
+      'narrator \u2014 it hangs off the panel instead of belonging to the explanation.',
+    inside: '<b>This one breaks the rules, on purpose.</b> §1 closes the drawing at seven marks; §3.3 ' +
+      'says nothing animates that is not happening. A breathing face on the drawing surface is now ' +
+      'the liveliest thing there, and the dot has to compete with it.'
+  };
+  function place(p){
+    document.body.dataset.place = p;
+    $(MOUNT[p]).appendChild(host);
+    $$('.pl').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.place === p)));
+    $('#verdict').innerHTML = VERDICT[p];
+    setGaze(0, 0);
+  }
+  return {say, react, lookAt, lookAtSvg, place, setGaze};
+})();
+
+$$('.pl').forEach(b => b.addEventListener('click', () => W.place(b.dataset.place)));
+$('#nodim').addEventListener('change', e => document.body.classList.toggle('nodim', e.target.checked));
+
+/* ---------- the drawing ---------- */
+const G = {L:112, R:508, Y:84, RAD:42};
+async function play(){
+  const my = ++token, svg = $('#svg');
+  closePop(); paused = false; updateChrome();
+  svg.innerHTML = '';
+  const [, code] = st(sel), ok = code === '200', body = bodyOf(sel);
+  const col = ok ? C.ok : C.no;
+  const x0 = G.L + G.RAD + 8, x1 = G.R - G.RAD - 8;
+
+  const wire = el('line', {x1:x0, y1:G.Y, x2:x0, y2:G.Y, stroke:C.hair, 'stroke-width':2,
+    'stroke-linecap':'round'}, svg);
+  el('circle', {cx:G.L, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
+  const srv = el('circle', {cx:G.R, cy:G.Y, r:G.RAD, fill:'none', stroke:C.sub, 'stroke-width':2}, svg);
+  label(svg, G.L, G.Y+G.RAD+26, 'you'); label(svg, G.R, G.Y+G.RAD+26, 'the server');
+  const held = el('circle', {cx:G.L, cy:G.Y, r:0, fill:col, 'fill-opacity':.22, stroke:col, 'stroke-width':2}, svg);
+  const ansT = label(svg, G.L, G.Y+G.RAD+48, '', Object.assign({fill:col, opacity:0}, MONO));
+
+  /* always-present marks */
+  const hitLine = el('rect', {x:x0, y:G.Y-16, width:x1-x0, height:32, fill:'transparent',
+    'data-mark':'tcp'}, svg);
+  hitLine.style.cursor = 'pointer';
+  hitLine.addEventListener('click', ev => { ev.stopPropagation(); openPop('tcp', (x0+x1)/2); });
+  makeHit(svg, 'srv', G.R, G.Y, G.RAD + 6);
+
+  say('nothing between them yet'); await wait(300);
+  say('a <b>line</b> opens between you and the server');
+  await tween(450, t => wire.setAttribute('x2', x0 + (x1-x0)*t), my);
+  if (token !== my) return;
+
+  const dg = el('g', {}, svg);
+  const d = el('circle', {cx:x0, cy:G.Y, r:8, fill:C.accent}, dg);
+  const g = label(svg, x0, G.Y-22, sel, Object.assign({fill:C.accent}, MONO));
+  const a = el('path', {d:'', stroke:C.accent, 'stroke-width':2.5, fill:'none',
+    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
+  const hitReq = el('circle', {cx:x0, cy:G.Y, r:22, fill:'transparent', 'data-mark':'req'}, svg);
+  hitReq.style.cursor = 'pointer';
+  hitReq.addEventListener('click', ev => { ev.stopPropagation();
+    openPop('req', +hitReq.getAttribute('cx')); });
+  if (paused) syncRings();
+  say('a <b>dot</b> carries the page name across — or stop it and click anything');
+  await tween(1100, t => { const x = x0+(x1-x0)*t;
+    d.setAttribute('cx',x); g.setAttribute('x',x); hitReq.setAttribute('cx',x);
+    a.setAttribute('d', head(x+20, G.Y, 1)); W.lookAtSvg(x, G.Y); }, my);
+  if (token !== my) return;
+  dg.remove(); g.remove(); a.remove(); hitReq.remove();
+
+  /* the server works - a ring closes around it, at a constant rate */
+  const CIRC = 2 * Math.PI * (G.RAD + 9);
+  const prog = el('circle', {cx:G.R, cy:G.Y, r:G.RAD+9, fill:'none', stroke:C.accent, 'stroke-width':2.5,
+    'stroke-linecap':'round', 'stroke-dasharray':CIRC, 'stroke-dashoffset':CIRC,
+    transform:'rotate(-90 '+G.R+' '+G.Y+')'}, svg);
+  say('the server is working on it'); W.lookAtSvg(G.R, G.Y);
+  await tween(1500, t => prog.setAttribute('stroke-dashoffset', CIRC * (1 - t)), my, linear);
+  if (token !== my) return;
+  await tween(320, t => { prog.setAttribute('opacity', 1-t);
+    prog.setAttribute('r', G.RAD + 9 + 10*t); }, my);
+  prog.remove();
+  if (token !== my) return;
+  srv.setAttribute('stroke', col);
+
+  const bg = el('g', {}, svg);
+  if (ok){ el('circle', {cx:0, cy:0, r:8, fill:col}, bg); }
+  else {
+    el('circle', {cx:0, cy:0, r:9, fill:'none', stroke:col, 'stroke-width':2}, bg);
+    el('path', {d:'M-4.5 -4.5L4.5 4.5M4.5 -4.5L-4.5 4.5', stroke:col, 'stroke-width':2,
+      'stroke-linecap':'round'}, bg);
+  }
+  bg.setAttribute('transform', 'translate('+x1+','+G.Y+')');
+  const g2 = label(svg, x1, G.Y-22, body, Object.assign({fill:col}, MONO));
+  const a2 = el('path', {d:'', stroke:col, 'stroke-width':2.5, fill:'none',
+    'stroke-linecap':'round', 'stroke-linejoin':'round'}, svg);
+  const hitRes = el('circle', {cx:x1, cy:G.Y, r:22, fill:'transparent', 'data-mark':'res'}, svg);
+  hitRes.style.cursor = 'pointer';
+  hitRes.addEventListener('click', ev => { ev.stopPropagation();
+    openPop('res', +hitRes.getAttribute('cx')); });
+  if (paused) syncRings();
+  say(ok ? 'a <b>dot</b> brings the page back' : 'a <b>crossed circle</b> comes back — no such page');
+  await tween(1100, t => { const x = x1-(x1-x0)*t;
+    bg.setAttribute('transform', 'translate('+x+','+G.Y+')');
+    g2.setAttribute('x', x); hitRes.setAttribute('cx', x);
+    a2.setAttribute('d', head(x-20, G.Y, -1)); W.lookAtSvg(x, G.Y); }, my);
+  if (token !== my) return;
+  bg.remove(); g2.remove(); a2.remove();
+  ansT.textContent = body;
+  await tween(330, t => { held.setAttribute('r', 22*t); ansT.setAttribute('opacity', t); }, my);
+  if (!ok){ held.setAttribute('fill-opacity', 0);
+    el('path', {d:'M'+(G.L-8)+' '+(G.Y-8)+'L'+(G.L+8)+' '+(G.Y+8)+'M'+(G.L+8)+' '+(G.Y-8)+'L'+(G.L-8)+' '+(G.Y+8),
+      stroke:col, 'stroke-width':2, 'stroke-linecap':'round'}, svg); }
+  /* the response mark stays reachable once it has landed */
+  hitRes.setAttribute('cx', G.L);
+  W.lookAtSvg(G.L, G.Y); W.react(ok);
+  say(ok ? 'you have the page' : 'there was no page by that name');
+}
+
+function sync(){
+  const [, code, ...rest] = st(sel), miss = code !== '200';
+  $('#pn').textContent = sel;
+  $('#reqPath').textContent = sel;
+  $('#rCode').textContent = code;
+  $('#rReason').textContent = rest.join(' ');
+  $('#pCode').className = 'part' + (miss ? ' miss' : '');
+  $('#pReason').className = 'part' + (miss ? ' miss' : '');
+  $('#rBody').textContent = bodyOf(sel);
+  $('#rBody').style.color = miss ? C.no : C.ink;
+  $('#markRes').innerHTML = miss
+    ? '<circle cx="19" cy="7" r="5.5" fill="none" stroke="'+C.no+'" stroke-width="2"/>' +
+      '<path d="M16.5 4.5l5 5M21.5 4.5l-5 5" stroke="'+C.no+'" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<path d="M11 3L6 7l5 4" stroke="'+C.no+'" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+    : '<circle cx="19" cy="7" r="5.5" fill="'+C.ok+'"/>' +
+      '<path d="M11 3L6 7l5 4" stroke="'+C.ok+'" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+  play();
+}
+
+$('#pn').onclick = () => { sel = NAMES[(NAMES.indexOf(sel)+1) % NAMES.length]; sync(); };
+$('#replay').onclick = () => play();
+$('#popClose').onclick = () => closePop();
+$('#pause').onclick = () => setPaused(!paused);
+$('#svg').addEventListener('click', () => setPaused(!paused));
+addEventListener('keydown', e => { if (e.key === 'Escape' && openMark) closePop(); });
+W.place('below');
+sync();
+</script>
