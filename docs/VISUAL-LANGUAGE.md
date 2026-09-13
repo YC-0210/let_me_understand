@@ -23,11 +23,11 @@ Eight. Nothing else may be drawn.
 |---|---|---|
 | **Circle** outline | r 42 · stroke 2 | A **place that persists** — you, the server |
 | **Disc** filled | r 8 | A **thing in motion** — one message |
-| **Held disc** filled, faint | r 22 · 22% fill · stroke 2 | A thing **at rest inside a place** |
+| **Held disc** filled, faint | r 22 · 22% fill · stroke 2 — r 7 where a place holds several | A thing **at rest inside a place**. Several held discs mean several things; the radius is fixed so quantity is carried by number, never by size. [ADR 0005](adr/0005-places-that-begin-and-end.md) |
 | **Line** | stroke 2 · round cap | A **channel** between two places |
 | **Arrowhead** chevron | stroke 2.5 · 9px arms | **Direction of travel** |
 | **Ring** sweeping arc | r = place + 9 · stroke 2.5 | **Work taking time**, around whatever is doing it |
-| **Cross** two strokes | stroke 2 · 9px arms | **Absence** — nothing is there |
+| **Cross** two strokes | stroke 2 · 9px arms, or scaled to the circle it replaces | **Absence** — nothing is there. Over a channel: something that never arrived. Where a place stood: the place is gone. [ADR 0005](adr/0005-places-that-begin-and-end.md) |
 | **Trace** dashed line | stroke 1.5 · dash 3 4 · 45% opacity | A path something **has already taken**. History, not structure — it outlives the channel it used. [ADR 0003](adr/0003-the-trace-mark.md) |
 
 ### Grammar
@@ -36,8 +36,11 @@ Eight. Nothing else may be drawn.
 2. An **arrowhead** never exists alone — always attached to a disc or a line.
 3. A **ring** only ever surrounds a **circle**, never a disc. Work is done by places, not
    by messages.
-4. A **cross** replaces a disc. They never appear together.
-5. A **circle** persists for the whole scene. A **disc** exists only while travelling.
+4. A **cross** replaces a disc, or a circle. It never appears alongside the thing it
+   replaces. ([ADR 0005](adr/0005-places-that-begin-and-end.md))
+5. A **circle** persists for as long as its place exists; a place may be created and may
+   end inside one scene. A **disc** exists only while travelling.
+   ([ADR 0005](adr/0005-places-that-begin-and-end.md))
 6. Text **names** marks. Text never explains inside the drawing — explanation lives
    behind a door (§5).
 
@@ -104,7 +107,9 @@ seconds. Steps are discrete, few, and drawn from what the source actually says h
 ## 4. Layout
 
 - One drawing per idea. A second idea gets a second drawing.
-- Places sit on one horizontal axis; the channel runs between them.
+- Each **kind** of place sits on its own vertical; the kinds run left to right, and the
+  channel runs between them. Several instances of one kind stack downwards.
+  ([ADR 0005](adr/0005-places-that-begin-and-end.md))
 - The reader's side is **left**. The system's side is **right**.
 - Names sit **below** their mark. Values ride **above** the mark carrying them.
 
