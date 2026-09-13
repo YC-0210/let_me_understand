@@ -47,7 +47,8 @@ svg.draw{display:block; width:100%; height:auto}
 #scrub::-moz-range-thumb{width:14px; height:14px; border-radius:50%; background:var(--accent); border:0}
 .phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-xs) 2px 0;
   display:flex; gap:10px; align-items:baseline}
-.phase .n{font-family:var(--mono); font-size:12px; color:var(--ink-tert); flex:none}
+.phase .n{font-family:var(--mono); font-size:11.5px; color:var(--ink-tert); flex:none;
+  min-width:62px}
 .phase b{color:var(--ink); font-weight:500}
 .ctl{display:flex; align-items:center; gap:var(--sp-sm); margin:var(--sp-md) 0 0}
 .btn{font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; color:var(--ink);
@@ -97,8 +98,8 @@ svg.draw{display:block; width:100%; height:auto}
 <header>
   <span class="eyebrow">PROTOTYPE · PART 2 · TWO KNOBS</span>
   <h1>Change the server. Change the framework. The thing in between does not move.</h1>
-  <p class="lede">Twelve combinations, every one of them really run. Turn either knob and watch
-  what changes — then watch what refuses to.</p>
+  <p class="lede">All seven steps the article lists, in its own words, over twelve combinations
+  that were really run. Turn either knob and watch what changes — then watch what refuses to.</p>
 </header>
 
 <div class="knobs">
@@ -107,10 +108,10 @@ svg.draw{display:block; width:100%; height:auto}
 </div>
 
 <div class="panel">
-  <svg id="svg" class="draw" viewBox="0 0 700 222" role="img"
+  <svg id="svg" class="draw" viewBox="0 0 740 244" role="img"
        aria-label="A request travelling from you to a server to a framework application and back"></svg>
   <div class="steps">
-    <input type="range" id="scrub" min="0" max="7" step="1" value="0" aria-label="Step through the exchange">
+    <input type="range" id="scrub" min="0" max="10" step="1" value="0" aria-label="Step through the exchange">
     <p class="phase" id="phase"></p>
   </div>
   <div class="ctl">
@@ -143,9 +144,17 @@ svg.draw{display:block; width:100%; height:auto}
   <b>ADR 0002</b>: checked against the article's own list of servers, real, and marked here.
   The Django project is ours too — the article says to clone its repository rather than printing
   it, so its <code>/hello</code> view is authored by us.</div>
-  <div class="row"><h4>NOT BUILT YET</h4>Doors. §5 says every mark has one and the word is the
-  door; nothing here opens. <code>start_response</code> is still not drawn as its own beat either,
-  though the capture now records exactly what each framework passed to it.</div>
+  <div class="row"><h4>THE SEVEN STEPS</h4>Every step in the article's recap is drawn and
+  labelled with its number. Its fifth — <i>calls the callable and gets back a body</i> — is opened
+  into the three things that really happen inside it, because there are <b>two routes back</b>:
+  <code>start_response</code> is a callback made while the application is still running, and the
+  body is the call's return value. The server holds the status and headers from step 7 until it
+  constructs the response at step 9, which is the article's sixth step — <i>using the data
+  returned by the call <b>and</b> the status and response headers set by start_response</i>.
+  Only <i>the application works</i> carries no number: the article's sequence figure shows it,
+  its list does not name it.</div>
+  <div class="row lift"><h4>NOT BUILT YET</h4>Doors. §5 says every mark has one and the word is
+  the door; nothing here opens yet.</div>
 </div>
 
 <p class="foot">Every byte on this page was captured from a real run: three servers
@@ -175,21 +184,28 @@ function txt(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anc
 let srv = 'webserver2', app = 'flaskapp';
 const run = () => D.runs[srv + '|' + app];
 
-const WORK = [2, 4, 6];
+/* The article's own seven steps, in its own words (section 3a.1), with the inside of
+   its fifth step - the call - opened into the three things that actually happen there.
+   ART maps each drawn step to the numbered step in the article's recap; a step with no
+   number is mechanism the article's sequence figure shows but its list does not name. */
 const STEPS = [
-  ['Nothing yet',                            0],
-  ['Your request arrives',                1000],
-  ['The server builds <b>environ</b>',     800],
-  ['The server calls the application',    1000],
-  ['The application works',               1300],
-  ['The application answers',             1000],
-  ['The server builds the response',       800],
-  ['The server replies to you',           1000],
+  ['Nothing yet',                                          0, 0],
+  ["The server loads an <b>application</b> callable",     700, 1],
+  ['The server reads a request',                         1000, 2],
+  ['The server parses it',                                650, 3],
+  ["The server builds an <b>environ</b> dictionary",      850, 4],
+  ["The server calls the <b>application</b> callable",   1000, 5],
+  ['The application works',                              1300, 0],
+  ["The application calls <b>start_response</b>",         950, 5],
+  ['The application returns a response body',             950, 5],
+  ['The server constructs an HTTP response',              850, 6],
+  ['The server transmits it back to you',                1000, 7],
 ];
+const WORK = [3, 4, 6, 9];          /* a place is working: parse, build, run, construct */
 /* section 3.1: travel eases, work is linear */
 const ease = f => f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2)/2;
 
-const G = {you:{x:80,y:118,r:38}, srv:{x:350,y:118,r:38}, app:{x:620,y:118,r:38}};
+const G = {you:{x:74,y:104,r:36}, srv:{x:344,y:104,r:36}, app:{x:646,y:104,r:36}};
 const gap = (a,b) => [a.x + a.r + 9, b.x - b.r - 9];
 const [n0, n1] = gap(G.you, G.srv);
 const [i0, i1] = gap(G.srv, G.app);
@@ -200,8 +216,10 @@ const pointOn = (d, f) => measure(d).getPointAtLength(Math.max(.001,f)*measure(d
 const partial = (d, f) => { const L = measure(d).getTotalLength(); return (f*L)+' '+L; };
 const arc = (x0, x1, y, lift) =>
   'M'+x0+' '+y+' C'+(x0+(x1-x0)*.32)+' '+(y+lift)+' '+(x1-(x1-x0)*.32)+' '+(y+lift)+' '+x1+' '+y;
-const P_IN = arc(n0,n1,G.you.y,-30), P_BACK = arc(n1,n0,G.you.y,30);
-const P_CALL = arc(i0,i1,G.srv.y,-30), P_RET = arc(i1,i0,G.srv.y,30);
+const P_IN = arc(n0,n1,G.you.y,-32), P_BACK = arc(n1,n0,G.you.y,32);
+/* two routes back from the application, because there really are two: start_response is
+   a callback made while it is still running, the body is the call's return value. */
+const P_CALL = arc(i0,i1,G.srv.y,-32), P_SR = arc(i1,i0,G.srv.y,30), P_BODY = arc(i1,i0,G.srv.y,96);
 
 let step = 0, sub = 1, playing = false, rafId = 0;
 const nameOf = (list, id) => (list.find(r => r[0] === id) || [id, id])[1];
@@ -215,23 +233,39 @@ function draw(){
   const atE = i => step === i ? ease(sub) : (step > i ? 1 : 0);
   const col = R.ok ? C.ok : C.no;
 
-  /* the application is loaded before any request, so its channel exists from the start */
-  el('line', {x1:i0, y1:G.srv.y, x2:i1, y2:G.srv.y, stroke:C.hair,
-    'stroke-width':2, 'stroke-linecap':'round'}, svg);
-  if (at(1) > 0) el('line', {x1:n0, y1:G.you.y, x2:n0 + (n1-n0)*Math.min(1, at(1)*1.6),
+  /* The channel to the application does not exist until the server has loaded it.
+     Step 1 IS that line appearing - the article's first step, drawn. */
+  if (at(1) > 0) el('line', {x1:i0, y1:G.srv.y, x2:i0 + (i1-i0)*Math.min(1, at(1)*1.5),
+    y2:G.srv.y, stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
+  if (at(2) > 0) el('line', {x1:n0, y1:G.you.y, x2:n0 + (n1-n0)*Math.min(1, at(2)*1.6),
     y2:G.you.y, stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
 
   const trace = (d, f, c) => { if (f <= 0) return;
     el('path', {d, fill:'none', stroke:c, 'stroke-width':1.5, opacity:.45,
       'stroke-linecap':'round', 'stroke-dasharray':partial(d, f)}, svg); };
-  trace(P_IN, atE(1), C.accent); trace(P_CALL, atE(3), C.accent);
-  trace(P_RET, atE(5), col);     trace(P_BACK, atE(7), col);
+  trace(P_IN,   atE(2), C.accent);
+  trace(P_CALL, atE(5), C.accent);
+  trace(P_SR,   atE(7), col);
+  trace(P_BODY, atE(8), col);
+  trace(P_BACK, atE(10), col);
 
   [G.you, G.srv, G.app].forEach(p => el('circle', {cx:p.x, cy:p.y, r:p.r, fill:'none',
     stroke:C.sub, 'stroke-width':2}, svg));
 
-  /* ring: work taking time. The only cue that something is happening. Linear. */
-  const worker = {2:G.srv, 4:G.app, 6:G.srv}, wcol = {2:C.accent, 4:C.accent, 6:col};
+  /* Held disc: status and response headers, at rest inside the server. start_response
+     hands them over while the application is STILL RUNNING, and the server keeps them
+     until it constructs the response. This is the one thing in part 2 that is genuinely
+     at rest inside a place for a duration the reader cannot otherwise see. */
+  if (step >= 7 && step <= 9){
+    const f = step === 7 ? (sub >= 1 ? 1 : 0) : 1;
+    if (f) el('circle', {cx:G.srv.x, cy:G.srv.y, r:20, fill:col, 'fill-opacity':.22,
+      stroke:col, 'stroke-width':2}, svg);
+  }
+
+  /* ring: work taking time, around whatever is doing it. The only cue that something
+     is happening. Linear - labour does not accelerate. */
+  const worker = {3:G.srv, 4:G.srv, 6:G.app, 9:G.srv};
+  const wcol   = {3:C.accent, 4:C.accent, 6:C.accent, 9:col};
   if (WORK.includes(step)){
     const p = worker[step], r = p.r + 9, CIRC = 2*Math.PI*r;
     el('circle', {cx:p.x, cy:p.y, r, fill:'none', stroke:wcol[step], 'stroke-width':2.5,
@@ -242,52 +276,63 @@ function draw(){
   /* discs, only while travelling. Eased. */
   const disc = (d, c) => { const q = pointOn(d, ease(sub));
     el('circle', {cx:q.x, cy:q.y, r:8, fill:c}, svg); };
-  if (step === 1) disc(P_IN, C.accent);
-  if (step === 3) disc(P_CALL, C.accent);
-  if (step === 5) disc(P_RET, col);
-  if (step === 7) disc(P_BACK, col);
+  if (step === 2)  disc(P_IN, C.accent);
+  if (step === 5)  disc(P_CALL, C.accent);
+  if (step === 7)  disc(P_SR, col);
+  if (step === 8)  disc(P_BODY, col);
+  if (step === 10) disc(P_BACK, col);
 
   /* names below marks; values above the mark carrying them (section 4).
-     The middle and right names are the two knobs - they are what the reader turns. */
-  txt(svg, G.you.x, G.you.y + G.you.r + 22, 'you');
-  txt(svg, G.srv.x, G.srv.y + G.srv.r + 22, shortSrv[srv], {fill:C.ink});
-  txt(svg, G.app.x, G.app.y + G.app.r + 22, shortApp[app], {fill:C.ink});
-  const NAMEY = G.you.y + G.you.r + 44;
-  /* the invariant, named in the source's own terms, identical in all twelve runs */
-  txt(svg, (i0+i1)/2, NAMEY, 'application(environ, start_response)',
+     The middle and right names are the two knobs. */
+  txt(svg, G.you.x, G.you.y + G.you.r + 21, 'you');
+  txt(svg, G.srv.x, G.srv.y + G.srv.r + 21, shortSrv[srv], {fill:C.ink});
+  txt(svg, G.app.x, G.app.y + G.app.r + 21, shortApp[app], {fill:C.ink});
+
+  const NAMEY = 226;
+  if (at(1) > 0) txt(svg, (i0+i1)/2, NAMEY, 'application(environ, start_response)',
       {'font-size':11.5, fill:C.tert, 'font-family':MONO});
-  if (at(1) > 0) txt(svg, (n0+n1)/2, NAMEY, 'a network connection', {'font-size':11.5, fill:C.tert});
+  if (at(2) > 0) txt(svg, (n0+n1)/2, NAMEY, 'a network connection', {'font-size':11.5, fill:C.tert});
 
-  if (at(1) > 0) txt(svg, (n0+n1)/2, G.you.y - 46, 'GET /hello',
-    {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
-  if (at(3) > 0) txt(svg, (i0+i1)/2, G.srv.y - 46,
-    'environ · ' + Object.keys(R.environ).length + ' keys',
-    {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
-  if (at(5) > 0) txt(svg, (i0+i1)/2, G.srv.y + 44, R.body.trim(),
-    {fill:col, 'font-family':MONO, 'font-size':12.5});
-  if (at(7) > 0) txt(svg, (n0+n1)/2, G.you.y + 44, R.statusLine,
-    {fill:col, 'font-family':MONO, 'font-size':12.5});
+  const val = (x, y, s, c) => txt(svg, x, y, s, {fill:c, 'font-family':MONO, 'font-size':12.5});
+  if (at(2) > 0) val((n0+n1)/2, G.you.y - 48, 'GET /hello', C.accent);
+  if (at(4) > 0) val(G.srv.x, G.srv.y - G.srv.r - 16,
+      Object.keys(R.environ).length + ' keys', C.accent);
+  if (at(5) > 0) val((i0+i1)/2, G.srv.y - 48, 'environ', C.accent);
+  /* the two routes back, labelled apart so neither sits on the other's arc */
+  /* the start_response label sits toward the application, where it came from; the body
+     label sits lower and further left, so neither lands on the other's arc or on a name */
+  /* each return leg gets its own lane: start_response between the two arcs, the body
+     below the lower one, neither on a curve and neither on a name */
+  if (at(7) > 0) val(i0 + (i1-i0)*.66, G.srv.y + 42,
+      R.status + ' · ' + R.appHeaders.length + ' header' +
+      (R.appHeaders.length === 1 ? '' : 's'), col);
+  if (at(8) > 0) val(i0 + (i1-i0)*.38, G.srv.y + 96, R.body.trim(), col);
+  if (at(10) > 0) val((n0+n1)/2, G.you.y + 48, R.statusLine, col);
 
-  $('#phase').innerHTML = '<span class="n">' + step + ' / 7</span>' + STEPS[step][0];
+  const [name, , art] = STEPS[step];
+  $('#phase').innerHTML = '<span class="n">' + (art ? 'article ' + art : '&nbsp;&nbsp;&nbsp;·') +
+    '</span>' + name;
   $('#scrub').value = step;
-  $('#says').innerHTML = SAYS[step]();
+  $('#says').innerHTML = SAYS[step] ? SAYS[step]() : '';
 }
 
 /* what turning a knob changed, for the step you are on */
 const SAYS = {
-  0: () => 'twelve combinations, every one really run',
-  1: () => 'the same request in all twelve runs',
-  2: () => '<b>' + Object.keys(run().environ).length + ' keys</b> — the server decides how many',
-  3: () => 'the call is identical in all twelve runs',
-  4: () => '<b>' + shortApp[app] + '</b> decides what comes back',
-  5: () => run().appHeaders.length + ' header' + (run().appHeaders.length === 1 ? '' : 's') +
-           ' set by the application: ' + run().appHeaders.map(h => h[0]).join(', '),
-  6: () => 'the server adds its own: ' +
-           run().respHeaders.filter(h => !run().appHeaders.some(a => a[0] === h[0]))
-             .map(h => h[0]).join(', ') +
-           (run().chunked ? ' — no <b>Content-Length</b> from the application, so this server '
-                          + 'had to chunk the body' : ''),
-  7: () => run().statusLine,
+  0:  () => 'twelve combinations, every one really run',
+  1:  () => '<b>' + shortSrv[srv] + '</b> has no application of its own — it was handed one',
+  2:  () => 'the same request in all twelve runs',
+  3:  () => 'only the first line is parsed: method, path, version',
+  4:  () => '<b>' + Object.keys(run().environ).length + ' keys</b> — the server decides how many',
+  5:  () => 'the call is identical in all twelve runs',
+  6:  () => '<b>' + shortApp[app] + '</b> decides what comes back',
+  7:  () => 'the application is <b>still running</b>; the server parks these until step 9',
+  8:  () => run().chunked
+              ? 'no <b>Content-Length</b> here, which will cost this server later'
+              : run().appHeaders.length + ' headers came with it: ' +
+                run().appHeaders.map(h => h[0]).join(', '),
+  9:  () => 'built from the body <b>and</b> the headers held since step 7' +
+            (run().chunked ? ' — with no Content-Length, this server had to chunk the body' : ''),
+  10: () => run().statusLine,
 };
 
 function renderEnv(){

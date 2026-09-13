@@ -181,3 +181,33 @@ project), **1 unverified** pending capture (#83, whether the bare application se
 - **#62** The Django project is ours. Django 5.2's generated `wsgi.py` may also need
   `environ` keys this server never sets. If Django cannot be served by the article's
   unmodified server, that is a **finding to report, not to patch around** (Principle 1).
+
+---
+
+## Verification — the inventory checked against what was actually drawn
+
+The inventory is worthless if it is written once and never checked. Checked after
+`mix.html` was built, and it had **drifted**: three groups of items were marked *shown*
+and were not drawn at all. This is the same failure the rule exists to catch, arriving by
+a different route — the first version missed a line, this version claimed a line was there.
+
+| item | claimed | was | now |
+|---|---|---|---|
+| #12, #15–18 — `set_app`, loading `module:callable` | shown | **not drawn** | Step 1, *"The server loads an `application` callable"*. The channel to the application does not exist until this step; the line appearing **is** the step. |
+| #25, #29, #31 — `parse_request`, the first line, the three-way split | shown | **not drawn** | Step 3, *"The server parses it"*, with the caption *only the first line is parsed: method, path, version*. |
+| #46–47 — `headers_set`, `start_response` | shown | **not drawn** | Step 7, *"The application calls `start_response`"*. The status and headers travel back on their own arc while the application is still running, and rest in the server as the **held disc** until step 9 consumes them. |
+| #83 — does the bare application set `Content-Length`? | unverified | — | **Resolved by capture: it does not.** It is the only one of the four that does not, which is why Gunicorn has to chunk its body and Waitress buffers it. Both stated where the reader meets them. |
+
+All seven steps of the article's recap are now drawn and labelled with their number. The
+article's fifth step is opened into three, because two things come back by two routes at
+two different times; only *the application works* carries no number, since the article's
+sequence figure shows it but its list does not name it.
+
+### A departure the first inventory did not contain
+
+| # | Statement | | Why |
+|---|---|---|---|
+| 93 | Running **Gunicorn** and **Waitress** against the article's own application files | **departed** | The article names them (#69) but runs only its own `webserver2.py`. Both were installed and really run, so that the claim the article makes in words could be checked rather than repeated. ADR 0002: **checked** against the article's own list of servers, **real** — twelve pairs, every byte captured — and **marked** on the page where the reader meets it. Without it the server is not a Parameter at all: it would have exactly one value. |
+
+Totals, revised: **93 statements** — 68 shown, 22 omitted with a reason, **2 departures**
+(#62 the Django project, #93 the third-party servers), 1 resolved by capture (#83).
