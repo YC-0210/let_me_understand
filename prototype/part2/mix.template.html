@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mix and Match</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -16,10 +18,10 @@
 }
 *{box-sizing:border-box}
 body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--sans);
-  font-size:16px; line-height:1.5; letter-spacing:-.05px; -webkit-font-smoothing:antialiased}
+  font-size:16px; line-height:1.5; letter-spacing:0; -webkit-font-smoothing:antialiased}
 .wrap{max-width:820px; margin:0 auto; padding:0 var(--sp-lg)}
 code{font-family:var(--mono); font-size:13px}
-h1{font-size:31px; font-weight:600; line-height:1.13; letter-spacing:-.85px; margin:0}
+h1{font-size:31px; font-weight:600; line-height:1.13; letter-spacing:0; margin:0}
 .lede{color:var(--ink-muted); font-size:17px; margin:14px 0 0; max-width:58ch}
 header{padding-block:var(--sp-xxl) 0}
 .eyebrow{font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
@@ -66,14 +68,13 @@ svg.draw{display:block; width:100%; height:auto}
 .btn[aria-pressed=true]{border-color:var(--accent); color:var(--accent)}
 
 /* ---------------- doors (section 5) ----------------
-   The word is the door. Marks are never buttons. A door looks like a link: dotted
-   underline, accent colour - unless the word IS the datum, which keeps its own colour
-   and lets the underline alone carry the affordance. Opening one stops time. */
+   The word is the door. Marks are never buttons. Every door uses the same accent so the
+   interaction vocabulary stays visible and predictable. Opening one stops time. */
 .door{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
   background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
 .door:hover{color:var(--accent-hover)}
 .door:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px; border-radius:2px}
-.door.datum{color:var(--ink)}
+.door.datum{color:var(--accent)}
 
 .pop{position:relative; margin:var(--sp-md) 0 0; background:var(--s2);
   border:1px solid var(--hair-strong); border-radius:var(--r-lg); padding:var(--sp-md)}
@@ -88,6 +89,8 @@ svg.draw{display:block; width:100%; height:auto}
 .pop p:last-child{margin-bottom:0}
 .pop b{color:var(--ink); font-weight:500}
 .pop code, .pop pre{font-family:var(--mono); font-size:12.5px}
+.pop ul{margin:0 0 10px; padding-left:18px}
+.pop li{margin:0 0 5px; font-size:13px; line-height:1.45; color:var(--ink-muted)}
 .pop pre{margin:0; padding:10px 12px; background:var(--canvas); border:1px solid var(--hair);
   border-radius:var(--r-md); overflow-x:auto; color:var(--ink-muted); line-height:1.55}
 
@@ -119,7 +122,7 @@ svg.draw{display:block; width:100%; height:auto}
 .branch .tier{display:inline-block; font-size:11px; font-weight:500; letter-spacing:.5px;
   color:var(--ink-tert); border:1px solid var(--hair-strong); border-radius:var(--r-pill);
   padding:3px 10px; margin:0 0 12px}
-.branch h3{margin:0 0 10px; font-size:19px; font-weight:600; letter-spacing:-.3px}
+.branch h3{margin:0 0 10px; font-size:19px; font-weight:600; letter-spacing:0}
 .branch p{margin:0 0 10px; font-size:14.5px; line-height:1.55; color:var(--ink-muted)}
 .branch b{color:var(--ink); font-weight:500}
 .branch code{font-family:var(--mono); font-size:12.5px; background:var(--canvas);
@@ -147,81 +150,206 @@ svg.draw{display:block; width:100%; height:auto}
   background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
 .bub .why:hover, .pop .why:hover{color:var(--accent-hover)}
 
-/* ---------------- Wink, the mascot ----------------
-   Brought over from the part 1 study on claude/focused-galileo-m6tm74. Chrome, not a
-   mark: it lives under the drawing, never on it, because section 1 closes the drawing at
-   eight marks and section 3.3 forbids idle drift inside it. Its three colours are NOT in
-   the palette - see the note on the page. */
-#winkHost{display:flex; align-items:center; gap:var(--sp-sm); margin:var(--sp-md) 0 0}
-.wink{flex:none; width:44px; height:44px; overflow:visible; opacity:.5; transition:opacity .45s ease}
-.wink.speaking{opacity:1; animation:wkNod .42s cubic-bezier(.22,.9,.3,1)}
+/* ---------------- Wink, the mascot ---------------- */
+.experience{position:relative; min-height:390px}
+.briefing{min-height:390px; display:grid; place-items:center; text-align:center}
+.briefing-inner{display:grid; justify-items:center; width:min(520px,100%); padding:38px 20px}
+.briefing-copy{margin:14px 0 18px; color:var(--ink-muted); font-size:15px; line-height:1.55}
+.briefing-copy strong{color:var(--ink); font-weight:600}
+.term-form{width:100%; text-align:left}
+.term-form fieldset{margin:0; padding:0; border:0}
+.term-form legend{width:100%; margin:0 0 4px; color:var(--ink); text-align:center;
+  font-size:14px; font-weight:600}
+.term-help{margin:0 0 14px; color:var(--ink-subtle); text-align:center; font-size:12px}
+.term-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px 12px;
+  margin:0 0 18px}
+.term-choice{display:flex; align-items:center; gap:9px; min-width:0; padding:7px 8px;
+  color:var(--ink-muted); font-size:13px; cursor:pointer}
+.term-choice:hover{color:var(--ink)}
+.term-choice input{flex:none; width:15px; height:15px; margin:0; accent-color:var(--accent)}
+.term-choice code{font-size:12px}
+.term-actions{text-align:center}
+.invite{display:inline-flex; align-items:center; gap:8px; padding:9px 14px; color:#fff;
+  background:var(--accent); border:0; border-radius:var(--r-md); cursor:pointer;
+  font:600 13px var(--sans); box-shadow:0 5px 18px #5e6ad238}
+.invite:hover{background:var(--accent-hover)}
+.invite:focus-visible{outline:2px solid var(--accent-hover); outline-offset:3px}
+.briefing.leaving{position:absolute; inset:0; z-index:4; pointer-events:none;
+  animation:briefingOut .36s ease forwards}
+.exchange{opacity:0; transform:translateY(18px) scale(.985)}
+.exchange.entering{animation:exchangeIn .75s cubic-bezier(.2,.8,.2,1) forwards}
+.exchange.ready{opacity:1; transform:none}
+@keyframes briefingOut{to{opacity:0; transform:translateY(-8px)}}
+@keyframes exchangeIn{to{opacity:1; transform:none}}
+
+#winkHost{position:relative; display:flex; align-items:center; gap:var(--sp-sm);
+  margin:var(--sp-md) 0 0; min-width:0}
+.wink{position:relative; z-index:2; flex:none; display:grid; place-items:center; width:44px;
+  height:44px; padding:0; border:0; border-radius:50%; background:transparent; cursor:pointer;
+  opacity:.5; touch-action:none; -webkit-tap-highlight-color:transparent;
+  transition:opacity .45s ease}
+.briefing .wink{width:72px; height:72px; opacity:1}
+.wink:focus-visible{outline:2px solid var(--accent-hover); outline-offset:4px}
+.wink-svg{display:block; width:100%; height:100%; overflow:visible;
+  transition:transform .16s cubic-bezier(.2,.8,.2,1)}
+.wink.speaking{opacity:1}
+.wink.speaking .wink-svg{animation:wkNod .42s cubic-bezier(.22,.9,.3,1)}
+.wink.pop .wink-svg{animation:wkPop .48s cubic-bezier(.18,.9,.2,1.25)}
+.wink.squish .wink-svg{transform:scale(1.12,.84)}
 .wk-body{fill:#F5F0FF}
-.wk-eye{fill:#4B3869}
-.wk-wink{stroke:#4B3869; stroke-width:3.2; fill:none; stroke-linecap:round}
+.wk-eye,.eye-fill{fill:#4B3869}
+.face-line{fill:none; stroke:#4B3869; stroke-width:3.2; stroke-linecap:round}
 .wk-spark{fill:#B491F5}
 .wk-breathe{transform-box:view-box; transform-origin:50px 50px; animation:wkBreathe 3.1s ease-in-out infinite}
 .wk-bob{transform-box:view-box; transform-origin:50px 50px; animation:wkBob 4.3s ease-in-out infinite}
 .wk-spark{transform-box:fill-box; transform-origin:center; animation:wkTwinkle 1.7s ease-in-out infinite}
-.wk-face{transform:translate(var(--gx,0px), var(--gy,0px)); transition:transform .5s cubic-bezier(.22,.9,.3,1)}
+.face{opacity:0; transform:translate(var(--gx,0px),var(--gy,0px));
+  transition:opacity .16s ease,transform .3s cubic-bezier(.22,.9,.3,1)}
+.face-rest{opacity:1}
+.wink[data-expression="curious"] .face-curious,
+.wink[data-expression="delighted"] .face-delighted,
+.wink[data-expression="focused"] .face-focused{opacity:1}
+.wink[data-expression]:not([data-expression="rest"]) .face-rest{opacity:0}
 .wk-eye{transform-box:fill-box; transform-origin:center}
-.wink.blink .wk-eye{animation:wkBlink .14s ease-in-out}
+.wink.blink .face-rest .wk-eye{animation:wkBlink .14s ease-in-out}
+.wink-burst{position:absolute; left:22px; top:22px; pointer-events:none}
+.wink-particle{position:absolute; width:5px; height:5px; border-radius:2px;
+  background:#B491F5; animation:wkBurst .65s ease-out forwards}
 @keyframes wkBreathe{0%,100%{transform:scale(1)} 50%{transform:scale(1.02)}}
 @keyframes wkBob{0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.2px)}}
 @keyframes wkTwinkle{0%,100%{opacity:.6; transform:scale(.9)} 50%{opacity:1; transform:scale(1.1)}}
 @keyframes wkBlink{0%,100%{transform:scaleY(1)} 50%{transform:scaleY(.08)}}
 @keyframes wkNod{0%{transform:translateY(0) scale(1,1)}
   32%{transform:translateY(1.4px) scale(1.05,.95)} 100%{transform:translateY(0) scale(1,1)}}
+@keyframes wkPop{35%{transform:translateY(-7px) scale(.92,1.1)}
+  65%{transform:translateY(1px) scale(1.05,.96)}}
+@keyframes wkBurst{to{transform:translate(var(--x),var(--y)) rotate(160deg); opacity:0}}
 .bub{position:relative; background:var(--s2); border:1px solid var(--hair-strong);
   border-radius:var(--r-lg); padding:9px 14px; font-size:14px; line-height:1.45;
   color:var(--ink-muted); max-width:52ch; min-height:20px}
 .bub b{color:var(--ink); font-weight:500}
 .bub code{font-family:var(--mono); font-size:12.5px}
+.source-bridge{display:block; margin:0 0 5px; color:var(--ink-subtle); font-size:11px;
+  line-height:1.35; letter-spacing:.15px}
+.source-bridge strong{color:var(--ink-muted); font-weight:500}
+.source-bridge.excerpt{padding-left:8px; border-left:2px solid var(--accent); font-style:italic}
+.source-map{display:flex; align-items:center; gap:4px}
+.source-map i{width:5px; height:5px; border-radius:50%; background:var(--hair-strong)}
+.source-map i.done{background:var(--ink-tert)}
+.source-map i.now{width:7px; height:7px; background:var(--accent)}
+
+/* The validated Code Lens brings the article's tiny framework into the exchange. */
+.framework-study{margin:var(--sp-md) 0 0; padding:var(--sp-md) 0 2px;
+  border-top:1px solid var(--hair)}
+.study-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  margin:0 0 12px}
+.study-head strong{font-size:13px; font-weight:600}
+.study-head span{font-size:11px; color:var(--ink-tert)}
+.code-lines{margin:0; padding:10px 12px; background:var(--canvas); border:1px solid var(--hair);
+  border-radius:var(--r-md); overflow-x:auto; font:12px/1.65 var(--mono); color:var(--ink-subtle)}
+.code-line{display:block; padding:0 5px; border-left:2px solid transparent; white-space:pre}
+.code-line.active{color:var(--ink); background:var(--s3); border-left-color:var(--accent)}
+.lens-layout{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(180px,.7fr); gap:18px}
+.lens-note{margin:0; color:var(--ink-muted); font-size:13px; line-height:1.5}
+.lens-note b{color:var(--ink); font-weight:500}
 .bub:empty{display:none}
 .bub::before{content:""; position:absolute; width:9px; height:9px; background:var(--s2);
   border-left:1px solid var(--hair-strong); border-bottom:1px solid var(--hair-strong);
   left:-6px; top:calc(50% - 5px); transform:rotate(45deg)}
 @media (prefers-reduced-motion:reduce){
-  .wk-breathe,.wk-bob,.wk-spark,.wink.blink .wk-eye,.wink.speaking{animation:none}
-  .wk-face,.wink{transition:none}
+  .wk-breathe,.wk-bob,.wk-spark,.wink.blink .wk-eye,.wink.speaking .wink-svg,
+  .wink.pop .wink-svg,.wink-particle,.briefing.leaving,.exchange.entering{animation:none}
+  .face,.wink,.wink-svg{transition:none}
 }
 [hidden]{display:none!important}
-@media (max-width:560px){ h1{font-size:25px} .lede{font-size:16px} }
+@media (max-width:560px){
+  h1{font-size:25px} .lede{font-size:16px}
+  .experience,.briefing{min-height:520px}
+  .briefing-inner{padding:30px 8px}
+  .term-grid{grid-template-columns:1fr; gap:4px}
+  .lens-layout{grid-template-columns:1fr}
+}
 </style>
 
 <div class="wrap">
 <header>
   <span class="eyebrow">PROTOTYPE · PART 2 · TWO KNOBS</span>
-  <h1>Change the server. Change the framework. The thing in between does not move.</h1>
-  <p class="lede">All seven steps the article lists, in its own words, over twelve combinations
-  that were really run. Turn either knob and watch what changes — then watch what refuses to.</p>
+  <h1 id="pageTitle">Change either side. The connection in between does not move.</h1>
+  <p class="lede" id="lede">Tell Wink which ideas are new, then follow one real exchange.</p>
 </header>
 
-<div class="knobs">
-  <div class="knob"><span class="eyebrow">SERVER</span><div class="row" id="knobSrv"></div></div>
-  <div class="knob"><span class="eyebrow">FRAMEWORK</span><div class="row" id="knobApp"></div></div>
-</div>
+<div class="experience" id="experience">
+  <section class="briefing" id="briefing" aria-label="Introduction to the exchange">
+    <div class="briefing-inner">
+      <div id="briefingWink">
+        <button class="wink" id="wink" type="button" data-expression="rest"
+                aria-label="Interact with Wink">
+          <svg class="wink-svg" id="winkSvg" viewBox="0 0 100 100" aria-hidden="true">
+            <g class="wk-bob"><g class="wk-breathe">
+              <circle class="wk-body" cx="50" cy="50" r="46"/>
+              <g class="face face-rest">
+                <g transform="rotate(-10 38.04 45.4)">
+                  <ellipse class="wk-eye" cx="38.04" cy="45.4" rx="5.98" ry="9.2"/>
+                </g>
+                <path class="face-line" d="M59.2 42.6 Q67 54.6 74.8 42.6"/>
+              </g>
+              <g class="face face-curious">
+                <circle class="eye-fill" cx="37" cy="45" r="6"/>
+                <circle class="eye-fill" cx="66" cy="45" r="6"/>
+                <circle class="face-line" cx="52" cy="65" r="4"/>
+              </g>
+              <g class="face face-delighted">
+                <path class="face-line" d="M29 48 Q37 38 45 48 M58 48 Q66 38 74 48 M39 64 Q52 76 65 64"/>
+              </g>
+              <g class="face face-focused">
+                <path class="face-line" d="M29 43 L44 47 M59 47 L74 43 M43 65 L61 65"/>
+              </g>
+              <g transform="translate(76.2 16.9)">
+                <path class="wk-spark" d="M0,-6.2 Q0.9,-1.5 5.2,0 Q0.9,1.5 0,6.2 Q-0.9,1.5 -5.2,0 Q-0.9,-1.5 0,-6.2 Z"/>
+              </g>
+            </g></g>
+          </svg>
+        </button>
+      </div>
+      <p class="briefing-copy"><strong>I’ll show you one real exchange.</strong><br>
+        First, tell me which ideas you want explained along the way.</p>
+      <form class="term-form" id="termForm">
+        <fieldset>
+          <legend>Which terms are new to you?</legend>
+          <p class="term-help">Check anything you want the explanation to use less often and unpack when needed.</p>
+          <div class="term-grid">
+            <label class="term-choice"><input type="checkbox" name="term" value="server"> Web server</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="framework"> Web framework</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="request"> HTTP request and response</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="wsgi"> WSGI and callable</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="environ"> <code>environ</code></label>
+            <label class="term-choice"><input type="checkbox" name="term" value="headers"> Response headers</label>
+            <label class="term-choice"><input type="checkbox" name="term" value="callback"> Callback and <code>start_response</code></label>
+            <label class="term-choice"><input type="checkbox" name="term" value="socket"> Socket and TCP</label>
+          </div>
+          <div class="term-actions">
+            <button class="invite" id="reveal" type="submit">Build my explanation <span aria-hidden="true">↓</span></button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </section>
 
-<div class="panel">
+  <div class="exchange" id="exchange" hidden>
+    <div class="knobs">
+      <div class="knob"><span class="eyebrow" id="serverLabel">SERVER</span><div class="row" id="knobSrv"></div></div>
+      <div class="knob"><span class="eyebrow" id="appLabel">FRAMEWORK</span><div class="row" id="knobApp"></div></div>
+    </div>
+
+    <div class="panel">
   <svg id="svg" class="draw" viewBox="0 0 740 244" role="img"
        aria-label="A request travelling from you to a server to a framework application and back"></svg>
   <div class="steps">
     <input type="range" id="scrub" min="0" max="10" step="1" value="0" aria-label="Step through the exchange">
   </div>
+  <section class="framework-study" id="frameworkStudy" hidden></section>
   <div id="winkHost">
-    <svg class="wink" id="wink" viewBox="0 0 100 100" aria-hidden="true">
-      <g class="wk-bob"><g class="wk-breathe">
-        <circle class="wk-body" cx="50" cy="50" r="46"/>
-        <g class="wk-face">
-          <g transform="rotate(-10 38.04 45.4)">
-            <ellipse class="wk-eye" cx="38.04" cy="45.4" rx="5.98" ry="9.2"/>
-          </g>
-          <path class="wk-wink" d="M59.2 42.6 Q67 54.6 74.8 42.6"/>
-        </g>
-        <g transform="translate(76.2 16.9)">
-          <path class="wk-spark" d="M0,-6.2 Q0.9,-1.5 5.2,0 Q0.9,1.5 0,6.2 Q-0.9,1.5 -5.2,0 Q-0.9,-1.5 0,-6.2 Z"/>
-        </g>
-      </g></g>
-    </svg>
+    <span class="wink-burst" id="winkBurst" aria-hidden="true"></span>
     <p class="bub" id="bub" role="status" aria-live="polite"></p>
   </div>
   <div class="scrim" id="scrim" hidden>
@@ -240,12 +368,21 @@ svg.draw{display:block; width:100%; height:auto}
   <div class="ctl">
     <button class="btn" id="play" aria-pressed="false">▶ Play</button>
   </div>
+    </div>
+  </div>
 </div>
 
 </div>
 
 <script>
 const D = /*__DATA__*/ null;
+if (D === null) {
+  const runnable = new URL('mix.html', location.href);
+  runnable.search = location.search;
+  runnable.hash = location.hash;
+  location.replace(runnable.href);
+  throw new DOMException('Opening the runnable prototype.', 'AbortError');
+}
 const $ = s => document.querySelector(s);
 const NS = 'http://www.w3.org/2000/svg';
 const C = {accent:'#5e6ad2', ok:'#27a644', no:'#d95448', ink:'#f7f8f8',
@@ -253,16 +390,21 @@ const C = {accent:'#5e6ad2', ok:'#27a644', no:'#d95448', ink:'#f7f8f8',
 const MONO = 'JetBrains Mono, ui-monospace, monospace';
 const SANS = 'Inter, system-ui, sans-serif';
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cleanUrl = new URL(location.href);
+if (cleanUrl.searchParams.has('variant')) {
+  cleanUrl.searchParams.delete('variant');
+  history.replaceState(null, '', cleanUrl);
+}
 
 function el(t, a, p){ const e = document.createElementNS(NS, t);
   for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
-/* Section 5: the mark is never the button - its caption is. A caption gets a dotted
-   underline and a click; a caption that IS the datum keeps its own colour, and the
-   underline alone carries the affordance (rule 2). */
+/* Section 5: the mark is never the button - its caption is. Every clickable caption
+   shares one accent colour; status/body values keep green or red when they encode outcome. */
 function cap(p, x, y, s, id, o){
   const g = el('g', {class:'door-g', tabindex:'0', role:'button'}, p);
   const t = txt(g, x, y, s, o);
-  if (!o || !o.fill || o.fill === C.sub || o.fill === C.tert) t.setAttribute('fill', C.accent);
+  if (!o || !o.fill || o.fill === C.sub || o.fill === C.tert || o.fill === C.ink)
+    t.setAttribute('fill', C.accent);
   const col = t.getAttribute('fill');
   const w = (t.getComputedTextLength ? t.getComputedTextLength() : s.length * 6) / 2;
   el('line', {x1:x - w, y1:y + 4, x2:x + w, y2:y + 4, stroke:col, 'stroke-width':1,
@@ -279,7 +421,7 @@ function txt(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anc
 
 /* the two knobs. Their values are unordered, so they are partitioned rather than plotted:
    every one of the twelve cells lands in the same Region - it works. */
-let srv = 'webserver2', app = 'flaskapp';
+let srv = 'webserver2', app = 'wsgiapp';
 const run = () => D.runs[srv + '|' + app];
 
 /* The article's own seven steps, in its own words (section 3a.1), with the inside of
@@ -323,10 +465,77 @@ const P_IN = arc(n0,n1,G.you.y,-32), P_BACK = arc(n1,n0,G.you.y,32);
    a callback made while it is still running, the body is the call's return value. */
 const P_CALL = arc(i0,i1,G.srv.y,-32), P_SR = arc(i1,i0,G.srv.y,30), P_BODY = arc(i1,i0,G.srv.y,96);
 
-let step = 0, sub = 1, playing = false, rafId = 0;
+let step = 0, sub = 1, playing = false, looping = false, rafId = 0;
 const nameOf = (list, id) => (list.find(r => r[0] === id) || [id, id])[1];
 const shortSrv = {webserver2:"the article's server", gunicorn:'gunicorn', waitress:'waitress'};
 const shortApp = {wsgiapp:'a bare WSGI app', pyramidapp:'Pyramid', flaskapp:'Flask', djangoapp:'Django'};
+let unfamiliar = new Set();
+const isNew = concept => unfamiliar.has(concept);
+const serverName = id => isNew('server') && id === 'webserver2'
+  ? "the article's request handler" : shortSrv[id];
+const appName = id => isNew('framework') && id === 'wsgiapp'
+  ? 'the bare Python app' : shortApp[id];
+const currentApp = () => appName(app);
+
+function updateVocabulary(){
+  const technical = unfamiliar.size === 0;
+  $('#pageTitle').textContent = technical
+    ? 'Change the server. Change the framework. The thing in between does not move.'
+    : 'Change either side. The connection in between does not move.';
+  $('#lede').textContent = technical
+    ? 'All seven steps the article lists, in its own words, over twelve combinations that ' +
+      'were really run. Turn either knob and watch what changes — then watch what refuses to.'
+    : 'Seven stages from the article, shown across twelve real combinations. Change either ' +
+      'side and watch what stays constant.';
+  $('#serverLabel').textContent = isNew('server') ? 'REQUEST HANDLER' : 'SERVER';
+  $('#appLabel').textContent = isNew('framework') ? 'APPLICATION CODE' : 'FRAMEWORK';
+}
+
+const BARE_LINES = [
+  'def app(environ, start_response):',
+  "    status = '200 OK'",
+  "    response_headers = [('Content-Type', 'text/plain')]",
+  '    start_response(status, response_headers)',
+  "    return [b'Hello world from a simple WSGI application!\\n']",
+];
+const bareActiveLines = () => step <= 5 ? [0] : step === 6 ? [1, 2] : step === 7 ? [3] : [4];
+const bareCode = active => '<pre class="code-lines">' + BARE_LINES.map((line, i) =>
+  '<span class="code-line' + (active.includes(i) ? ' active' : '') + '">' +
+  esc(line) + '</span>').join('') + '</pre>';
+
+let frameworkRenderKey = '';
+function renderFrameworkStudy(){
+  const host = $('#frameworkStudy');
+  const key = app + '|' + step;
+  if (key === frameworkRenderKey) return;
+  frameworkRenderKey = key;
+  if (app !== 'wsgiapp' || step < 5 || step > 8) {
+    host.hidden = true; host.innerHTML = ''; return;
+  }
+  host.hidden = false;
+  const notes = {
+    5:isNew('wsgi')
+      ? 'The request handler only needs one application function with two inputs. ' +
+        glossary('wsgi', 'Why is this enough?')
+      : 'The server only needs a callable with two arguments.',
+    6:isNew('headers')
+      ? 'The application chooses an outcome and extra information for the reply. ' +
+        glossary('headers', 'What are response headers?')
+      : 'The application chooses a status and response headers.',
+    7:isNew('callback')
+      ? 'It uses the reporting function supplied by the request handler. ' +
+        glossary('callback', 'What does <code>start_response</code> do?')
+      : 'It hands that metadata back through <code>start_response</code>.',
+    8:isNew('request') ? 'Its return value is the content sent back to the browser.'
+                       : 'Its return value is the response body.',
+  };
+  host.innerHTML = '<div class="study-head"><strong>The article\'s five-line ' +
+    (isNew('framework') ? 'application' : 'framework') + '</strong>' +
+    '<span>CODE LENS · synchronized to this moment</span></div>' +
+    '<div class="lens-layout">' + bareCode(bareActiveLines()) +
+    '<p class="lens-note"><b>' + notes[step] + '</b><br>The highlighted line is what the ' +
+    'application is doing in the exchange above. No framework package is hiding it.</p></div>';
+}
 
 function draw(){
   const svg = $('#svg'), R = run();
@@ -389,8 +598,8 @@ function draw(){
   /* names below marks; values above the mark carrying them (section 4).
      The middle and right names are the two knobs. */
   cap(svg, G.you.x, G.you.y + G.you.r + 21, 'you', 'you');
-  cap(svg, G.srv.x, G.srv.y + G.srv.r + 21, shortSrv[srv], 'server', {fill:C.ink});
-  cap(svg, G.app.x, G.app.y + G.app.r + 21, shortApp[app], 'app', {fill:C.ink});
+  cap(svg, G.srv.x, G.srv.y + G.srv.r + 21, serverName(srv), 'server', {fill:C.ink});
+  cap(svg, G.app.x, G.app.y + G.app.r + 21, appName(app), 'app', {fill:C.ink});
 
   /* the ring's caption: the job being done, in the article's words */
   const JOBNAME = {3:'parsing', 4:'building environ', 6:'running', 9:'constructing the response'};
@@ -421,7 +630,8 @@ function draw(){
   if (at(10) > 0) val((n0+n1)/2, G.you.y + 48, R.statusLine, col, 'response');
 
   $('#scrub').value = step;
-  if (NARRATION[step]) W.say(lead() + NARRATION[step]());
+  if (NARRATION[step]) W.say(sourceBridge() + NARRATION[step]());
+  renderFrameworkStudy();
   if (FLIGHT[step]){ const q = pointOn(FLIGHT[step], ease(sub)); W.lookAtSvg(q.x, q.y); }
   else if (GAZE[step]) W.lookAtSvg(GAZE[step].x, GAZE[step].y);
   else W.setGaze(0, 1.8);
@@ -429,25 +639,33 @@ function draw(){
 
 /* what turning a knob changed, for the step you are on */
 /* section 3a: each step runs for its own duration, then rests long enough to be seen */
-/* ---------------- Wink ----------------
-   The controller from the part 1 study, unchanged in behaviour: it breathes, blinks on a
-   random period so it never lands on the breathing beat, nods while speaking, and points
-   its features at whatever is being talked about. A circle has no facing; where the
-   features sit is the only direction it has. */
+/* Direct press/release owns expression and gaze briefly. Pointer proximity comes next;
+   playback narration and step gaze follow; the resting wink is the final fallback. */
 const W = (() => {
-  const svg = $('#wink'), bub = $('#bub');
-  let speakTimer = 0;
-  const setGaze = (gx, gy) => {
-    svg.style.setProperty('--gx', gx.toFixed(2) + 'px');
-    svg.style.setProperty('--gy', gy.toFixed(2) + 'px');
+  const mascot = $('#wink'), svg = $('#winkSvg'), bub = $('#bub');
+  let speakTimer = 0, expressionTimer = 0, directUntil = 0, playbackUntil = 0;
+  let pointerOwnsGaze = false, docked = false;
+  const rawGaze = (gx, gy) => {
+    mascot.style.setProperty('--gx', gx.toFixed(2) + 'px');
+    mascot.style.setProperty('--gy', gy.toFixed(2) + 'px');
   };
+  const directActive = () => performance.now() < directUntil;
+  const setGaze = (gx, gy) => { if (!pointerOwnsGaze && !directActive()) rawGaze(gx, gy); };
+  const setExpression = name => { mascot.dataset.expression = name; };
+  function restoreExpression(){
+    const now = performance.now();
+    if (now < directUntil) return;
+    if (pointerOwnsGaze) setExpression('curious');
+    else if (now < playbackUntil) setExpression('focused');
+    else setExpression('rest');
+  }
   function lookAt(clientX, clientY){
-    if (REDUCED) return;
-    const r = svg.getBoundingClientRect();
+    if (REDUCED || pointerOwnsGaze || directActive()) return;
+    const r = mascot.getBoundingClientRect();
     if (!r.width) return;
     const dx = clientX - (r.left + r.width/2), dy = clientY - (r.top + r.height/2);
     const L = Math.hypot(dx, dy) || 1, k = Math.min(1, L / 240);
-    setGaze(4.6 * k * dx / L, 3.0 * k * dy / L);
+    rawGaze(4.6 * k * dx / L, 3.0 * k * dy / L);
   }
   function lookAtSvg(x, y){
     const r = $('#svg').getBoundingClientRect();
@@ -458,21 +676,72 @@ const W = (() => {
   function say(t){
     if (bub.innerHTML === t) return;
     bub.innerHTML = t;
-    svg.classList.remove('speaking'); void svg.offsetWidth;
-    svg.classList.add('speaking');
+    if (!docked) return;
+    playbackUntil = performance.now() + 900;
+    if (performance.now() >= directUntil && !pointerOwnsGaze) setExpression('focused');
+    mascot.classList.remove('speaking'); void mascot.offsetWidth;
+    mascot.classList.add('speaking');
     clearTimeout(speakTimer);
-    speakTimer = setTimeout(() => svg.classList.remove('speaking'),
-      Math.max(900, t.replace(/<[^>]*>/g, '').length * 46));
+    speakTimer = setTimeout(() => { mascot.classList.remove('speaking'); restoreExpression(); }, 900);
+  }
+  function pointerLook(clientX, clientY){
+    if (!docked || REDUCED) return;
+    pointerOwnsGaze = true;
+    const r = mascot.getBoundingClientRect();
+    const dx = Math.max(-4, Math.min(4, (clientX - (r.left + r.width/2)) / 30));
+    const dy = Math.max(-3, Math.min(3, (clientY - (r.top + r.height/2)) / 35));
+    rawGaze(dx, dy);
+    if (performance.now() >= directUntil && performance.now() >= playbackUntil)
+      setExpression('curious');
+  }
+  function pointerLeave(){
+    pointerOwnsGaze = false;
+    rawGaze(0, 1.8);
+    restoreExpression();
+  }
+  function press(){
+    if (!docked) return false;
+    directUntil = Infinity;
+    clearTimeout(expressionTimer);
+    mascot.classList.remove('pop');
+    mascot.classList.add('squish');
+    setExpression('focused');
+    return true;
+  }
+  function release(){
+    if (!docked) return false;
+    mascot.classList.remove('squish', 'pop'); void svg.offsetWidth;
+    mascot.classList.add('pop');
+    directUntil = performance.now() + 900;
+    setExpression('delighted');
+    clearTimeout(expressionTimer);
+    expressionTimer = setTimeout(() => {
+      mascot.classList.remove('pop');
+      directUntil = 0;
+      restoreExpression();
+      if (!pointerOwnsGaze) draw();
+    }, 900);
+    return true;
+  }
+  function cancel(){
+    mascot.classList.remove('squish');
+    directUntil = 0;
+    restoreExpression();
   }
   (function blink(){
     if (REDUCED) return;
     setTimeout(() => {
-      svg.classList.add('blink');
-      setTimeout(() => svg.classList.remove('blink'), 160);
+      if (mascot.dataset.expression === 'rest') {
+        mascot.classList.add('blink');
+        setTimeout(() => mascot.classList.remove('blink'), 160);
+      }
       blink();
     }, 3000 + Math.random() * 3000);
   })();
-  return {say, lookAt, lookAtSvg, setGaze};
+  return {
+    say, lookAt, lookAtSvg, setGaze, pointerLook, pointerLeave, press, release, cancel,
+    setDocked(value){ docked = value; if (!value) pointerLeave(); },
+  };
 })();
 
 /* What Wink says at each step. Its job is the sentence the drawing cannot carry - the
@@ -484,6 +753,9 @@ const door = (id, text, datum) =>
 const to = n => '<button class="to" data-step="' + n + '">step ' + n + '</button>';
 /* a word the article never explains. Principle 3: assume no foundation. */
 const why = (id, text) => '<button class="why" data-why="' + id + '">' + text + '</button>';
+const glossary = (concept, text) => door('term' + concept, text);
+const handler = () => isNew('server') ? 'The request-handling program' : 'The server';
+const handlerLower = () => isNew('server') ? 'the request-handling program' : 'the server';
 
 /* Branches: beyond the primary Source, so every claim carries a Citation with a link.
    The quotes below were taken from the live documents, not from memory. */
@@ -535,40 +807,92 @@ const BRANCHES = {
 const NARRATION = [
   () => 'Nothing yet — three places, nothing joined up, and ' +
         door('grid', 'twelve combinations') + ' to try',
-  () => 'The server ' + door('loaded', 'loads an <b>application</b> callable') +
-        '. It has <b>none of its own</b>' +
-        (srv === 'webserver2' ? '' : ', and ' + door('beyond', 'this server is not in the article')),
-  () => 'The server <b>reads a request</b> — it crossed a real network, through a ' +
-        why('socket', 'socket') + ', and it is the same request in all twelve runs',
-  () => 'The server <b>parses it</b> — only the ' + door('parse', 'first line') +
-        ', split into method, path, version',
-  () => 'The server <b>builds an environ dictionary</b> — ' +
-        door('env', Object.keys(run().environ).length + ' keys', true) +
-        ' in one plain dictionary, and the server decides how many',
-  () => 'The server <b>calls the application callable</b> — one call, and it looks the same ' +
-        'whichever two you picked',
-  () => '<b>' + shortApp[app] + '</b> works. It is deciding what to send, and the server is ' +
-        'blocked until it answers',
-  () => '<b>' + shortApp[app] + '</b> calls <b>start_response</b> — ' +
-        door('sr', 'status and headers', true) + ' handed back <b>while it is still running</b>. ' +
-        'The server parks them until ' + to(9),
-  () => '<b>' + shortApp[app] + '</b> <b>returns a response body</b> — ' +
+  () => isNew('wsgi')
+    ? handler() + ' ' + door('loaded', 'loads the application function') +
+      '. The article calls it an ' + glossary('wsgi', 'application callable') +
+      '. This program has <b>none of its own</b>' +
+      (srv === 'webserver2' ? '' : ', and ' + door('beyond', 'this request handler is not in the article'))
+    : handler() + ' ' + door('loaded', 'loads an <b>application</b> callable') +
+      '. It has <b>none of its own</b>' +
+      (srv === 'webserver2' ? '' : ', and ' + door('beyond', 'this server is not in the article')),
+  () => isNew('request')
+    ? handler() + ' <b>reads the browser\'s message</b> asking for <code>/hello</code>. The article ' +
+      'calls it an ' + glossary('request', 'HTTP request') + '. It travelled through a ' +
+      (isNew('socket') ? why('socket', 'socket') : 'socket')
+    : handler() + ' <b>reads a request</b> — it crossed a real network, through a ' +
+      (isNew('socket') ? why('socket', 'socket') : 'socket') +
+      ', and it is the same request in all twelve runs',
+  () => isNew('request')
+    ? handler() + ' <b>reads only its first line</b> — ' + door('parse', 'method, path, version')
+    : handler() + ' <b>parses it</b> — only the ' + door('parse', 'first line') +
+      ', split into method, path, version',
+  () => isNew('environ')
+    ? handler() + ' <b>collects the request details</b> — ' +
+      door('env', Object.keys(run().environ).length + ' entries', true) +
+      ' in one plain dictionary. The article calls that dictionary ' +
+      glossary('environ', '<code>environ</code>')
+    : handler() + ' <b>builds an environ dictionary</b> — ' +
+      door('env', Object.keys(run().environ).length + ' keys', true) +
+      ' in one plain dictionary, and the server decides how many',
+  () => isNew('wsgi') || isNew('callback')
+    ? handler() + ' <b>runs the application function</b> — passing the request details and a ' +
+      'function for reporting reply details. This call stays the same whichever two you picked'
+    : handler() + ' <b>calls the application callable</b> — one call, and it looks the same ' +
+      'whichever two you picked',
+  () => '<b>' + currentApp() + '</b> works. It is deciding what to send, and ' +
+        handlerLower() + ' waits for its answer' + (app === 'wsgiapp'
+          ? '. Its exact five-line code is following this moment below' : ''),
+  () => isNew('callback') || isNew('headers')
+    ? '<b>' + currentApp() + '</b> uses ' +
+      (isNew('callback') ? glossary('callback', '<code>start_response</code>')
+                         : '<b>start_response</b>') +
+      ' — handing the reply status and ' +
+      (isNew('headers') ? glossary('headers', 'headers') : 'headers') +
+      ' back <b>while it is still running</b>. ' + handler() + ' saves them until ' + to(9)
+    : '<b>' + currentApp() + '</b> calls <b>start_response</b> — ' +
+      door('sr', 'status and headers', true) + ' handed back <b>while it is still running</b>. ' +
+      'The server parks them until ' + to(9),
+  () => '<b>' + currentApp() + '</b> <b>returns the reply body</b> — ' +
         (run().chunked
-          ? 'with ' + door('chunk', 'no Content-Length') + ', which will cost this server in a moment'
-          : run().appHeaders.length + ' headers came with it: ' +
-            run().appHeaders.map(h => h[0]).join(', ')),
-  () => 'The server <b>constructs an HTTP response</b> — from the body <b>and</b> the headers ' +
-        'held since ' + to(7) +
+          ? 'with ' + door('chunk', 'no Content-Length') + ', which matters to this request handler'
+          : 'with ' + door('appheaders',
+              run().appHeaders.length + (isNew('headers') ? ' response ' : ' ') +
+              'header' + (run().appHeaders.length === 1 ? '' : 's'), true) + ' from the application'),
+  () => handler() + (isNew('request') || isNew('headers')
+        ? ' <b>assembles the browser\'s reply</b> — from the body and the response details saved at '
+        : ' <b>constructs an HTTP response</b> — from the body <b>and</b> the headers held since ') +
+        to(7) +
         (run().chunked ? ', so it had to ' + door('chunk', 'chunk the body')
+                       : isNew('headers') ? ', plus two details added by ' + handlerLower()
                        : ', plus ' + run().respHeaders.filter(h =>
                            !run().appHeaders.some(a => a[0] === h[0])).map(h => h[0]).join(' and ')),
-  () => 'The server <b>transmits it back to you</b> — ' +
+  () => handler() + (isNew('request') ? ' <b>sends the finished reply to your browser</b> — '
+                                      : ' <b>transmits it back to you</b> — ') +
         door('response', run().statusLine, true) + ', and it ' + door('real', 'really ran'),
 ];
-const lead = () => {
+const SOURCE_WORDS = [
+  'Before the exchange begins', 'Load an application', 'Read a request', 'Parse the request',
+  'Build the environment', 'Call the application', 'Call the application',
+  'Call the application', 'Call the application', 'Construct a response', 'Transmit the response'
+];
+const sourceBridge = () => {
   const art = STEPS[step][2];
-  return '<span class="lead"><b>' + step + ' / ' + (STEPS.length - 1) + '</b>  ' +
-    (art ? 'the article\'s step ' + art : 'not in the article\'s list') + '</span>';
+  const current = art || (step === 0 ? 0 : 5);
+  const simpler = [
+    'Before the exchange begins', 'Load the application function', 'Read the browser message',
+    'Read its first line', 'Collect request details', 'Run the application', 'Run the application',
+    'Report reply details', 'Return the reply body', 'Assemble the browser reply', 'Send the reply'
+  ];
+  const simplify = [false, isNew('wsgi') || isNew('framework'), isNew('request'),
+    isNew('request'), isNew('environ'), isNew('wsgi') || isNew('callback'),
+    isNew('framework'), isNew('callback') || isNew('headers'),
+    isNew('request') || isNew('headers'), isNew('request') || isNew('headers'),
+    isNew('request')][step];
+  const words = simplify ? simpler[step] : SOURCE_WORDS[step];
+  const dots = [1,2,3,4,5,6,7].map(n => '<i class="' +
+    (n === current ? 'now' : n < current ? 'done' : '') + '"></i>').join('');
+  return '<span class="source-bridge source-map">' + dots +
+    '<strong>' + words + '</strong></span>';
 };
 
 /* What is behind each word. This is where the notes that used to sit under the drawing
@@ -576,6 +900,30 @@ const lead = () => {
    where the reader meets it, never in a footnote. */
 const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const DOORS = {
+  termrequest: () => ['HTTP request and response',
+    '<p>An <b>HTTP request</b> is the message your browser sends when it asks for a page. ' +
+    'It includes what the browser wants, such as <code>GET /hello</code>.</p>' +
+    '<p>An <b>HTTP response</b> is the reply: an outcome such as <code>200 OK</code>, extra ' +
+    'details, and the page content.</p>'],
+  termwsgi: () => ['WSGI and the application callable',
+    '<p><b>WSGI</b> is an agreed shape for connecting Python request handlers to Python ' +
+    'application code. Both sides can change as long as they keep that shape.</p>' +
+    '<p>The <b>application callable</b> is simply a function the request handler can run. It ' +
+    'accepts two inputs: the request details and a function for reporting reply details.</p>'],
+  termenviron: () => ['environ',
+    '<p><code>environ</code> is one ordinary Python dictionary containing the details of the ' +
+    'current browser message: its path, method, connection information, and WSGI settings.</p>' +
+    '<p>The name is short for “environment.” The application reads this dictionary instead ' +
+    'of reading the network message itself.</p>'],
+  termheaders: () => ['response headers',
+    '<p><b>Headers</b> are named pieces of information sent alongside the reply content. For ' +
+    'example, <code>Content-Type: text/plain</code> tells the browser how to interpret it.</p>' +
+    '<p>They describe the reply; they are not the visible reply body itself.</p>'],
+  termcallback: () => ['callback and start_response',
+    '<p>A <b>callback</b> is a function one part of a program gives to another part so it can ' +
+    'report something back later.</p>' +
+    '<p>Here the request handler supplies <code>start_response</code>. The application calls it ' +
+    'once it knows the reply status and headers, before returning the reply body.</p>'],
   env: () => {
     const R = run(), extra = new Set(R.extra);
     return ['environ, as this server built it',
@@ -616,6 +964,26 @@ const DOORS = {
     '<p>The server parks them there and does nothing with them until ' + to(9) + '. It appends ' +
     'two of its own on the way in: <code>Date</code> — hardcoded in the article to ' +
     '<code>Mon, 15 Jul 2019 5:54:48 GMT</code> — and <code>Server</code>.</p>'],
+  appheaders: () => {
+    const R = run();
+    const headerList = R.appHeaders
+      .map(h => '<li><code>' + esc(h[0]) + '</code>: ' + esc(h[1]) + '</li>').join('');
+    const djangoNote = app === 'djangoapp'
+      ? '<p><b>Beyond the article:</b> the article does not name Django\'s six returned ' +
+        'headers. It says to try Django, and it later names four general response headers in ' +
+        'a Pyramid example: <code>Content-Type</code>, <code>Content-Length</code>, ' +
+        '<code>Date</code>, and <code>Server</code>. These six are from this prototype\'s real ' +
+        'Django 5.2.17 run, not from the article\'s text.</p>'
+      : '<p>The article talks about response headers generally, then names four from its ' +
+        'Pyramid response example: <code>Content-Type</code>, <code>Content-Length</code>, ' +
+        '<code>Date</code>, and <code>Server</code>. The list here is the actual set captured ' +
+        'from this application before the server adds its own headers.</p>';
+    return ['headers returned by ' + shortApp[app],
+      '<ul class="header-list">' + headerList + '</ul>' + djangoNote +
+      '<p>That boundary matters: the article teaches the route back through ' +
+      '<code>start_response</code>; the exact framework defaults are extra evidence from the ' +
+      'captured run.</p>'];
+  },
   chunk: () => ['why the body had to be chunked',
     '<p>The bare application is the only one of the four that sets no ' +
     '<code>Content-Length</code>. Without it this server cannot say how long the body is, so it ' +
@@ -645,7 +1013,10 @@ const DOORS = {
     'this picture that is <b>not</b> inside the server\'s program — everything to the right of ' +
     'the first line runs in one process.</p>'],
   server: () => ['the server: ' + srv,
-    srv === 'webserver2'
+    (isNew('server')
+      ? '<p>A <b>web server</b> is the program that receives a browser message and sends a ' +
+        'reply. In this picture it is the middle circle.</p>' : '') +
+    (srv === 'webserver2'
       ? '<p>The article\'s own <code>webserver2.py</code>, copied verbatim — just under 150 ' +
         'lines. It implements the <b>server half</b> of WSGI: read, parse, build ' +
         '<code>environ</code>, call the application, build the response, send it.</p>' +
@@ -657,8 +1028,12 @@ const DOORS = {
         'files. It puts <b>' + Object.keys(run().environ).length + '</b> keys in ' +
         '<code>environ</code> where the article\'s server puts eleven, and sets ' +
         '<code>SERVER_SOFTWARE</code> to <code>' +
-        esc(run().environ['SERVER_SOFTWARE'] || '') + '</code>.</p>'],
+        esc(run().environ['SERVER_SOFTWARE'] || '') + '</code>.</p>')],
   app: () => ['the application: ' + shortApp[app],
+    (isNew('framework')
+      ? '<p>A <b>web framework</b> is reusable application code that handles jobs such as ' +
+        'routing a path to the right function. The right circle is the application built ' +
+        'with that framework.</p>' : '') +
     '<p>The framework half of WSGI. Whatever else it is, to the server it is ' +
     '<b>one callable</b> taking <code>(environ, start_response)</code> and returning an ' +
     'iterable of bytes.</p>' +
@@ -670,6 +1045,9 @@ const DOORS = {
     'bytes. It opens when you ask and closes when the reply has been sent — the server\'s last ' +
     'line is <code>client_connection.close()</code>, inside a <code>finally</code>.</p>'],
   call: () => ['application(environ, start_response)',
+    (isNew('wsgi') || isNew('callback')
+      ? '<p>This label means: run the application function with the request-details dictionary ' +
+        'and the function it can use to report reply details.</p>' : '') +
     '<p>Not a network hop. The server and the application are the <b>same running program</b>, ' +
     'and this is an ordinary Python function call — same process, same call stack.</p>' +
     '<p>It is drawn with the same line mark as the network connection because the mark means ' +
@@ -720,10 +1098,11 @@ const GAZE = {0:null, 1:G.app, 3:G.srv, 4:G.srv, 6:G.app, 9:G.srv};
 const FLIGHT = {2:P_IN, 5:P_CALL, 7:P_SR, 8:P_BODY, 10:P_BACK};
 
 const DWELL = 300;
-function stopPlay(){ playing = false; cancelAnimationFrame(rafId);
+function stopPlay(){ playing = false; looping = false; cancelAnimationFrame(rafId);
   $('#play').setAttribute('aria-pressed','false'); $('#play').textContent = '▶ Play'; }
 function play(fromStart){
   if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
+  stopPlay();
   if (openDoor) closeDoor();
   playing = true; $('#play').setAttribute('aria-pressed','true'); $('#play').textContent = '❚❚ Pause';
   /* resume picks up where it stopped; only a knob or the end rewinds */
@@ -744,12 +1123,33 @@ function play(fromStart){
   })(last);
 }
 
+/* Scrubbing chooses one moment to study. Keep only that moment alive instead of
+   silently freezing it or carrying on into the next one. */
+function loopStep(n){
+  stopPlay();
+  step = Math.max(0, Math.min(STEPS.length - 1, n));
+  if (REDUCED || !STEPS[step][1]) { sub = 1; return draw(); }
+  looping = true; sub = 0;
+  let last = performance.now(), rest = 0;
+  (function frame(now){
+    if (!looping) return;
+    const dt = now - last; last = now;
+    if (rest > 0) rest -= dt;
+    else {
+      sub = Math.min(1, sub + dt / STEPS[step][1]);
+      if (sub >= 1) rest = DWELL * 2;
+    }
+    if (rest <= 0 && sub >= 1) sub = 0;
+    draw(); rafId = requestAnimationFrame(frame);
+  })(last);
+}
+
 function knob(host, list, get, set){
   host.innerHTML = '';
   list.forEach(([id]) => {
     const b = document.createElement('button');
     b.className = 'opt'; b.type = 'button';
-    b.textContent = (host.id === 'knobSrv' ? shortSrv : shortApp)[id];
+    b.textContent = host.id === 'knobSrv' ? serverName(id) : appName(id);
     b.setAttribute('aria-pressed', String(get() === id));
     b.onclick = () => { set(id); syncKnobs(); stopPlay(); play(true); };
     host.appendChild(b);
@@ -761,10 +1161,11 @@ function syncKnobs(){
 }
 
 /* ---- doors: the word is the door, and opening one stops time (section 5) ---- */
-let openDoor = null, wasPlaying = false;
+let openDoor = null, wasPlaying = false, wasLooping = false;
 function showDoor(id){
   if (openDoor === id) return closeDoor();
   wasPlaying = playing || wasPlaying;
+  wasLooping = looping || wasLooping;
   stopPlay();
   const [title, body] = DOORS[id]();
   openDoor = id;
@@ -776,7 +1177,8 @@ function showDoor(id){
 function closeDoor(){
   if (!openDoor) return;
   openDoor = null; $('#pop').hidden = true;
-  if (wasPlaying){ wasPlaying = false; play(false); }   /* same instant, not the start */
+  if (wasLooping){ wasLooping = false; loopStep(step); }
+  else if (wasPlaying){ wasPlaying = false; play(false); }   /* same instant, not the start */
 }
 $('#svg').addEventListener('click', e => { if (!e.target.closest('.door-g')) return; });
 function goToStep(n){
@@ -786,6 +1188,7 @@ function goToStep(n){
 function showBranch(id){
   const B = BRANCHES[id];
   wasPlaying = playing || wasPlaying;
+  wasLooping = looping || wasLooping;
   stopPlay();
   $('#branchTitle').textContent = B.title;
   $('#branchBody').innerHTML = B.body +
@@ -798,7 +1201,8 @@ function showBranch(id){
 function closeBranch(){
   if ($('#scrim').hidden) return;
   $('#scrim').hidden = true;
-  if (wasPlaying && !openDoor){ wasPlaying = false; play(false); }
+  if (wasLooping && !openDoor){ wasLooping = false; loopStep(step); }
+  else if (wasPlaying && !openDoor){ wasPlaying = false; play(false); }
 }
 $('#branchClose').addEventListener('click', closeBranch);
 $('#scrim').addEventListener('click', e => { if (e.target === $('#scrim')) closeBranch(); });
@@ -821,9 +1225,100 @@ addEventListener('keydown', e => {
 });
 
 $('#scrub').addEventListener('input', e => {
-  stopPlay(); wasPlaying = false; closeDoor(); step = +e.target.value; sub = 1; draw(); });
-$('#play').addEventListener('click', () => playing ? stopPlay() : play(false));
+  stopPlay(); wasPlaying = false; wasLooping = false; closeDoor(); loopStep(+e.target.value); });
+$('#play').addEventListener('click', () => (playing || looping) ? stopPlay() : play(false));
+
+let exchangeReady = false, tapCount = 0, lastTap = 0, tapResetTimer = 0;
+const mascot = $('#wink');
+
+function celebrateWink(){
+  if (REDUCED) return;
+  const burst = $('#winkBurst');
+  for (let i = 0; i < 10; i++) {
+    const particle = document.createElement('i');
+    const angle = i * Math.PI * 2 / 10;
+    particle.className = 'wink-particle';
+    particle.style.setProperty('--x', Math.cos(angle) * 48 + 'px');
+    particle.style.setProperty('--y', Math.sin(angle) * 48 + 'px');
+    burst.appendChild(particle);
+    setTimeout(() => particle.remove(), 700);
+  }
+}
+
+function registerWinkTap(){
+  const now = performance.now();
+  tapCount = now - lastTap < 1800 ? tapCount + 1 : 1;
+  lastTap = now;
+  clearTimeout(tapResetTimer);
+  if (tapCount === 3) { celebrateWink(); tapCount = 0; }
+  tapResetTimer = setTimeout(() => { tapCount = 0; }, 1800);
+}
+
+function revealExchange(){
+  if (exchangeReady) return;
+  unfamiliar = new Set(new FormData($('#termForm')).getAll('term'));
+  updateVocabulary();
+  syncKnobs();
+  frameworkRenderKey = '';
+  exchangeReady = true;
+  const briefing = $('#briefing'), exchange = $('#exchange'), host = $('#winkHost');
+  const first = mascot.getBoundingClientRect();
+  $('#reveal').disabled = true;
+  briefing.classList.add('leaving');
+  exchange.hidden = false;
+  host.insertBefore(mascot, $('#winkBurst'));
+  step = 0; sub = 1; draw();
+
+  if (REDUCED) {
+    briefing.hidden = true;
+    exchange.classList.add('ready');
+    document.body.classList.add('exchange-ready');
+    W.setDocked(true);
+    play(true);
+    mascot.focus();
+    return;
+  }
+
+  exchange.classList.add('entering');
+  const last = mascot.getBoundingClientRect();
+  mascot.animate([
+    {transform:'translate(' + (first.left-last.left) + 'px,' + (first.top-last.top) +
+      'px) scale(' + (first.width/last.width) + ')'},
+    {transform:'translate(0,0) scale(1)'},
+  ], {duration:760, easing:'cubic-bezier(.2,.8,.2,1)'});
+  setTimeout(() => {
+    briefing.hidden = true;
+    exchange.classList.remove('entering');
+    exchange.classList.add('ready');
+    document.body.classList.add('exchange-ready');
+    W.setDocked(true);
+    play(true);
+    mascot.focus();
+  }, 760);
+}
+
+$('#termForm').addEventListener('submit', e => { e.preventDefault(); revealExchange(); });
+$('#winkHost').addEventListener('pointermove', e => W.pointerLook(e.clientX, e.clientY));
+$('#winkHost').addEventListener('pointerleave', () => { W.pointerLeave(); draw(); });
+mascot.addEventListener('pointerdown', e => {
+  if (!W.press()) return;
+  mascot.setPointerCapture?.(e.pointerId);
+});
+mascot.addEventListener('pointerup', e => {
+  if (!W.release()) return;
+  if (mascot.hasPointerCapture?.(e.pointerId)) mascot.releasePointerCapture(e.pointerId);
+  registerWinkTap();
+});
+mascot.addEventListener('pointercancel', () => W.cancel());
+mascot.addEventListener('keydown', e => {
+  if (!exchangeReady || e.repeat || (e.key !== 'Enter' && e.key !== ' ')) return;
+  e.preventDefault(); W.press();
+});
+mascot.addEventListener('keyup', e => {
+  if (!exchangeReady || (e.key !== 'Enter' && e.key !== ' ')) return;
+  e.preventDefault();
+  if (W.release()) registerWinkTap();
+});
 
 syncKnobs();
-if (REDUCED){ step = STEPS.length - 1; draw(); } else play(true);
 </script>

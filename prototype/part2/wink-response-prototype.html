@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Responsive Wink — three prototypes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* THROWAWAY PROTOTYPE: three responsive Wink personalities, switchable via ?variant=. */
+:root{color-scheme:dark;--canvas:#010102;--s1:#0f1011;--s2:#141516;--s3:#18191a;
+  --hair:#23252a;--hair2:#34343a;--ink:#f7f8f8;--muted:#d0d6e0;--sub:#8a8f98;
+  --tert:#62666d;--accent:#5e6ad2;--accent2:#828fff;--purple:#b491f5;
+  --sans:"Inter",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:var(--canvas);color:var(--ink);font:15px/1.5 var(--sans)}
+button{font:inherit}.page{width:min(820px,calc(100% - 48px));margin:auto;padding:48px 0 112px}
+.eyebrow{display:block;margin-bottom:8px;color:var(--sub);font-size:11px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase}h1{margin:0;max-width:740px;font-size:clamp(27px,4vw,34px);
+  font-weight:600;line-height:1.13;letter-spacing:-.035em}.question{margin:12px 0 28px;color:var(--muted)}
+.stage{position:relative;min-height:430px;border:1px solid var(--hair);border-radius:18px;
+  background:linear-gradient(145deg,#111214,#09090a);overflow:hidden}
+.stage::before{content:"";position:absolute;width:340px;height:220px;left:50%;top:30%;transform:translate(-50%,-50%);
+  border-radius:50%;background:#5e6ad211;filter:blur(40px);pointer-events:none}
+
+/* One mascot, with four genuinely drawn expressions rather than a rotated face. */
+.mascot{position:relative;z-index:2;display:grid;place-items:center;width:92px;height:92px;padding:0;
+  border:0;background:transparent;border-radius:50%;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent}
+.mascot:focus-visible{outline:2px solid var(--accent2);outline-offset:5px}
+.wink-svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 13px 22px #0008)}
+.wk-body{fill:#f5f0ff}.wk-spark{fill:var(--purple);transform-box:fill-box;transform-origin:center;
+  animation:twinkle 1.7s ease-in-out infinite}.face{opacity:0;transition:opacity .16s ease}.face-rest{opacity:1}
+.mascot[data-expression="curious"] .face,.mascot[data-expression="delighted"] .face,
+.mascot[data-expression="thinking"] .face,.mascot[data-expression="focused"] .face{opacity:0}
+.mascot[data-expression="curious"] .face-curious,.mascot[data-expression="delighted"] .face-delighted,
+.mascot[data-expression="thinking"] .face-thinking,.mascot[data-expression="focused"] .face-focused{opacity:1}
+.mascot[data-expression]:not([data-expression="rest"]) .face-rest{opacity:0}
+.eye-fill{fill:#4b3869}.face-line{fill:none;stroke:#4b3869;stroke-width:3.2;stroke-linecap:round}
+.mascot.nod .wink-svg{animation:nod .38s cubic-bezier(.2,.8,.2,1)}
+.mascot.pop .wink-svg{animation:pop .48s cubic-bezier(.18,.9,.2,1.25)}
+.mascot.squish .wink-svg{transform:scale(1.12,.84)}
+.wink-svg{transition:transform .16s cubic-bezier(.2,.8,.2,1)}
+@keyframes twinkle{50%{opacity:.55;transform:scale(.82) rotate(18deg)}}
+@keyframes nod{35%{transform:translateY(5px) scale(1.05,.94)}}
+@keyframes pop{35%{transform:translateY(-12px) scale(.92,1.1)}65%{transform:translateY(1px) scale(1.05,.96)}}
+
+.bubble{position:relative;padding:12px 15px;color:var(--muted);background:var(--s2);border:1px solid var(--hair2);
+  border-radius:12px;font-size:14px}.bubble strong{color:var(--ink);font-weight:600}
+.bubble::before{content:"";position:absolute;width:10px;height:10px;left:-6px;top:25px;background:var(--s2);
+  border-left:1px solid var(--hair2);border-bottom:1px solid var(--hair2);transform:rotate(45deg)}
+.state-readout{position:absolute;z-index:4;right:14px;top:14px;padding:5px 8px;color:var(--tert);
+  background:#09090acc;border:1px solid var(--hair);border-radius:6px;font:10px var(--mono);text-transform:uppercase}
+.action{padding:8px 12px;color:var(--muted);background:var(--s2);border:1px solid var(--hair2);
+  border-radius:8px;cursor:pointer;font-size:12px}.action:hover{color:white;border-color:var(--accent)}
+.action:focus-visible,.switcher button:focus-visible{outline:2px solid var(--accent2);outline-offset:3px}
+
+/* A — direct conversation. Every click advances a small emotional sentence. */
+.variant-a{display:grid;place-items:center;padding:44px 24px}.variant-a .conversation{display:grid;
+  grid-template-columns:auto minmax(240px,430px);align-items:center;gap:17px}.variant-a .tap-hint{grid-column:2;
+  color:var(--tert);font-size:11px}.variant-a .mascot:hover .wink-svg{transform:translateY(-3px)}
+
+/* B — contextual companion. Wink reacts to the content, not just to being poked. */
+.variant-b{display:grid;grid-template-columns:178px 1fr;min-height:430px}.companion-rail{position:relative;
+  z-index:2;display:grid;align-content:center;justify-items:center;gap:14px;padding:24px;border-right:1px solid var(--hair)}
+.companion-rail .bubble{font-size:12px;text-align:center}.companion-rail .bubble::before{display:none}
+.mini-viz{position:relative;z-index:2;display:grid;align-content:center;padding:34px}.mini-viz h2{margin:0 0 5px;font-size:18px}
+.mini-viz>p{margin:0 0 24px;color:var(--sub);font-size:13px}.control-group{margin-bottom:18px}.control-label{display:block;
+  margin-bottom:7px;color:var(--tert);font:10px var(--mono);letter-spacing:.07em}.control-row{display:flex;flex-wrap:wrap;gap:7px}
+.control{padding:7px 10px;color:var(--sub);background:var(--s1);border:1px solid var(--hair);border-radius:7px;
+  cursor:pointer;font-size:12px}.control[aria-pressed="true"]{color:white;border-color:var(--accent);background:var(--s2)}
+.exchange{display:flex;align-items:center;gap:9px;margin:9px 0 24px;color:var(--tert);font:10px var(--mono)}
+.node{width:30px;height:30px;border:1px solid var(--hair2);border-radius:50%;background:var(--s2)}
+.line{height:1px;flex:1;background:var(--hair2);position:relative}.line::after{content:"";position:absolute;inset:-2px auto auto 0;
+  width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:0}.variant-b.playing .line::after{opacity:1;animation:travel 1s ease-in-out infinite}
+@keyframes travel{to{transform:translateX(235px)}}
+.play{color:white;background:var(--accent);border:0;border-radius:8px;padding:9px 13px;cursor:pointer;font-weight:600;font-size:12px}
+
+/* C — tactile creature. Hover gaze, press squash, release pop, and tap streak delight. */
+.variant-c{display:grid;place-items:center;padding:28px}.playground{position:relative;z-index:2;display:grid;
+  justify-items:center;text-align:center}.variant-c .mascot{width:128px;height:128px}.playground h2{margin:14px 0 3px;font-size:18px}
+.playground p{margin:0;color:var(--sub);font-size:12px}.tap-meter{display:flex;gap:6px;margin-top:18px}.tap-meter i{width:7px;height:7px;
+  border-radius:50%;background:var(--hair2);transition:.2s}.tap-meter i.on{background:var(--purple);box-shadow:0 0 10px #b491f5}
+.burst{position:absolute;left:50%;top:42%;pointer-events:none}.particle{position:absolute;width:6px;height:6px;
+  border-radius:2px;background:var(--purple);animation:burst .65s ease-out forwards}
+@keyframes burst{to{transform:translate(var(--x),var(--y)) rotate(160deg);opacity:0}}
+
+.switcher{position:fixed;z-index:30;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;
+  gap:5px;padding:5px;background:#171719f2;border:1px solid #3a3a40;border-radius:999px;box-shadow:0 14px 44px #000b}
+.switcher button{display:grid;place-items:center;width:31px;height:31px;padding:0;color:var(--muted);border:0;
+  border-radius:50%;background:transparent;cursor:pointer}.switcher button:hover{background:#242428;color:white}
+.variant-label{min-width:220px;text-align:center;font-size:12px;font-weight:600}.variant-label small{display:block;
+  color:var(--tert);font:9px/1.2 var(--mono);text-transform:uppercase;letter-spacing:.07em}
+@media(max-width:620px){.page{width:calc(100% - 28px);padding-top:28px}.variant-b{grid-template-columns:1fr}
+  .companion-rail{grid-template-columns:auto 1fr;border-right:0;border-bottom:1px solid var(--hair);text-align:left}
+  .mini-viz{padding:24px}.variant-a .conversation{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .variant-a .tap-hint{grid-column:1}.bubble::before{display:none}.variant-label{min-width:170px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<main class="page">
+  <span class="eyebrow">Prototype · part 2 · responsive Wink</span>
+  <h1>How should Wink respond when the reader interacts?</h1>
+  <p class="question">The chosen quiet briefing stays fixed. These versions test three different levels of personality.</p>
+  <section class="stage" id="stage" aria-label="Responsive mascot prototype"></section>
+</main>
+
+<nav class="switcher" aria-label="Prototype variants">
+  <button id="previous" aria-label="Previous variant">←</button>
+  <div class="variant-label" id="variantLabel"></div>
+  <button id="next" aria-label="Next variant">→</button>
+</nav>
+
+<template id="mascotTemplate">
+  <button class="mascot" data-expression="rest" type="button" aria-label="Interact with Wink">
+    <svg class="wink-svg" viewBox="0 0 100 100" aria-hidden="true">
+      <circle class="wk-body" cx="50" cy="50" r="46"/>
+      <g class="face face-rest"><ellipse class="eye-fill" cx="38" cy="46" rx="5.8" ry="9"/><path class="face-line" d="M59 43 Q67 55 75 43"/></g>
+      <g class="face face-curious"><circle class="eye-fill" cx="37" cy="45" r="6"/><circle class="eye-fill" cx="66" cy="45" r="6"/><circle class="face-line" cx="52" cy="65" r="4"/></g>
+      <g class="face face-delighted"><path class="face-line" d="M29 48 Q37 38 45 48 M58 48 Q66 38 74 48 M39 64 Q52 76 65 64"/></g>
+      <g class="face face-thinking"><ellipse class="eye-fill" cx="37" cy="44" rx="5.5" ry="8"/><path class="face-line" d="M59 46 Q67 41 74 46 M46 66 Q53 62 60 66"/></g>
+      <g class="face face-focused"><path class="face-line" d="M29 43 L44 47 M59 47 L74 43 M43 65 L61 65"/></g>
+      <g transform="translate(76 17)"><path class="wk-spark" d="M0,-6 Q1,-1.5 5,0 Q1,1.5 0,6 Q-1,1.5 -5,0 Q-1,-1.5 0,-6Z"/></g>
+    </svg>
+  </button>
+</template>
+
+<script>
+const VARIANTS={A:{name:'Tap to talk'},B:{name:'Context companion'},C:{name:'Tactile creature'}};
+const keys=Object.keys(VARIANTS),params=new URLSearchParams(location.search);
+let variant=(params.get('variant')||'A').toUpperCase();if(!VARIANTS[variant])variant='A';
+let state='rest',tapCount=0,timer=0;const stage=document.querySelector('#stage'),label=document.querySelector('#variantLabel');
+const mascot=()=>document.querySelector('#mascotTemplate').content.cloneNode(true).firstElementChild;
+function setState(next){state=next;const m=stage.querySelector('.mascot');if(m)m.dataset.expression=next;updateLabel()}
+function updateLabel(){label.innerHTML=`${variant} · ${VARIANTS[variant].name}<small>expression · ${state}</small>`}
+function bump(m,kind='nod'){m.classList.remove('nod','pop');void m.offsetWidth;m.classList.add(kind)}
+
+function VariantA(){
+  const root=document.createElement('div');root.className='variant-a';const m=mascot();
+  root.innerHTML='<span class="state-readout">click response</span><div class="conversation"><div class="mascot-slot"></div><div class="bubble" role="status"><strong>I’ll show you one real request.</strong><br>Tap me—I react, then return to listening.</div><span class="tap-hint">Each tap advances a short expression cycle.</span></div>';
+  root.querySelector('.mascot-slot').append(m);const bubble=root.querySelector('.bubble');
+  const beats=[['curious','Oh—where should we look first?'],['thinking','The server changes. The call in the middle does not.'],['delighted','Exactly. Now you’re ready to reveal the exchange.']];let beat=0;
+  m.onclick=()=>{const [expression,copy]=beats[beat++%beats.length];setState(expression);bump(m,expression==='delighted'?'pop':'nod');bubble.innerHTML=`<strong>${copy}</strong><br>Tap again to see the next response.`;clearTimeout(timer);timer=setTimeout(()=>setState('rest'),1700)};
+  return root;
+}
+function VariantB(){
+  const root=document.createElement('div');root.className='variant-b';const m=mascot();
+  root.innerHTML='<span class="state-readout">context response</span><aside class="companion-rail"><div class="mascot-slot"></div><div class="bubble" role="status">I react to what you choose.</div></aside><div class="mini-viz"><h2>Try the exchange</h2><p>Wink acknowledges surrounding actions without demanding attention.</p><div class="control-group"><span class="control-label">SERVER</span><div class="control-row"><button class="control" aria-pressed="true">article server</button><button class="control" aria-pressed="false">gunicorn</button><button class="control" aria-pressed="false">waitress</button></div></div><div class="exchange"><span class="node"></span><span class="line"></span><span class="node"></span><span class="line"></span><span class="node"></span></div><button class="play">▶ Play exchange</button></div>';
+  root.querySelector('.mascot-slot').append(m);const bubble=root.querySelector('.bubble');
+  root.querySelectorAll('.control').forEach(btn=>btn.onclick=()=>{btn.parentElement.querySelectorAll('.control').forEach(x=>x.setAttribute('aria-pressed','false'));btn.setAttribute('aria-pressed','true');setState('curious');bump(m);bubble.textContent=`${btn.textContent}? I’ll watch what changes.`;clearTimeout(timer);timer=setTimeout(()=>setState('rest'),1400)});
+  root.querySelector('.play').onclick=()=>{root.classList.add('playing');setState('focused');bubble.textContent='Following the request…';clearTimeout(timer);timer=setTimeout(()=>{root.classList.remove('playing');setState('delighted');bump(m,'pop');bubble.textContent='There—the middle call stayed the same.'},1500)};
+  m.onclick=()=>{setState('delighted');bump(m,'pop');bubble.textContent='I’m here. Try one of the controls.'};return root;
+}
+function VariantC(){
+  const root=document.createElement('div');root.className='variant-c';const m=mascot();
+  root.innerHTML='<span class="state-readout">pointer + tap response</span><div class="playground"><div class="mascot-slot"></div><h2>Wink is tactile</h2><p>Move nearby, press, and release. Three taps earn a tiny celebration.</p><div class="tap-meter"><i></i><i></i><i></i></div><div class="burst"></div></div>';
+  root.querySelector('.mascot-slot').append(m);const dots=[...root.querySelectorAll('.tap-meter i')],burst=root.querySelector('.burst');
+  root.onpointermove=e=>{const r=m.getBoundingClientRect(),dx=Math.max(-4,Math.min(4,(e.clientX-(r.left+r.width/2))/30)),dy=Math.max(-3,Math.min(3,(e.clientY-(r.top+r.height/2))/35));m.querySelectorAll('.face').forEach(f=>f.style.transform=`translate(${dx}px,${dy}px)`);if(state==='rest')setState('curious')};
+  root.onpointerleave=()=>{m.querySelectorAll('.face').forEach(f=>f.style.transform='');if(state==='curious')setState('rest')};
+  m.onpointerdown=()=>{m.classList.add('squish');setState('focused')};m.onpointerup=()=>{m.classList.remove('squish');setState('delighted');bump(m,'pop');tapCount=(tapCount+1)%4;dots.forEach((d,i)=>d.classList.toggle('on',i<tapCount));if(tapCount===3){for(let i=0;i<10;i++){const p=document.createElement('i');p.className='particle';p.style.setProperty('--x',`${Math.cos(i)*65}px`);p.style.setProperty('--y',`${Math.sin(i)*65}px`);burst.append(p);setTimeout(()=>p.remove(),700)}}clearTimeout(timer);timer=setTimeout(()=>setState('rest'),900)};
+  return root;
+}
+function render(){clearTimeout(timer);tapCount=0;state='rest';stage.replaceChildren(({A:VariantA,B:VariantB,C:VariantC})[variant]());const url=new URL(location.href);url.searchParams.set('variant',variant);history.replaceState(null,'',url);updateLabel()}
+function cycle(delta){variant=keys[(keys.indexOf(variant)+delta+keys.length)%keys.length];render()}
+document.querySelector('#previous').onclick=()=>cycle(-1);document.querySelector('#next').onclick=()=>cycle(1);
+addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)||document.activeElement.isContentEditable)return;if(e.key==='ArrowLeft')cycle(-1);if(e.key==='ArrowRight')cycle(1)});render();
+</script>
+</body>
+</html>
