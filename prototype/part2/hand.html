@@ -26,17 +26,8 @@ h1{font-size:30px; font-weight:600; line-height:1.14; letter-spacing:-.8px; marg
 header{padding-block:var(--sp-xxl) 0}
 .eyebrow{font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--ink-subtle)}
 
-.tabs{display:flex; gap:var(--sp-xs); flex-wrap:wrap; margin:var(--sp-xl) 0 var(--sp-md)}
-.tab{font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; text-align:left;
-  color:var(--ink-subtle); background:var(--s1); border:1px solid var(--hair);
-  border-radius:var(--r-md); padding:9px 14px}
-.tab:hover{border-color:var(--hair-strong); color:var(--ink)}
-.tab:focus-visible{outline:2px solid var(--accent-focus); outline-offset:2px}
-.tab[aria-selected=true]{border-color:var(--accent); color:var(--ink); background:var(--s2)}
-.tab b{font-family:var(--mono); font-size:12px; font-weight:500; color:var(--ink-tert); margin-right:8px}
-.tab[aria-selected=true] b{color:var(--accent)}
 
-.panel{background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
+.panel{margin:var(--sp-xl) 0 0; background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-xl); padding:var(--sp-lg)}
 svg.draw{display:block; width:100%; height:auto}
 .steps{margin:var(--sp-md) 0 0}
 /* the step control is drawn, not inherited - the host's native track is light */
@@ -73,33 +64,49 @@ svg.draw{display:block; width:100%; height:auto}
 
 <div class="wrap">
 <header>
-  <span class="eyebrow">PROTOTYPE · PART 2 · ONE QUESTION</span>
+  <span class="eyebrow">PROTOTYPE · PART 2 · SETTLED</span>
   <h1>How should the server hand <code>environ</code> to the application?</h1>
   <p class="lede">Between you and the server there is a real network connection. Between the
   server and the application there is not — they are the same running program, and the call is
-  an ordinary function call. Four ways to draw that. Same eight steps in each.</p>
+  an ordinary function call. Four ways to draw that were built and compared; this is the one
+  that was chosen.</p>
 </header>
 
-<div class="tabs" role="tablist" id="tabs"></div>
-
 <div class="panel">
-  <svg id="svg" class="draw" viewBox="0 0 700 250" role="img" aria-label="Four ways to draw the server calling the application"></svg>
+  <svg id="svg" class="draw" viewBox="0 0 700 215" role="img"
+       aria-label="A request travelling from you to a server to a Flask application and back"></svg>
   <div class="steps">
     <input type="range" id="scrub" min="0" max="7" step="1" value="0" aria-label="Step through the exchange">
     <p class="phase" id="phase"></p>
   </div>
   <div class="ctl">
     <button class="btn" id="play" aria-pressed="false">▶ Play</button>
-    <span class="eyebrow" id="hint"></span>
+    <span class="eyebrow" id="hint">work fills · travel moves</span>
   </div>
 </div>
 
-<div class="verdict" id="verdict"></div>
+<div class="verdict">
+  <div class="row"><h4>WHAT WAS DECIDED</h4>One line mark for both channels. The
+  <b>word underneath</b> says which kind it is — <code>a network connection</code> or
+  <code>a function call</code>. The mark carries <i>channel</i>; the name carries <i>what kind</i>.</div>
+  <div class="row cost"><h4>WHAT IT COSTS</h4>The drawing ends symmetrical, so at a glance the
+  application looks as far away as the server does. The word is doing work the mark is not.
+  Three rejected alternatives — a second kind of line, the application drawn inside the server,
+  and no third place at all — are in git history.</div>
+  <div class="row"><h4>WHAT IT DOES TO THE SPEC</h4>Nothing new. No ADR. §1 already defines a
+  line as <b>a channel between two places</b>; part 1 simply never had more than one kind of
+  channel, so the definition was never tested.</div>
+  <div class="row cost"><h4>NOT DRAWN YET</h4><code>start_response</code>. The application calls
+  it to hand status and headers back to the server <b>while the application is still running</b>,
+  and the server parks them in <code>headers_set</code> until it builds the response. That is a
+  thing genuinely at rest inside a place — which is where the <b>held disc</b> belongs, and it is
+  the only place in part 2 that earns it.</div>
+</div>
 
-<p class="foot">Throwaway. Nothing here is captured — the bodies read
+<p class="foot">Throwaway. Nothing here is captured — the body reads
 <b>Hello world from Flask!</b> because that is what the article's <code>flaskapp.py</code> returns,
-but no server has been run yet. This page decides one thing only: the mark between the server and
-the application. <b>Delete it once that is settled.</b></p>
+but no server has been run yet. This page settled one thing: the mark between the server and the
+application. <b>Delete it once the real drawing exists.</b></p>
 </div>
 
 <script>
@@ -116,8 +123,8 @@ function el(t, a, p){ const e = document.createElementNS(NS, t);
 function txt(p, x, y, s, o){ const e = el('text', Object.assign({x, y, 'text-anchor':'middle',
   fill:C.sub, 'font-size':12.5, 'font-family':SANS}, o||{}), p); e.textContent = s; return e; }
 
-/* Work steps and travel steps alternate. Every place that works gets a ring;
-   every ring leaves a held disc behind; every hand-off is a disc on a line. */
+/* Work steps and travel steps alternate. A place that works gets a ring and nothing
+   else; a hand-off is a disc on a line. One mark animates per step. */
 const WORK = [2, 4, 6];
 const STEPS = [
   ['Nothing yet',                            0],
@@ -129,128 +136,59 @@ const STEPS = [
   ['The server builds the response',       800],
   ['The server replies to you',           1000],
 ];
-/* section 3: travel eases, work is linear. Without this they read as the same motion. */
+/* Section 3: travel eases, work is linear. Without this they read as one motion. */
 const ease = f => f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2)/2;
 
-/* ---- the four candidates ------------------------------------------------ */
-const VARIANTS = [
-  {id:'A', tab:'The same line',
-   hint:'one mark, used twice',
-   claim:'The line already in the language, used again between server and application.',
-   cost:'Says the application is somewhere else. A reader who finished part 1 learned that a line is a socket that opens and closes. It is not one here.',
-   spec:'Nothing new. No ADR.'},
-  {id:'B', tab:'A second kind of line',
-   hint:'new mark: a rail',
-   claim:'Two thin parallel strokes — a rail — meaning a call inside one program. Kept apart from the plain line and from the dashed trace.',
-   cost:'An eighth mark, forever, on every future page. And the reader has to be told what it means; they cannot guess it.',
-   spec:'Needs an ADR. Adds a mark to a closed system.'},
-  {id:'C', tab:'The application inside the server',
-   hint:'no second channel at all',
-   claim:'One program is one place. The application is a circle drawn inside the server, so nothing crosses a gap — environ moves inward.',
-   cost:'Breaks §4: places no longer sit on one horizontal axis. The server is drawn much larger than you, which in Bertin’s terms says the server is bigger — a thing we are not claiming. And there is no room inside the circle for the value that comes back, so it has to sit outside, away from the arc carrying it.',
-   spec:'Needs an ADR for the layout rule, but adds no mark.'},
-  {id:'D', tab:'No third place',
-   hint:'the application is work, not a place',
-   claim:'The application is not a place at all — it is what the server does. It appears as the ring, named.',
-   cost:'Hides the point of the article. If the application is only a ring, nothing shows that it is a separate, swappable program, and swapping Flask for Django changes only a word.',
-   spec:'Nothing new. No ADR.'},
-];
-let vi = 0, step = 0, sub = 1, playing = false, rafId = 0;
-
-/* geometry per variant */
-function geom(v){
-  if (v === 'C') return {vb:'0 0 600 292', you:{x:110,y:118,r:38},
-                         srv:{x:420,y:118,r:104}, app:{x:466,y:118,r:30}};
-  if (v === 'D') return {vb:'0 0 700 215', you:{x:140,y:118,r:38},
-                         srv:{x:560,y:118,r:38}, app:null};
-  return {vb:'0 0 700 215', you:{x:80,y:118,r:38},
-          srv:{x:350,y:118,r:38}, app:{x:620,y:118,r:38}};
-}
-const gapL = (a,b) => [a.x + a.r + 9, b.x - b.r - 9];
+const G = {you:{x:80,y:118,r:38}, srv:{x:350,y:118,r:38}, app:{x:620,y:118,r:38}};
+const gap = (a,b) => [a.x + a.r + 9, b.x - b.r - 9];
+const [n0, n1] = gap(G.you, G.srv);        /* the real network gap */
+const [i0, i1] = gap(G.srv, G.app);        /* the function call */
 
 const measure = (() => { const m = el('path', {}, $('#svg')); m.style.display='none'; return d => {
   m.setAttribute('d', d); return m; }; })();
 function pointOn(d, f){ const m = measure(d); return m.getPointAtLength(Math.max(.001,f)*m.getTotalLength()); }
-function partial(d, f){ const m = measure(d), L = m.getTotalLength(); return {dash:(f*L)+' '+L}; }
+function partial(d, f){ const m = measure(d), L = m.getTotalLength(); return (f*L)+' '+L; }
+const arc = (x0, x1, y, lift) =>
+  'M'+x0+' '+y+' C'+(x0+(x1-x0)*.32)+' '+(y+lift)+' '+(x1-(x1-x0)*.32)+' '+(y+lift)+' '+x1+' '+y;
 
-function arc(x0, x1, y, lift){
-  return 'M'+x0+' '+y+' C'+(x0+(x1-x0)*.32)+' '+(y+lift)+' '+(x1-(x1-x0)*.32)+' '+(y+lift)+' '+x1+' '+y;
-}
+const P_IN   = arc(n0, n1, G.you.y, -30);
+const P_BACK = arc(n1, n0, G.you.y,  30);
+const P_CALL = arc(i0, i1, G.srv.y, -30);
+const P_RET  = arc(i1, i0, G.srv.y,  30);
+
+let step = 0, sub = 1, playing = false, rafId = 0;
 
 function draw(){
   const svg = $('#svg');
   [...svg.children].forEach(c => { if (c.style.display !== 'none') c.remove(); });
-  const v = VARIANTS[vi].id, G = geom(v);
-  svg.setAttribute('viewBox', G.vb);
-  const at  = i => step === i ? sub : (step > i ? 1 : 0);          /* linear - work */
-  const atE = i => step === i ? ease(sub) : (step > i ? 1 : 0);     /* eased  - travel */
-  /* The result of a piece of work APPEARS when that work finishes - it does not
-     fill alongside the ring. One thing animates per step, or the reader is
-     watching two progress indicators for one event. */
-  const landed = i => step === i ? (sub >= 1 ? 1 : 0) : (step > i ? 1 : 0);
-  const [n0, n1] = gapL(G.you, G.srv);                       /* the real network gap */
+  const at  = i => step === i ? sub : (step > i ? 1 : 0);        /* linear - work */
+  const atE = i => step === i ? ease(sub) : (step > i ? 1 : 0);  /* eased  - travel */
 
-  /* ---- the network channel: opens at step 1, stays open ---- */
-  if (at(1) > 0) el('line', {x1:n0, y1:G.you.y, x2:n0 + (n1-n0)*Math.min(1,at(1)*1.6),
+  /* the function call exists from the start: the application is loaded before any request */
+  el('line', {x1:i0, y1:G.srv.y, x2:i1, y2:G.srv.y, stroke:C.hair,
+    'stroke-width':2, 'stroke-linecap':'round'}, svg);
+  /* the network connection opens when you ask */
+  if (at(1) > 0) el('line', {x1:n0, y1:G.you.y, x2:n0 + (n1-n0)*Math.min(1, at(1)*1.6),
     y2:G.you.y, stroke:C.hair, 'stroke-width':2, 'stroke-linecap':'round'}, svg);
 
-  /* ---- the second channel, drawn four different ways ---- */
-  let i0 = 0, i1 = 0;
-  if (v === 'A' || v === 'B'){
-    [i0, i1] = gapL(G.srv, G.app);
-    if (v === 'A'){
-      el('line', {x1:i0, y1:G.srv.y, x2:i1, y2:G.srv.y, stroke:C.hair,
-        'stroke-width':2, 'stroke-linecap':'round'}, svg);
-    } else {
-      /* the rail: two thin parallel strokes, far enough apart to be a different mark */
-      [-4.5, 4.5].forEach(dy => el('line', {x1:i0, y1:G.srv.y+dy, x2:i1, y2:G.srv.y+dy,
-        stroke:C.hair, 'stroke-width':1.5, 'stroke-linecap':'round'}, svg));
-    }
-  } else if (v === 'C'){
-    i0 = G.srv.x - G.srv.r + 30; i1 = G.app.x - G.app.r - 9;
-    el('line', {x1:i0, y1:G.srv.y, x2:i1, y2:G.srv.y, stroke:C.hair,
-      'stroke-width':2, 'stroke-linecap':'round'}, svg);
-  }
-
-  /* ---- traces: history, ADR 0003 ---- */
+  /* traces: history, left by whatever travelled. ADR 0003. */
   const trace = (d, f, c) => { if (f <= 0) return;
-    el('path', Object.assign({d, fill:'none', stroke:c, 'stroke-width':1.5, opacity:.45,
-      'stroke-linecap':'round'}, {'stroke-dasharray':partial(d,f).dash}), svg); };
-  const P_IN   = arc(n0, n1, G.you.y, -34);
-  const P_BACK = arc(n1, n0, G.you.y,  34);
-  let P_CALL = null, P_RET = null;
-  if (v !== 'D'){
-    P_CALL = arc(i0, i1, G.srv.y, v === 'C' ? -26 : -30);
-    P_RET  = arc(i1, i0, G.srv.y, v === 'C' ?  26 :  30);
-  }
-  trace(P_IN, atE(1), C.accent);
-  if (P_CALL) trace(P_CALL, atE(3), C.accent);
-  if (P_RET)  trace(P_RET,  atE(5), C.ok);
+    el('path', {d, fill:'none', stroke:c, 'stroke-width':1.5, opacity:.45,
+      'stroke-linecap':'round', 'stroke-dasharray':partial(d, f)}, svg); };
+  trace(P_IN,   atE(1), C.accent);
+  trace(P_CALL, atE(3), C.accent);
+  trace(P_RET,  atE(5), C.ok);
   trace(P_BACK, atE(7), C.ok);
 
-  /* ---- the places ---- */
-  const circle = (p, stroke) => el('circle', {cx:p.x, cy:p.y, r:p.r, fill:'none',
-    stroke, 'stroke-width':2}, svg);
-  circle(G.you, C.sub);
-  circle(G.srv, C.sub);
-  if (G.app) circle(G.app, C.sub);
+  /* the three places, persisting for the whole scene */
+  [G.you, G.srv, G.app].forEach(p => el('circle', {cx:p.x, cy:p.y, r:p.r, fill:'none',
+    stroke:C.sub, 'stroke-width':2}, svg));
 
-  /* ---- which place is doing the work at each work step ---- */
-  const worker = {2: G.srv, 4: (G.app || G.srv), 6: G.srv};
-  const workCol = {2: C.accent, 4: C.accent, 6: C.ok};
-
-  /* ---- held disc: what a piece of work produced, at rest inside the place ---- */
-  const held = (p, f, col) => { if (f <= 0) return;
-    el('circle', {cx:p.x, cy:p.y, r:22*Math.min(1,f), fill:col, 'fill-opacity':.22,
-      stroke:col, 'stroke-width':2}, svg); };
-  /* environ rests in the server from the moment it is built until it is handed over */
-  if (step === 2) held(G.srv, landed(2), C.accent);
-  if (v === 'D' && step === 3) held(G.srv, 1, C.accent);
-  /* the body rests in whoever made it, until it moves on */
-  if (step === 4) held(worker[4], landed(4), C.ok);
-  if (step === 6) held(G.srv, landed(6), C.ok);
-
-  /* ---- ring: work taking time, around whatever is doing it. Linear - labour does not accelerate. ---- */
+  /* ring: work taking time, around whatever is doing it. The ONLY cue that something
+     is happening - a second filling mark would be a second progress bar for one event.
+     Linear: labour does not accelerate. */
+  const worker  = {2:G.srv, 4:G.app, 6:G.srv};
+  const workCol = {2:C.accent, 4:C.accent, 6:C.ok};
   if (WORK.includes(step)){
     const p = worker[step], R = p.r + 9, CIRC = 2*Math.PI*R;
     el('circle', {cx:p.x, cy:p.y, r:R, fill:'none', stroke:workCol[step], 'stroke-width':2.5,
@@ -258,52 +196,40 @@ function draw(){
       transform:'rotate(-90 '+p.x+' '+p.y+')'}, svg);
   }
 
-  /* ---- discs, each only while travelling. Eased - travel accelerates. ---- */
-  const disc = (d, f, col) => { const q = pointOn(d, f);
+  /* discs, each only while travelling. Eased: travel accelerates. */
+  const disc = (d, col) => { const q = pointOn(d, ease(sub));
     el('circle', {cx:q.x, cy:q.y, r:8, fill:col}, svg); };
-  if (step === 1) disc(P_IN, ease(sub), C.accent);
-  if (step === 3 && P_CALL) disc(P_CALL, ease(sub), C.accent);
-  if (step === 5 && P_RET)  disc(P_RET,  ease(sub), C.ok);
-  if (step === 7) disc(P_BACK, ease(sub), C.ok);
+  if (step === 1) disc(P_IN,   C.accent);
+  if (step === 3) disc(P_CALL, C.accent);
+  if (step === 5) disc(P_RET,  C.ok);
+  if (step === 7) disc(P_BACK, C.ok);
 
-  /* ---- names below marks, values above (section 4) ---- */
+  /* names below marks, values above the mark carrying them (section 4) */
   txt(svg, G.you.x, G.you.y + G.you.r + 22, 'you');
-  txt(svg, G.srv.x, G.srv.y + G.srv.r + (v === 'C' ? 44 : 22),
-      v === 'C' ? 'the server, and Flask inside it' : 'the server');
-  if (G.app) txt(svg, G.app.x, G.app.y + G.app.r + (v === 'C' ? 18 : 22), 'Flask');
-  if (v === 'D' && step >= 4) txt(svg, G.srv.x, G.srv.y - G.srv.r - 34, 'Flask',
-      {fill:C.accent, 'font-family':MONO, 'font-size':12});
-
-  /* channel names */
+  txt(svg, G.srv.x, G.srv.y + G.srv.r + 22, 'the server');
+  txt(svg, G.app.x, G.app.y + G.app.r + 22, 'Flask');
   const NAMEY = G.you.y + G.you.r + 40;
+  txt(svg, (i0+i1)/2, NAMEY, 'a function call', {'font-size':11.5, fill:C.tert});
   if (at(1) > 0) txt(svg, (n0+n1)/2, NAMEY, 'a network connection', {'font-size':11.5, fill:C.tert});
-  if (v === 'A' || v === 'B') txt(svg, (i0+i1)/2, NAMEY, 'a function call', {'font-size':11.5, fill:C.tert});
-  if (v === 'C') txt(svg, (i0+i1)/2, G.srv.y + 32, 'a function call', {'font-size':11.5, fill:C.tert});
 
-  /* values ride above the mark carrying them */
-  if (at(1) > 0) txt(svg, (n0+n1)/2, G.you.y - 46, 'GET /hello', {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
-  if (at(3) > 0 && P_CALL) txt(svg, (i0+i1)/2, G.srv.y - (v === 'C' ? 44 : 42), 'environ',
-      {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
-  /* in C the body will not fit inside the circle, so it sits below it - see the cost note */
-  if (at(5) > 0 && P_RET) txt(svg, v === 'C' ? G.srv.x : (i0+i1)/2,
-      v === 'C' ? G.srv.y + G.srv.r + 20 : G.srv.y + 44, 'Hello world from Flask!',
-      {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
-  if (at(7) > 0) txt(svg, (n0+n1)/2, G.you.y + 44, 'HTTP/1.1 200 OK', {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
-  if (v === 'D' && (step === 2 || step === 3)) txt(svg, G.srv.x, G.srv.y - G.srv.r - 34, 'environ',
-      {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
+  if (at(1) > 0) txt(svg, (n0+n1)/2, G.you.y - 46, 'GET /hello',
+    {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
+  if (at(3) > 0) txt(svg, (i0+i1)/2, G.srv.y - 46, 'environ',
+    {fill:C.accent, 'font-family':MONO, 'font-size':12.5});
+  if (at(5) > 0) txt(svg, (i0+i1)/2, G.srv.y + 44, 'Hello world from Flask!',
+    {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
+  if (at(7) > 0) txt(svg, (n0+n1)/2, G.you.y + 44, 'HTTP/1.1 200 OK',
+    {fill:C.ok, 'font-family':MONO, 'font-size':12.5});
 
   $('#phase').innerHTML = '<span class="n">' + step + ' / 7</span>' + STEPS[step][0];
   $('#scrub').value = step;
-  $('#hint').textContent = VARIANTS[vi].hint;
 }
 
-/* ---- time ---- */
+/* Section 3a: a step's animation shows the transition INTO that step, and landing on a
+   step shows its completed state. So each step runs for its OWN duration, then rests. */
+const DWELL = 300;
 function stopPlay(){ playing = false; cancelAnimationFrame(rafId);
   $('#play').setAttribute('aria-pressed','false'); $('#play').textContent = '▶ Play'; }
-/* Section 3a: a step's animation shows the transition INTO that step, and landing on
-   a step shows its completed state. So each step runs for its own duration and then
-   rests, visibly, before the next one starts. */
-const DWELL = 300;
 function play(){
   if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
   playing = true; $('#play').setAttribute('aria-pressed','true'); $('#play').textContent = '❚❚ Pause';
@@ -323,26 +249,8 @@ function play(){
   rafId = requestAnimationFrame(tick);
 }
 
-/* ---- tabs ---- */
-VARIANTS.forEach((v, i) => {
-  const b = document.createElement('button');
-  b.className = 'tab'; b.setAttribute('role','tab'); b.setAttribute('aria-selected', i === 0);
-  b.innerHTML = '<b>' + v.id + '</b>' + v.tab;
-  b.onclick = () => { vi = i;
-    [...$('#tabs').children].forEach((c, j) => c.setAttribute('aria-selected', j === i));
-    renderVerdict(); stopPlay(); play(); };
-  $('#tabs').appendChild(b);
-});
-function renderVerdict(){
-  const v = VARIANTS[vi];
-  $('#verdict').innerHTML =
-    '<div class="row"><h4>WHAT IT SAYS</h4>' + v.claim + '</div>' +
-    '<div class="row cost"><h4>WHAT IT COSTS</h4>' + v.cost + '</div>' +
-    '<div class="row"><h4>WHAT IT DOES TO THE SPEC</h4>' + v.spec + '</div>';
-}
 $('#scrub').addEventListener('input', e => { stopPlay(); step = +e.target.value; sub = 1; draw(); });
 $('#play').addEventListener('click', () => playing ? stopPlay() : play());
 
-renderVerdict();
 if (REDUCED){ step = STEPS.length - 1; draw(); } else play();
 </script>
