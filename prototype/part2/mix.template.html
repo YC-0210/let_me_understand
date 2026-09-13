@@ -48,11 +48,16 @@ svg.draw{display:block; width:100%; height:auto}
 #scrub::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:14px; height:14px;
   margin-top:-5px; border-radius:50%; background:var(--accent); border:0}
 #scrub::-moz-range-thumb{width:14px; height:14px; border-radius:50%; background:var(--accent); border:0}
-.phase{font-size:14px; color:var(--ink-subtle); min-height:22px; margin:var(--sp-xs) 2px 0;
-  display:flex; gap:10px; align-items:baseline}
-.phase .n{font-family:var(--mono); font-size:11.5px; color:var(--ink-tert); flex:none;
-  min-width:62px}
-.phase b{color:var(--ink); font-weight:500}
+/* where the reader is, so a reference to "step 9" points at something they can see */
+.bub .lead{display:block; font-family:var(--mono); font-size:11px; letter-spacing:.3px;
+  color:var(--ink-tert); margin:0 0 4px}
+.bub .lead b{color:var(--ink-subtle); font-weight:500}
+.bub .to{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit;
+  white-space:nowrap}
+.bub .to:hover, .pop .to:hover{color:var(--accent-hover)}
+.pop .to{color:var(--accent); border-bottom:1px dotted currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
 .ctl{display:flex; align-items:center; gap:var(--sp-sm); margin:var(--sp-md) 0 0}
 .btn{font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; color:var(--ink);
   background:var(--s1); border:1px solid var(--hair); border-radius:var(--r-md); padding:8px 14px}
@@ -160,7 +165,6 @@ svg.draw{display:block; width:100%; height:auto}
        aria-label="A request travelling from you to a server to a framework application and back"></svg>
   <div class="steps">
     <input type="range" id="scrub" min="0" max="10" step="1" value="0" aria-label="Step through the exchange">
-    <p class="phase" id="phase"></p>
   </div>
   <div id="winkHost">
     <svg class="wink" id="wink" viewBox="0 0 100 100" aria-hidden="true">
@@ -377,11 +381,8 @@ function draw(){
   if (at(8) > 0) val(i0 + (i1-i0)*.38, G.srv.y + 96, R.body.trim(), col, 'body');
   if (at(10) > 0) val((n0+n1)/2, G.you.y + 48, R.statusLine, col, 'response');
 
-  const [name, , art] = STEPS[step];
-  $('#phase').innerHTML = '<span class="n">' + (art ? 'article ' + art : '&nbsp;&nbsp;&nbsp;·') +
-    '</span>' + name;
   $('#scrub').value = step;
-  if (NARRATION[step]) W.say(NARRATION[step]());
+  if (NARRATION[step]) W.say(lead() + NARRATION[step]());
   if (FLIGHT[step]){ const q = pointOn(FLIGHT[step], ease(sub)); W.lookAtSvg(q.x, q.y); }
   else if (GAZE[step]) W.lookAtSvg(GAZE[step].x, GAZE[step].y);
   else W.setGaze(0, 1.8);
@@ -437,35 +438,52 @@ const W = (() => {
 
 /* What Wink says at each step. Its job is the sentence the drawing cannot carry - the
    drawing names its marks, Wink says what just happened and why it matters. */
+
 const door = (id, text, datum) =>
   '<button class="door' + (datum ? ' datum' : '') + '" data-door="' + id + '">' + text + '</button>';
+/* a reference to another step is a way of getting there, not just a number */
+const to = n => '<button class="to" data-step="' + n + '">step ' + n + '</button>';
 
+/* The article's own wording for the step, then what it means - one sentence, not two
+   lines saying the same thing. Section 3a.1 keeps the source's terms at the front. */
 const NARRATION = [
-  () => 'three places and nothing joined up yet — ' + door('grid', 'twelve combinations') + ' to try',
-  () => 'the server is ' + door('loaded', 'handed an application') +
+  () => 'Nothing yet — three places, nothing joined up, and ' +
+        door('grid', 'twelve combinations') + ' to try',
+  () => 'The server ' + door('loaded', 'loads an <b>application</b> callable') +
         '. It has <b>none of its own</b>' +
-        (srv === 'webserver2' ? '' : ' — and ' + door('beyond', 'this one is not in the article')),
-  () => 'your request crosses a real network. The same request in all twelve runs',
-  () => 'only the ' + door('parse', 'first line') + ' is parsed: method, path, version',
-  () => 'the server packs ' +
+        (srv === 'webserver2' ? '' : ', and ' + door('beyond', 'this server is not in the article')),
+  () => 'The server <b>reads a request</b> — it crossed a real network, and it is the same ' +
+        'request in all twelve runs',
+  () => 'The server <b>parses it</b> — only the ' + door('parse', 'first line') +
+        ', split into method, path, version',
+  () => 'The server <b>builds an environ dictionary</b> — ' +
         door('env', Object.keys(run().environ).length + ' keys', true) +
-        ' into one plain dictionary, and it decides how many',
-  () => 'one call, and it looks the same whichever two you picked',
-  () => '<b>' + shortApp[app] + '</b> is deciding what to send',
-  () => door('sr', 'status and headers', true) + ', handed back <b>while it is still running</b>. ' +
-        'The server parks them until step 9',
-  () => run().chunked
-          ? 'and the body — with ' + door('chunk', 'no Content-Length') +
-            ', which will cost this server in a moment'
-          : 'and the body, as the return value. ' + run().appHeaders.length +
-            ' headers came with it: ' + run().appHeaders.map(h => h[0]).join(', '),
-  () => 'built from the body <b>and</b> the headers held since step 7' +
-        (run().chunked ? ' — so this server had to ' + door('chunk', 'chunk the body')
+        ' in one plain dictionary, and the server decides how many',
+  () => 'The server <b>calls the application callable</b> — one call, and it looks the same ' +
+        'whichever two you picked',
+  () => '<b>' + shortApp[app] + '</b> works. It is deciding what to send, and the server is ' +
+        'blocked until it answers',
+  () => '<b>' + shortApp[app] + '</b> calls <b>start_response</b> — ' +
+        door('sr', 'status and headers', true) + ' handed back <b>while it is still running</b>. ' +
+        'The server parks them until ' + to(9),
+  () => '<b>' + shortApp[app] + '</b> <b>returns a response body</b> — ' +
+        (run().chunked
+          ? 'with ' + door('chunk', 'no Content-Length') + ', which will cost this server in a moment'
+          : run().appHeaders.length + ' headers came with it: ' +
+            run().appHeaders.map(h => h[0]).join(', ')),
+  () => 'The server <b>constructs an HTTP response</b> — from the body <b>and</b> the headers ' +
+        'held since ' + to(7) +
+        (run().chunked ? ', so it had to ' + door('chunk', 'chunk the body')
                        : ', plus ' + run().respHeaders.filter(h =>
                            !run().appHeaders.some(a => a[0] === h[0])).map(h => h[0]).join(' and ')),
-  () => 'and it lands back with you: ' + door('response', run().statusLine, true) +
-        ' — ' + door('real', 'really ran'),
+  () => 'The server <b>transmits it back to you</b> — ' +
+        door('response', run().statusLine, true) + ', and it ' + door('real', 'really ran'),
 ];
+const lead = () => {
+  const art = STEPS[step][2];
+  return '<span class="lead"><b>' + step + ' / ' + (STEPS.length - 1) + '</b>  ' +
+    (art ? 'the article\'s step ' + art : 'not in the article\'s list') + '</span>';
+};
 
 /* What is behind each word. This is where the notes that used to sit under the drawing
    went: section 5 says the word is the door, and ADR 0002 says a departure is marked
@@ -591,7 +609,7 @@ const DOORS = {
   held: () => ['headers_set',
     '<pre>self.headers_set = [status, response_headers + server_headers]</pre>' +
     '<p>The status and headers the application handed over <b>while it was still running</b>, ' +
-    'parked in the server until step 9. This is the only thing in the whole exchange that sits ' +
+    'parked in the server until ' + to(9) + '. This is the only thing in the whole exchange that sits ' +
     'still for a while, which is why it is drawn as a resting disc rather than a moving one.</p>' +
     '<p>The server appends two of its own here: <code>Date</code> — hardcoded in the article to ' +
     '<code>Mon, 15 Jul 2019 5:54:48 GMT</code> — and <code>Server</code>.</p>'],
@@ -677,10 +695,18 @@ function closeDoor(){
   if (wasPlaying){ wasPlaying = false; play(false); }   /* same instant, not the start */
 }
 $('#svg').addEventListener('click', e => { if (!e.target.closest('.door-g')) return; });
-$('#bub').addEventListener('click', e => {
+function goToStep(n){
+  stopPlay(); wasPlaying = false; closeDoor();
+  step = Math.max(0, Math.min(STEPS.length - 1, n)); sub = 1; draw();
+}
+const onClick = e => {
+  const t = e.target.closest('.to');
+  if (t){ goToStep(+t.dataset.step); return; }
   const d = e.target.closest('.door');
   if (d) showDoor(d.dataset.door);
-});
+};
+$('#bub').addEventListener('click', onClick);
+$('#popBody').addEventListener('click', onClick);
 $('#popClose').addEventListener('click', closeDoor);
 addEventListener('keydown', e => { if (e.key === 'Escape' && openDoor) closeDoor(); });
 
