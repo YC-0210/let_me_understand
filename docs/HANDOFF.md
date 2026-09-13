@@ -94,6 +94,9 @@ Call the Skill tool for:
 ## How to work with this user
 
 - **One question at a time**, short. Long multi-part questions did not land.
+- **Be brief.** Verbose answers get in the way. Say the thing, stop.
+- **Put every decision in one place**, at the very bottom, under the heading
+  `Decision for you to make :` — never scattered through the prose.
 - **Build to decide.** Every good decision this session came from seeing options side by
   side, not from discussion.
 - **Render before publishing.** Use the headless Chromium at `/opt/pw-browsers/chromium`
