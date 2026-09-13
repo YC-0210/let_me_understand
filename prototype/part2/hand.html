@@ -184,8 +184,10 @@ function draw(){
   svg.setAttribute('viewBox', G.vb);
   const at  = i => step === i ? sub : (step > i ? 1 : 0);          /* linear - work */
   const atE = i => step === i ? ease(sub) : (step > i ? 1 : 0);     /* eased  - travel */
-  /* the result of a piece of work appears as that work finishes */
-  const done = i => step === i ? Math.max(0, (sub - .55)/.45) : (step > i ? 1 : 0);
+  /* The result of a piece of work APPEARS when that work finishes - it does not
+     fill alongside the ring. One thing animates per step, or the reader is
+     watching two progress indicators for one event. */
+  const landed = i => step === i ? (sub >= 1 ? 1 : 0) : (step > i ? 1 : 0);
   const [n0, n1] = gapL(G.you, G.srv);                       /* the real network gap */
 
   /* ---- the network channel: opens at step 1, stays open ---- */
@@ -242,11 +244,11 @@ function draw(){
     el('circle', {cx:p.x, cy:p.y, r:22*Math.min(1,f), fill:col, 'fill-opacity':.22,
       stroke:col, 'stroke-width':2}, svg); };
   /* environ rests in the server from the moment it is built until it is handed over */
-  if (step === 2) held(G.srv, done(2), C.accent);
+  if (step === 2) held(G.srv, landed(2), C.accent);
   if (v === 'D' && step === 3) held(G.srv, 1, C.accent);
   /* the body rests in whoever made it, until it moves on */
-  if (step === 4) held(worker[4], done(4), C.ok);
-  if (step === 6) held(G.srv, done(6), C.ok);
+  if (step === 4) held(worker[4], landed(4), C.ok);
+  if (step === 6) held(G.srv, landed(6), C.ok);
 
   /* ---- ring: work taking time, around whatever is doing it. Linear - labour does not accelerate. ---- */
   if (WORK.includes(step)){
@@ -298,22 +300,27 @@ function draw(){
 /* ---- time ---- */
 function stopPlay(){ playing = false; cancelAnimationFrame(rafId);
   $('#play').setAttribute('aria-pressed','false'); $('#play').textContent = '▶ Play'; }
+/* Section 3a: a step's animation shows the transition INTO that step, and landing on
+   a step shows its completed state. So each step runs for its own duration and then
+   rests, visibly, before the next one starts. */
+const DWELL = 300;
 function play(){
   if (REDUCED){ step = STEPS.length - 1; sub = 1; return draw(); }
-  if (step >= STEPS.length - 1){ step = 0; sub = 1; }
   playing = true; $('#play').setAttribute('aria-pressed','true'); $('#play').textContent = '❚❚ Pause';
-  let t0 = performance.now();
+  step = 0; sub = 1; draw();
+  let t0 = performance.now(), resting = t0 + DWELL;
   const tick = now => {
     if (!playing) return;
-    const dur = STEPS[Math.min(step + 1, STEPS.length - 1)][1] || 1;
-    sub = Math.min(1, (now - t0) / dur);
-    if (sub >= 1){
-      if (step >= STEPS.length - 1){ sub = 1; draw(); return stopPlay(); }
-      step++; sub = 0; t0 = now;
+    if (resting){
+      if (now < resting){ rafId = requestAnimationFrame(tick); return; }
+      if (step >= STEPS.length - 1) return stopPlay();
+      step++; sub = 0; t0 = now; resting = 0;
     }
+    sub = Math.min(1, (now - t0) / (STEPS[step][1] || 1));
+    if (sub >= 1){ sub = 1; resting = now + DWELL; }
     draw(); rafId = requestAnimationFrame(tick);
   };
-  step = 0; sub = 0; rafId = requestAnimationFrame(tick);
+  rafId = requestAnimationFrame(tick);
 }
 
 /* ---- tabs ---- */
