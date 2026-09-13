@@ -11,9 +11,9 @@ result - see MISSION principle 1.
 import json, os, socket, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VENV = os.environ.get('CAP_VENV', '/tmp/claude-0/-home-user-let-me-understand/'
-                      'ff779b40-f3f1-5f73-9904-1c58ce4e4f38/scratchpad/lsbaws')
-PY = os.path.join(VENV, 'bin', 'python')
+VENV = os.environ.get('CAP_VENV')
+PY = os.environ.get('CAP_PYTHON') or (os.path.join(VENV, 'bin', 'python')
+                                      if VENV else sys.executable)
 
 SERVERS = [
     ('webserver2', "the article's own server, ~150 lines"),
