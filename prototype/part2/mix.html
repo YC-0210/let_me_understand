@@ -106,6 +106,47 @@ svg.draw{display:block; width:100%; height:auto}
 .legend .sw{width:10px; height:2px; background:var(--ink); display:inline-block}
 .legend .sw.dim{background:var(--ink-subtle); opacity:.62}
 
+/* ---------------- a Branch, in front of the screen ----------------
+   CONTEXT.md: a Branch is an opt-in note that goes further than the primary Source and
+   carries its tier openly. The main line opens in place, under the drawing; a Branch
+   comes in front, because it is a detour rather than the next thing. Every claim in one
+   carries a Citation with a link, so a reader can check it rather than trust it. */
+.scrim{position:fixed; inset:0; background:rgba(1,1,2,.72); z-index:40;
+  display:flex; align-items:center; justify-content:center; padding:var(--sp-lg)}
+.branch{position:relative; width:min(620px,100%); max-height:82vh; overflow-y:auto;
+  background:var(--s2); border:1px solid var(--hair-strong); border-radius:var(--r-xl);
+  padding:var(--sp-lg); box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.branch .tier{display:inline-block; font-size:11px; font-weight:500; letter-spacing:.5px;
+  color:var(--ink-tert); border:1px solid var(--hair-strong); border-radius:var(--r-pill);
+  padding:3px 10px; margin:0 0 12px}
+.branch h3{margin:0 0 10px; font-size:19px; font-weight:600; letter-spacing:-.3px}
+.branch p{margin:0 0 10px; font-size:14.5px; line-height:1.55; color:var(--ink-muted)}
+.branch b{color:var(--ink); font-weight:500}
+.branch code{font-family:var(--mono); font-size:12.5px; background:var(--canvas);
+  border:1px solid var(--hair); border-radius:var(--r-xs); padding:1px 5px}
+.branch .quote{margin:0 0 10px; padding:10px 14px; border-left:2px solid var(--hair-strong);
+  background:var(--canvas); border-radius:0 var(--r-md) var(--r-md) 0}
+.branch .quote p{margin:0 0 6px; color:var(--ink); font-size:14px}
+.branch .quote cite{display:block; font-style:normal; font-size:12px; color:var(--ink-tert)}
+.branch .quote cite a{color:var(--accent); text-decoration:none;
+  border-bottom:1px dotted currentColor}
+.branch .quote cite a:hover{color:var(--accent-hover)}
+.branch .srcs{margin:14px 0 0; padding:12px 0 0; border-top:1px solid var(--hair)}
+.branch .srcs h4{margin:0 0 8px; font-size:11px; font-weight:500; letter-spacing:.5px;
+  color:var(--ink-subtle)}
+.branch .srcs li{font-size:13px; line-height:1.5; color:var(--ink-tert); margin:0 0 6px}
+.branch .srcs ul{margin:0; padding-left:18px}
+.branch .srcs a{color:var(--accent); text-decoration:none; border-bottom:1px dotted currentColor}
+.branch .srcs a:hover{color:var(--accent-hover)}
+.branch .close{position:absolute; top:12px; right:12px; width:30px; height:30px;
+  border-radius:var(--r-sm); background:transparent; border:1px solid transparent;
+  color:var(--ink-subtle); cursor:pointer; font-size:16px; line-height:1; font-family:var(--sans)}
+.branch .close:hover{background:var(--s3); border-color:var(--hair); color:var(--ink)}
+.branch .close:focus-visible{outline:2px solid var(--accent-focus); outline-offset:1px}
+.bub .why, .pop .why{color:var(--accent); border-bottom:1px dashed currentColor; cursor:pointer;
+  background:none; border-top:0; border-left:0; border-right:0; padding:0; font:inherit}
+.bub .why:hover, .pop .why:hover{color:var(--accent-hover)}
+
 /* ---------------- Wink, the mascot ----------------
    Brought over from the part 1 study on claude/focused-galileo-m6tm74. Chrome, not a
    mark: it lives under the drawing, never on it, because section 1 closes the drawing at
@@ -182,6 +223,14 @@ svg.draw{display:block; width:100%; height:auto}
       </g></g>
     </svg>
     <p class="bub" id="bub" role="status" aria-live="polite"></p>
+  </div>
+  <div class="scrim" id="scrim" hidden>
+    <div class="branch" id="branch" role="dialog" aria-modal="true" aria-labelledby="branchTitle">
+      <button class="close" id="branchClose" aria-label="Close and carry on">✕</button>
+      <span class="tier">BEYOND THE ARTICLE</span>
+      <h3 id="branchTitle"></h3>
+      <div id="branchBody"></div>
+    </div>
   </div>
   <div class="pop" id="pop" hidden>
     <button class="close" id="popClose" aria-label="Close and carry on">✕</button>
@@ -433,6 +482,53 @@ const door = (id, text, datum) =>
   '<button class="door' + (datum ? ' datum' : '') + '" data-door="' + id + '">' + text + '</button>';
 /* a reference to another step is a way of getting there, not just a number */
 const to = n => '<button class="to" data-step="' + n + '">step ' + n + '</button>';
+/* a word the article never explains. Principle 3: assume no foundation. */
+const why = (id, text) => '<button class="why" data-why="' + id + '">' + text + '</button>';
+
+/* Branches: beyond the primary Source, so every claim carries a Citation with a link.
+   The quotes below were taken from the live documents, not from memory. */
+const BRANCHES = {
+  socket: {
+    title: 'What is a socket?',
+    body:
+      '<p>Two programs that want to talk have a problem: they are separate, and they may be ' +
+      'on separate machines. A <b>socket</b> is the thing the operating system gives each of ' +
+      'them to talk through — one end of a pipe between two programs. You write bytes into ' +
+      'your end; they come out of theirs.</p>' +
+      '<div class="quote"><p>“…a <b>“client” socket</b> — an endpoint of a conversation, and a ' +
+      '<b>“server” socket</b>, which is more like a switchboard operator.”</p>' +
+      '<cite><a href="https://docs.python.org/3/howto/sockets.html" target="_blank" ' +
+      'rel="noopener">Python Socket Programming HOWTO</a></cite></div>' +
+      '<p>That is the split you can see in the drawing. The server holds a switchboard socket ' +
+      'waiting for callers; each caller gets a conversation of its own.</p>' +
+      '<p>The kind used here is a <b>TCP</b> socket, which is why the article can treat the ' +
+      'request as plain text arriving in order rather than as packets to reassemble:</p>' +
+      '<div class="quote"><p>“TCP provides a <b>reliable, in-order, byte-stream service</b> to ' +
+      'applications.”</p><cite><a href="https://www.rfc-editor.org/rfc/rfc9293.html#section-2.2" ' +
+      'target="_blank" rel="noopener">RFC 9293 §2.2, Key TCP Concepts</a> — the current TCP ' +
+      'standard</cite></div>' +
+      '<p>In Python that is the two constants at the top of the article\'s server: ' +
+      '<code>AF_INET</code> chooses addressing over the internet, <code>SOCK_STREAM</code> ' +
+      'chooses TCP. The module is a thin wrapper over the interface Unix has had since the ' +
+      'early 1980s.</p>' +
+      '<div class="quote"><p>“This module provides access to the <b>BSD socket interface</b>. ' +
+      'It is available on all modern Unix systems, Windows, MacOS…”</p>' +
+      '<cite><a href="https://docs.python.org/3/library/socket.html" target="_blank" ' +
+      'rel="noopener">Python <code>socket</code> module documentation</a></cite></div>' +
+      '<p><b>What this means for the drawing:</b> the leftmost line is a socket. The line ' +
+      'between the server and the application is not — that is a function call inside one ' +
+      'program, and nothing is sent anywhere.</p>',
+    sources: [
+      ['RFC 9293 — Transmission Control Protocol', 'https://www.rfc-editor.org/rfc/rfc9293.html',
+       'IETF standard, August 2022; obsoletes RFC 793'],
+      ['Python Socket Programming HOWTO', 'https://docs.python.org/3/howto/sockets.html',
+       'the official Python guide to the same API the article uses'],
+      ['Python socket — low-level networking interface',
+       'https://docs.python.org/3/library/socket.html', 'reference for AF_INET and SOCK_STREAM'],
+    ],
+  },
+};
+
 
 /* The article's own wording for the step, then what it means - one sentence, not two
    lines saying the same thing. Section 3a.1 keeps the source's terms at the front. */
@@ -442,8 +538,8 @@ const NARRATION = [
   () => 'The server ' + door('loaded', 'loads an <b>application</b> callable') +
         '. It has <b>none of its own</b>' +
         (srv === 'webserver2' ? '' : ', and ' + door('beyond', 'this server is not in the article')),
-  () => 'The server <b>reads a request</b> — it crossed a real network, and it is the same ' +
-        'request in all twelve runs',
+  () => 'The server <b>reads a request</b> — it crossed a real network, through a ' +
+        why('socket', 'socket') + ', and it is the same request in all twelve runs',
   () => 'The server <b>parses it</b> — only the ' + door('parse', 'first line') +
         ', split into method, path, version',
   () => 'The server <b>builds an environ dictionary</b> — ' +
@@ -570,7 +666,7 @@ const DOORS = {
     run().appHeaders.length + ' header' + (run().appHeaders.length === 1 ? '' : 's') + ': ' +
     run().appHeaders.map(h => '<code>' + esc(h[0]) + '</code>').join(', ') + '.</p>'],
   net: () => ['a network connection',
-    '<p>A real TCP socket. Two separate programs, possibly two separate machines, exchanging ' +
+    '<p>A real TCP ' + why('socket', 'socket') + '. Two separate programs, possibly two separate machines, exchanging ' +
     'bytes. It opens when you ask and closes when the reply has been sent — the server\'s last ' +
     'line is <code>client_connection.close()</code>, inside a <code>finally</code>.</p>'],
   call: () => ['application(environ, start_response)',
@@ -611,7 +707,8 @@ const DOORS = {
     'because WSGI says the result is an <b>iterable</b>: an application is free to return it in ' +
     'pieces.</p>'],
   real: () => ['where these bytes came from',
-    '<p>One real <code>GET /hello</code> sent over a socket to a real running server, twelve ' +
+    '<p>One real <code>GET /hello</code> sent over a ' + why('socket', 'socket') +
+    ' to a real running server, twelve ' +
     'times. The response you are reading is what came back, not a reconstruction.</p>' +
     '<p>The one thing here the article does not contain is the Django project: it says to clone ' +
     'its repository rather than printing the files, so the <code>/hello</code> view is ours. ' +
@@ -686,7 +783,29 @@ function goToStep(n){
   stopPlay(); wasPlaying = false; closeDoor();
   step = Math.max(0, Math.min(STEPS.length - 1, n)); sub = 1; draw();
 }
+function showBranch(id){
+  const B = BRANCHES[id];
+  wasPlaying = playing || wasPlaying;
+  stopPlay();
+  $('#branchTitle').textContent = B.title;
+  $('#branchBody').innerHTML = B.body +
+    '<div class="srcs"><h4>SOURCES</h4><ul>' + B.sources.map(([n, u, note]) =>
+      '<li><a href="' + u + '" target="_blank" rel="noopener">' + n + '</a> — ' + note + '</li>')
+      .join('') + '</ul></div>';
+  $('#scrim').hidden = false;
+  $('#branchClose').focus();
+}
+function closeBranch(){
+  if ($('#scrim').hidden) return;
+  $('#scrim').hidden = true;
+  if (wasPlaying && !openDoor){ wasPlaying = false; play(false); }
+}
+$('#branchClose').addEventListener('click', closeBranch);
+$('#scrim').addEventListener('click', e => { if (e.target === $('#scrim')) closeBranch(); });
+
 const onClick = e => {
+  const w = e.target.closest('.why');
+  if (w){ showBranch(w.dataset.why); return; }
   const t = e.target.closest('.to');
   if (t){ goToStep(+t.dataset.step); return; }
   const d = e.target.closest('.door');
@@ -695,7 +814,11 @@ const onClick = e => {
 $('#bub').addEventListener('click', onClick);
 $('#popBody').addEventListener('click', onClick);
 $('#popClose').addEventListener('click', closeDoor);
-addEventListener('keydown', e => { if (e.key === 'Escape' && openDoor) closeDoor(); });
+addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('#scrim').hidden) return closeBranch();
+  if (openDoor) closeDoor();
+});
 
 $('#scrub').addEventListener('input', e => {
   stopPlay(); wasPlaying = false; closeDoor(); step = +e.target.value; sub = 1; draw(); });
