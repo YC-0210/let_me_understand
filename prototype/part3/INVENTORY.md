@@ -239,14 +239,53 @@ built.
 | #102 | unverified: are missed signals what we actually see? | **Consistent with it.** `webserver3e`/`3f` leak 1–6 zombies at 32 and 128 clients and none at 1–3; `webserver3g`, whose handler loops, leaks none at any size. A **second** hazard the article does not mention was also seen once and did not repeat: `os.wait()` blocks when there is nothing to collect, and one run of `3e` at 128 clients stalled at 107 served. It is stated on the page as a hazard in the code, not as a measured effect. |
 | #88 | unverified: can the process limit be reached in this container? | **Not attempted.** The file-descriptor limit was, and it reproduced the article's figure exactly: `webserver3d.py` under `RLIMIT_NOFILE=64` accepted 60 connections and then died with `OSError: [Errno 24] Too many open files`. It is the only traceback in the entire capture. The process-limit experiment stays **unverified** and is not claimed anywhere on the page. |
 
+### A second verification pass, after the page was rebuilt as a story
+
+The first build presented the six servers as a set of options to compare, which assumes
+the reader has already read the article and knows why those six exist. They do not exist
+as options; they exist because each one broke and the next one fixed it. Rebuilding the
+page around that arc turned up a further class of drift — **claims that were written, and
+that no reader could reach.**
+
+| item | claimed | was | now |
+|---|---|---|---|
+| #24, #42, #85, #98 — the Branches on sockets, descriptors, zombies and EINTR | shown | **written but unreachable.** Three of the five Branches had no link anywhere on the page; `EINTR` was reachable only through a door nothing linked to. A fourth link pointed at a Branch that does not exist, so clicking it did nothing at all. | Every Branch is linked where the reader first meets the idea, and a check now walks every chapter, step, door and Branch body and fails if any link does not resolve. |
+| #37, #42 — process and file descriptor | shown | reachable **only if the reader had ticked that term in the briefing.** A Branch is opt-in by definition; gating the link as well as the wording meant a confident reader could never go deeper. | `isNew()` chooses the wording. The link is always there. |
+| #94 — SIGCHLD | shown | the briefing offered "Signal and `SIGCHLD`" as a box to tick, and ticking it led nowhere. | Linked at the step where the signal is sent. |
+| #3, #48 — `REQUEST_QUEUE_SIZE` as the six servers' own labels | shown | the knobs read `3b iterative`, `3d no close`. Those are filenames from an article the reader may not have read. | Each knob says what the program **does** — *one at a time*, *fork a child*, *…and never let go* — with the article's own `3b`/`3d` tag alongside, per Principle 3. |
+
+Four term doors (`termprocess`, `termfd`, `termzombie`, `termbacklog`) were **deleted**: the
+Branches now say more, and unlinked code that renders nothing is exactly how the Branches
+became unreachable in the first place.
+
+### Two findings taken off the page
+
+The page carried three places where the article's claims do not match what the code does.
+Two are now recorded here only, on the judgement that a page which stops three times to
+correct a tutorial costs a reader more trust in the tutorial than the corrections are
+worth. Both remain true, and both are backed by the capture:
+
+| # | finding | why it is here and not on the page |
+|---|---|---|
+| #100 | The step from `webserver3e.py` to `webserver3f.py` changes `REQUEST_QUEUE_SIZE` from 5 to 1024 as well as adding the `EINTR` retry, and never says so. One-line variants of each were run: `3e` with 3f's backlog left 2–4 zombies at 128 clients, `3f` with 3e's backlog left 5–8. Neither change is what matters — both leak, because both collect one child per signal. | It is a finding about **method**, not about anything the reader is about to type. Knowing it changes nothing they would do. |
+| #104 | The article's comment on `WNOHANG` says it will *"return EWOULDBLOCK error"*. It returns `(0, 0)` — which is what its own next line, `if pid == 0`, is written to catch. The code is right; only the comment is wrong. | A wrong comment beside correct code costs the reader nothing. |
+
+**#98, the `EINTR` finding, stays on the page**, because it is the one that costs a reader
+real time: the article tells them to expect a crash, they will not see one, and they will
+assume they typed it in wrong. It is reached from the last chapter, where the reader meets
+the two nearly-identical servers in the grid and would otherwise ask why both are there.
+
 ### A departure the first inventory did not contain
 
 | # | Statement | | Why |
 |---|---|---|---|
+| 114 | The page is **seven chapters**, not six servers on a shelf | **departed** | The article is one problem and four bugs hit while fixing it; presented as a set of options, that arc is gone and only a reader who already read the article knows why the six programs exist. The chapters follow the article's own order and its own demonstrations, and each ends on the thing that makes the next one necessary. Both knobs stay, one click away, for a reader who would rather roam. ADR 0002: checked against the article's structure, real — every chapter is a captured run — and marked, in that the path and the free knobs are both offered on screen. |
 | 113 | Only **1, 2 and 3** clients are drawn; 8, 32 and 128 were run but appear only on the rung above | **departed** | The article's sharpest demonstrations use 128 and 300 clients. A hundred and twenty-eight circles is not a drawing, and faking it with "and 125 more" would be a picture that lies about what it shows. So the crowd knob is drawn where it can be drawn, and abstracted where it cannot — with every cell of the grid stepping back down to what really happened in that run, which is what MISSION principle 5 requires of any Rung above the ground. Marked on the page, next to the knob and under the grid. |
 
 ## Totals, revised
 
-113 statements: **91 shown**, **16 omitted with a reason**, **3 departures** (#19 the shared
-sleep constant, #81 the recording client, #113 the undrawable crowd sizes), **1 still
-unverified** (#88, the process limit), and **3 resolved by capture** (#98, #100, #102).
+114 statements: **89 shown on the page**, **16 omitted with a reason**, **4 departures**
+(#19 the shared sleep constant, #81 the recording client, #113 the undrawable crowd sizes,
+#114 the chapter structure), **1 still unverified** (#88, the process limit), **3 resolved
+by capture** (#98, #100, #102), and **2 resolved by capture but deliberately kept off the
+page** (#100, #104) for the reason given above.

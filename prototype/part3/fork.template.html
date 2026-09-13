@@ -183,7 +183,7 @@ svg.draw{display:block; width:100%; height:auto}
 @keyframes exchangeIn{to{opacity:1; transform:none}}
 
 #winkHost{position:relative; display:flex; align-items:center; gap:var(--sp-sm);
-  margin:var(--sp-md) 0 0; min-width:0}
+  flex-wrap:wrap; margin:var(--sp-md) 0 0; min-width:0}
 .wink{position:relative; z-index:2; flex:none; display:grid; place-items:center; width:44px;
   height:44px; padding:0; border:0; border-radius:50%; background:transparent; cursor:pointer;
   opacity:.5; touch-action:none; -webkit-tap-highlight-color:transparent;
@@ -228,6 +228,8 @@ svg.draw{display:block; width:100%; height:auto}
   border-radius:var(--r-lg); padding:9px 14px; font-size:14px; line-height:1.45;
   color:var(--ink-muted); max-width:52ch; min-height:20px}
 .bub b{color:var(--ink); font-weight:500}
+.bub .ch-found{display:block; margin:8px 0 0; padding:8px 0 0;
+  border-top:1px solid var(--hair); color:var(--ink)}
 .bub code{font-family:var(--mono); font-size:12.5px}
 .source-bridge{display:block; margin:0 0 5px; color:var(--ink-subtle); font-size:11px;
   line-height:1.35; letter-spacing:.15px}
@@ -264,6 +266,9 @@ svg.draw{display:block; width:100%; height:auto}
 [hidden]{display:none!important}
 @media (max-width:560px){
   h1{font-size:25px} .lede{font-size:16px}
+  .ch-title{font-size:19px} .ch-ask{font-size:14.5px}
+  .ch-next{flex:1 1 100%; justify-content:center}
+  .ch-rail{flex-wrap:wrap}
   .experience,.briefing{min-height:520px}
   .briefing-inner{padding:30px 8px}
   .term-grid{grid-template-columns:1fr; gap:4px}
@@ -283,6 +288,40 @@ svg.draw{display:block; width:100%; height:auto}
 .metric .mv{font:500 15px var(--mono); color:var(--ink)}
 .metric .mv.good{color:var(--ok)} .metric .mv.bad{color:var(--no)}
 .metric .mv .mark{font-family:var(--sans); margin-right:5px}
+
+/* The story spine. The article is a problem and four bugs hit while fixing it, and a
+   reader who has not read it needs that arc before it needs an instrument. The chapter
+   bar carries the question; Wink answers it; the knobs are what you graduate into. */
+.chapter{margin:var(--sp-xl) 0 var(--sp-md)}
+.ch-rail{display:flex; align-items:center; gap:6px; margin:0 0 10px}
+.ch-dot{flex:none; width:22px; height:4px; border-radius:var(--r-pill); padding:0;
+  border:0; background:var(--hair-strong); cursor:pointer}
+.ch-dot:hover{background:var(--ink-tert)}
+.ch-dot:focus-visible{outline:2px solid var(--accent-focus); outline-offset:3px}
+.ch-dot.done{background:var(--ink-tert)}
+.ch-dot.now{background:var(--accent); width:34px}
+.ch-count{margin-left:6px; font-size:11px; letter-spacing:.4px; color:var(--ink-tert);
+  white-space:nowrap}
+.ch-title{margin:0 0 6px; font-size:21px; font-weight:600; letter-spacing:0;
+  text-wrap:balance}
+.ch-ask{margin:0; color:var(--ink-muted); font-size:15px; line-height:1.55; max-width:62ch}
+.ch-ask code{font-size:13px}
+.ch-next{display:inline-flex; align-items:center; gap:8px; flex:none; align-self:center;
+  padding:9px 15px; color:#fff; background:var(--accent); border:0;
+  border-radius:var(--r-md); cursor:pointer; font:600 13px var(--sans);
+  box-shadow:0 5px 18px #5e6ad238}
+.ch-next:hover{background:var(--accent-hover)}
+.ch-next:focus-visible{outline:2px solid var(--accent-hover); outline-offset:3px}
+.ch-next.ghost{background:transparent; color:var(--ink-subtle);
+  border:1px solid var(--hair); box-shadow:none; font-weight:500}
+.ch-next.ghost:hover{background:var(--s2); color:var(--ink); border-color:var(--hair-strong)}
+.roam{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:0 0 6px;
+  font-size:12.5px; color:var(--ink-tert)}
+.roam button{color:var(--accent); border:0; border-bottom:1px dotted currentColor;
+  background:none; padding:0; font:inherit; cursor:pointer}
+.opt .tag{color:var(--ink-tert); font-family:var(--mono); font-size:11px; margin-right:6px}
+.opt[aria-pressed=true] .tag{color:var(--accent)}
+table.grid th.rowh .tag{color:var(--ink-tert); margin-right:5px}
 
 /* The rung above the ground. Not a plot: the two knobs are unordered in the way a
    number is ordered, so the six servers x six client counts are PARTITIONED into
@@ -323,8 +362,8 @@ table.grid td{padding:2px}
 <header>
   <span class="eyebrow">PROTOTYPE · PART 3 · FORK</span>
   <h1 id="pageTitle">One call. Two returns.</h1>
-  <p class="lede" id="lede">Turn the number of people asking at once, and watch what the
-    server's design does to them.</p>
+  <p class="lede" id="lede">A server that serves one person at a time, and the single line
+    that fixes it — along with everything that line quietly breaks.</p>
 </header>
 
 <div class="experience" id="experience">
@@ -360,12 +399,15 @@ table.grid td{padding:2px}
           </svg>
         </button>
       </div>
-      <p class="briefing-copy"><strong>Six servers, one request each, really run.</strong><br>
-        First, tell me which ideas you want unpacked along the way.</p>
+      <p class="briefing-copy"><strong>A web server that can only do one thing at a
+        time.</strong><br>
+        Three people ask at once. I'll show you what happens to them — and the four bugs
+        you hit while fixing it.</p>
       <form class="term-form" id="termForm">
         <fieldset>
           <legend>Which terms are new to you?</legend>
-          <p class="term-help">Check anything you want explained at the moment it matters.</p>
+          <p class="term-help">Check anything you'd like unpacked. Nothing here assumes
+            you have read the article — this only changes the words I use.</p>
           <div class="term-grid">
             <label class="term-choice"><input type="checkbox" name="term" value="process"> Process, PID and PPID</label>
             <label class="term-choice"><input type="checkbox" name="term" value="fd"> File descriptor</label>
@@ -385,12 +427,19 @@ table.grid td{padding:2px}
   </section>
 
   <div class="exchange" id="exchange" hidden>
-    <div class="knobs">
+    <section class="chapter" id="chapter" aria-live="polite">
+      <div class="ch-rail" id="chRail"></div>
+      <h2 class="ch-title" id="chTitle"></h2>
+      <p class="ch-ask" id="chAsk"></p>
+    </section>
+
+    <div class="knobs" id="knobs" hidden>
       <div class="knob"><span class="eyebrow" id="serverLabel">THE SERVER</span>
         <div class="row" id="knobSrv"></div></div>
       <div class="knob"><span class="eyebrow">CLIENTS AT ONCE</span>
         <div class="row" id="knobN"></div></div>
     </div>
+    <p class="roam" id="roamOpen"></p>
 
     <div class="panel">
       <svg id="svg" class="draw" viewBox="0 0 740 392" role="img"
@@ -403,6 +452,7 @@ table.grid td{padding:2px}
       <div id="winkHost">
         <span class="wink-burst" id="winkBurst" aria-hidden="true"></span>
         <p class="bub" id="bub" role="status" aria-live="polite"></p>
+        <button class="ch-next" id="chNext" type="button" hidden></button>
       </div>
       <div class="scrim" id="scrim" hidden>
         <div class="branch" id="branch" role="dialog" aria-modal="true" aria-labelledby="branchTitle">
@@ -488,13 +538,73 @@ const DRAWABLE = [1, 2, 3];
 const cell = (s, k) => D.cells[(s || srv) + '|' + (k || n)];
 
 const SRV = {
-  webserver3b:{fork:false, closes:true,  reap:'none',    short:'3b iterative'},
-  webserver3c:{fork:true,  closes:true,  reap:'none',    short:'3c fork'},
-  webserver3d:{fork:true,  closes:false, reap:'none',    short:'3d no close'},
-  webserver3e:{fork:true,  closes:true,  reap:'wait',    short:'3e wait()'},
-  webserver3f:{fork:true,  closes:true,  reap:'wait',    short:'3f + EINTR'},
-  webserver3g:{fork:true,  closes:true,  reap:'waitpid', short:'3g waitpid'},
+  webserver3b:{fork:false, closes:true,  reap:'none',
+    short:'one at a time',        file:'3b'},
+  webserver3c:{fork:true,  closes:true,  reap:'none',
+    short:'fork a child',         file:'3c'},
+  webserver3d:{fork:true,  closes:false, reap:'none',
+    short:'…and never let go',    file:'3d'},
+  webserver3e:{fork:true,  closes:true,  reap:'wait',
+    short:'collect one',          file:'3e'},
+  webserver3f:{fork:true,  closes:true,  reap:'wait',
+    short:'collect one, retrying', file:'3f'},
+  webserver3g:{fork:true,  closes:true,  reap:'waitpid',
+    short:'collect them all',     file:'3g'},
 };
+
+const ms = (s, k) => Math.round(median(D.cells[s + '|' + k].lastMs));
+const CHAPTERS = [
+  {srv:'webserver3b', n:3, title:'One at a time',
+   ask:  'Three people ask for the same page at the same moment. This server finishes ' +
+         'one, then starts the next. Watch what that costs the third one.',
+   found:() => 'Client 3 waited <b>' + ms('webserver3b', 3) + ' ms</b> for work that ' +
+         'took two. Nothing was slow — it was standing in a queue. So how do you serve ' +
+         'all three at once?'},
+  {srv:'webserver3c', n:1, title:'One call, two returns', stopAt:5,
+   ask:  'The answer is one line: <code>os.fork()</code>. Start with a single client, so ' +
+         'you can see exactly what that line does.',
+   found:() => 'One line, and there are two ' +
+         why('process', 'processes') +
+         ' where there was one. The child does the work; the parent is already back ' +
+         'waiting for the next caller.'},
+  {srv:'webserver3c', n:3, title:'Now all three',
+   ask:  'Same server, three people at once. Each one gets a process of its own.',
+   found:() => 'All three finished in <b>' + ms('webserver3c', 3) + ' ms</b> — what ' +
+         '<i>one</i> of them took on its own. Nobody queued.<br>You can also see three ' +
+         'red crosses on the right that nothing is clearing up. Hold that thought; it is ' +
+         'chapter 5.'},
+  {srv:'webserver3d', n:3, title:'Why the parent lets go', stopAt:12,
+   ask:  'In the last two chapters the parent closed its own copy of each connection. ' +
+         'This is the same program with that one line commented out.',
+   found:() => 'Every client got the whole reply and <b>not one of them ever finished</b>. ' +
+         'The parent is still holding a ' + why('fd', 'descriptor') +
+         ' for each, so the count never reaches zero and the kernel never closes anything. ' +
+         'It also never gets those back: ' + door('fds', 'four open here, and climbing') + '.'},
+  {srv:'webserver3c', n:3, title:'The children that will not leave',
+   ask:  'Back to the working server, and to those crosses. A child that has exited is ' +
+         'not quite gone.',
+   found:() => 'Three ' + why('zombie', 'zombies') + ' — processes that ended, and that ' +
+         'nobody collected. They use no memory and no processor time, and they still each ' +
+         'hold a slot in the kernel\'s table. You cannot kill them. Someone has to ' +
+         '<b>wait</b> for them.'},
+  {srv:'webserver3g', n:3, title:'Collecting them',
+   ask:  'When a child ends, the kernel sends the parent a signal. The parent can answer ' +
+         'it by asking for the child\'s exit status — which is what finally clears it.',
+   found:() => 'No crosses left. The last step of the article, and at three clients it ' +
+         'works perfectly.'},
+  {srv:'webserver3e', n:3, title:'Under a crowd', grid:true,
+   ask:  'The article does not stop there, and this is why. Two different ways of ' +
+         'collecting children look <b>identical</b> at this size.',
+   found:() => 'At three clients, ' + door('grid', 'all three of these') + ' leave nothing ' +
+         'behind. Turn the crowd up in the grid below and they come apart: at 128 clients ' +
+         'this one leaves <b>' + fmt(D.cells['webserver3e|128'].zombiesLeft) + '</b> and ' +
+         '<b>collect them all</b> leaves <b>' + fmt(D.cells['webserver3g|128'].zombiesLeft) +
+         '</b>. One signal can stand for several deaths, so collecting one per signal is ' +
+         'not enough.<br>The grid\'s other row, <b>collect one, retrying</b>, is that same ' +
+         'server plus a fix for a crash ' + why('eintr', 'that no longer happens') +
+         ' — worth knowing before you type the article in.'},
+];
+let chapter = 0, story = true;
 
 let unfamiliar = new Set();
 const isNew = c => unfamiliar.has(c);
@@ -807,7 +917,12 @@ function draw(){
 
   $('#scrub').value = step;
   renderReadout();
-  if (NARRATION()) W.say(bridge() + NARRATION());
+  if (NARRATION()){
+    const end = story && step >= chapterEnd() && sub >= 1;
+    W.say(bridge() + NARRATION() +
+      (end ? '<span class="ch-found">' + CHAPTERS[chapter].found() + '</span>' : ''));
+  }
+  syncNext();
   W.lookAtSvg(cur.fork != null ? XK : (cur.ring && cur.ring.who === 'c' ? XK : XP),
               cur.fork != null ? rowY(cur.fork, k) : MIDY);
 }
@@ -867,12 +982,15 @@ function NARRATION(){
     'people asking at once — every pair really run';
   if (a === 1) return 'The server makes a socket, binds it to port 8888 and ' +
     door('listen', 'listens') + '. It is one ' +
-    (isNew('process') ? why('process', 'process') : 'process') + ', holding one ' +
-    (isNew('fd') ? why('fd', 'file descriptor') : 'file descriptor');
+    why('process', isNew('process') ? 'running program' : 'process') + ', holding one ' +
+    why('fd', isNew('fd') ? 'handle on an open thing' : 'file descriptor') +
+    ' — the ' + why('socket', 'socket') + ' it will listen on';
   if (a === 2) return k === 1
-    ? 'One client connects. The kernel put it in the ' + door('backlog', 'accept queue')
-    : 'All ' + k + ' connect <b>at once</b>. They fit because the kernel holds a ' +
-      door('backlog', 'queue of waiting connections') + ' — nothing has been accepted yet';
+    ? 'One client opens a ' + why('socket', 'socket') + ' to the server. The kernel put ' +
+      'it in the ' + door('backlog', 'accept queue') + ' — the program has not picked up yet'
+    : 'All ' + k + ' open a ' + why('socket', 'socket') + ' <b>at once</b>. They fit ' +
+      'because the kernel holds a ' + door('backlog', 'queue of waiting connections') +
+      ' — nothing has been accepted yet';
   if (a === 3) return '<b>accept()</b> hands back a second ' +
     (isNew('fd') ? 'handle' : 'descriptor') + ' — one ' + door('accept', 'connected socket') +
     ' for talking to that client';
@@ -918,15 +1036,14 @@ function NARRATION(){
       '. They have their reply. They just cannot tell it is over';
   if (a === 13) return 'The ' + (k === 1 ? 'child is' : 'children are') + ' gone, but the ' +
     'kernel still has ' + (k === 1 ? 'an entry' : 'entries') + ': ' +
-    (isNew('zombie') ? glossary('zombie', 'a zombie') : door('zombie', 'a zombie', true)) +
-    (k === 1 ? '' : ' each') + '. SIGCHLD goes up to the parent to say so';
+    why('zombie', 'a zombie') + (k === 1 ? '' : ' each') + '. ' +
+    door('termsignal', 'SIGCHLD') + ' goes up to the parent to say so';
   if (a === 14) return S.reap === 'none'
     ? 'Nothing reaps them, so they stay. ' + door('reap', 'You cannot kill a zombie') +
       ' — someone has to wait for it'
     : zLeft === 0
-      ? 'Reaped — ' + door('reap', 'nothing left behind', true) + '. At ' + k +
-        ' client' + (k === 1 ? '' : 's') + ' <b>3e, 3f and 3g all look identical</b>. ' +
-        'Turn the crowd up in the ' + door('grid', 'grid below') + ' to find where they stop being'
+      ? 'The parent asks for each one\'s exit status, and that is what finally clears it. ' +
+        door('reap', 'Nothing left behind', true) + ' — the kernel\'s table is clean again'
       : door('reap', zLeft + ' still there', true) + ' after the handler ran. ' +
         'Not enough signals arrived for the number of children that died';
   return cur.name;
@@ -942,36 +1059,11 @@ const fmt = a => a.every(v => v === a[0]) ? String(a[0])
   : median(a) + ' (runs: ' + a.join(', ') + ')';
 
 const DOORS = {
-  termprocess: () => ['process, PID and PPID',
-    '<p>A <b>process</b> is one running copy of a program. Start the same program twice ' +
-    'and there are two processes, each with its own memory.</p>' +
-    '<p>The kernel gives each one a number, its <b>PID</b>, and remembers which process ' +
-    'started it — the <b>PPID</b>, or parent process ID. That relationship is drawn here ' +
-    'as the line between the middle circle and the ones on the right.</p>'],
-  termfd: () => ['file descriptor',
-    '<p>A <b>file descriptor</b> is a small number the kernel gives a process when it ' +
-    'opens something: a file, or — as here — a socket.</p>' +
-    '<p>The article\'s sentence is the one to keep: <i>"in UNIX everything is a file."</i> ' +
-    'A socket has a descriptor exactly as a file does, and that is why forking a process ' +
-    'has anything to do with networking at all.</p>' +
-    '<p>Each small disc inside a circle on this page is one open descriptor.</p>'],
-  termzombie: () => ['zombie process',
-    '<p>A <b>zombie</b> is a process that has finished running but that nobody has ' +
-    'collected yet. The kernel keeps its exit status around in case its parent asks.</p>' +
-    '<p>So it uses no processor time and no memory of its own — but it still occupies an ' +
-    'entry in the kernel\'s table of processes, and there is a limit on those.</p>' +
-    '<p>The article puts it plainly: <b>you cannot kill a zombie, you have to wait for ' +
-    'it.</b></p>'],
   termsignal: () => ['signal and SIGCHLD',
     '<p>A <b>signal</b> is the kernel interrupting a process to tell it something ' +
     'happened. The process can name a function to run when one arrives.</p>' +
     '<p><b>SIGCHLD</b> is the one that means "a child of yours has just ended." It is ' +
     'how a parent finds out without having to sit and wait.</p>'],
-  termbacklog: () => ['the listen backlog',
-    '<p>When a program calls <code>listen(5)</code>, the 5 is how many finished ' +
-    'connections the kernel will hold for it while it is busy elsewhere.</p>' +
-    '<p>That is why a client can connect to a server that is not accepting: the kernel ' +
-    'accepted it, not the program.</p>'],
   termconcurrent: () => ['concurrent, exactly',
     '<p>The article gives the strict definition, and it is worth having:</p>' +
     '<div class="quote"><p>"Two events are concurrent if you cannot tell by looking at ' +
@@ -1282,6 +1374,11 @@ function reapDoor(){
   const table = '<table class="rec"><tr><th>clients at once</th><th>zombies left</th></tr>' +
     counts + '</table>';
   if (S.reap === 'wait') return ['os.wait(), once per signal',
+    (srv === 'webserver3f'
+      ? '<p class="warn">This server exists to fix a crash that ' +
+        why('eintr', 'no longer happens on a modern Python') + '. Its other change is the ' +
+        'one below.</p>'
+      : '') +
     wait +
     '<p>SIGCHLD arrives, the handler runs, one child is collected. That is enough when ' +
     'children end one at a time.</p>' +
@@ -1297,10 +1394,7 @@ function reapDoor(){
     'collect, say so rather than waiting" — so the handler can never block the parent. ' +
     'The <b>loop</b> means one signal can collect any number of children, which is what ' +
     'makes missed signals harmless.</p>' + table +
-    '<p>The article\'s own comment on <code>WNOHANG</code> says it will <i>"return ' +
-    'EWOULDBLOCK error"</i>. It does not — it returns <code>(0, 0)</code>, which is ' +
-    'exactly what the next line, <code>if pid == 0</code>, is written to catch. The code ' +
-    'is right and the comment beside it is not.</p>'];
+    ''];
 }
 function waitBlockEvidence(){
   /* Said carefully, because the runs do not all agree. One run of webserver3e at 128
@@ -1426,14 +1520,10 @@ const BRANCHES = {
       '<b>not one <code>EINTR</code>, and not one crash.</b> The only traceback any server ' +
       'produced in the whole capture was <code>webserver3d.py</code> running out of file ' +
       'descriptors, which is a different lesson and a true one.</p>' +
-      '<p>So on a current Python the article\'s <code>3e → 3f</code> step changes nothing ' +
-      'it claims to change. It does change something else, silently: ' +
-      '<code>REQUEST_QUEUE_SIZE</code> goes from 5 to 1024 in the same edit, and the ' +
-      'article never mentions it. We ran one-line variants to see which of the two ' +
-      'accounted for the difference.</p>' + diagTable() +
-      '<p><b>Neither.</b> Both servers leak zombies at 128 clients whichever backlog they ' +
-      'have, because both call <code>os.wait()</code> once per signal. The fix that ' +
-      'matters is the next one the article makes — and that one is entirely correct.</p>' +
+      '<p>So on a current Python this step of the article changes nothing it claims to ' +
+      'change. Both of these servers still leak zombies at 128 clients, because both ' +
+      'collect one child per signal. The fix that matters is the next one the article ' +
+      'makes — and that one is entirely correct.</p>' +
       '<p>This is not a mistake on the article\'s part. It is a ten-year-old article that ' +
       'was right when it was written. It is here because a reader retyping this code today ' +
       'will not see the error the article tells them to expect, and would reasonably ' +
@@ -1478,18 +1568,6 @@ const BRANCHES = {
     ],
   },
 };
-function diagTable(){
-  const rows = Object.entries(D.diagnostics || {}).map(([k, v]) =>
-    '<tr><td>' + esc(k) + '</td><td class="' + (median(v.zombiesLeft) ? 'bad' : 'ok') + '">' +
-    fmt(v.zombiesLeft) + '</td></tr>').join('');
-  const base = ['webserver3e', 'webserver3f'].map(s => {
-    const c = D.cells[s + '|128'];
-    return c ? '<tr><td>' + s + '.py, unmodified</td><td class="' +
-      (median(c.zombiesLeft) ? 'bad' : 'ok') + '">' + fmt(c.zombiesLeft) + '</td></tr>' : '';
-  }).join('');
-  return '<table class="rec"><tr><th>128 clients at once</th><th>zombies left</th></tr>' +
-    base + rows + '</table>';
-}
 
 /* ---------------- the rung above the ground ----------------
    MISSION principle 5: every abstract view must offer a way back down to the concrete
@@ -1502,7 +1580,8 @@ function renderGrid(){
   let html = '<tr><th></th>' + D.clients.map(k =>
     '<th>' + k + '</th>').join('') + '</tr>';
   for (const [id, blurb] of D.servers){
-    html += '<tr><th class="rowh" title="' + esc(blurb) + '">' + SRV[id].short + '</th>';
+    html += '<tr><th class="rowh" title="' + esc(blurb) + '"><span class="tag">' +
+      SRV[id].file + '</span>' + SRV[id].short + '</th>';
     for (const k of D.clients){
       const c = D.cells[id + '|' + k];
       if (!c){ html += '<td></td>'; continue; }
@@ -1542,7 +1621,7 @@ function cellDoor(id, k){
     '<table class="rec">' + rows.map(r =>
       '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>').join('') + '</table>' +
     '<p>Median of ' + D.repeats + ' runs; each cell shows every run in brackets where they ' +
-    'disagreed. They disagree because ' + why('concurrent', 'concurrent events have no order') +
+    'disagreed. They disagree because ' + door('termconcurrent', 'concurrent events have no order') +
     ' you can count on.</p>' +
     (ns ? '<p><b>' + ns + ' client' + (ns === 1 ? '' : 's') + ' never got a reply at all.</b> ' +
       'That is not this server\'s design failing — it is the ' + door('backlog', 'backlog') +
@@ -1573,8 +1652,7 @@ function limitDoor(){
     'anywhere in this capture.</p>'];
 }
 DOORS.limit = limitDoor;
-DOORS.eintrnote = () => ['about that EINTR fix', '<p>See ' +
-  why('eintr', 'the whole finding') + '.</p>'];
+
 
 /* ---------------- Wink, carried over from part 2 unchanged ----------------
    Direct press/release owns expression and gaze briefly. Pointer proximity comes next;
@@ -1693,12 +1771,12 @@ function rebuild(keepStep){
 function stopPlay(){ playing = false; looping = false; cancelAnimationFrame(rafId);
   $('#play').setAttribute('aria-pressed', 'false'); $('#play').textContent = '▶ Play'; }
 function play(fromStart){
-  if (REDUCED){ step = steps.length - 1; sub = 1; return draw(); }
+  if (REDUCED){ step = chapterEnd(); sub = 1; return draw(); }
   stopPlay();
   if (openDoor) closeDoor();
   playing = true;
   $('#play').setAttribute('aria-pressed', 'true'); $('#play').textContent = '❚❚ Pause';
-  if (fromStart || step >= steps.length - 1){ step = 0; sub = 1; }
+  if (fromStart || step >= chapterEnd()){ step = 0; sub = 1; }
   draw();
   let last = performance.now(), rest = sub >= 1 ? DWELL : 0;
   (function frame(now){
@@ -1706,7 +1784,7 @@ function play(fromStart){
     const dt = now - last; last = now;
     if (rest > 0){ rest -= dt; draw(); rafId = requestAnimationFrame(frame); return; }
     if (sub >= 1){
-      if (step >= steps.length - 1){ sub = 1; draw(); return stopPlay(); }
+      if (step >= chapterEnd()){ sub = 1; draw(); return stopPlay(); }
       step++; sub = 0;
     }
     sub = Math.min(1, sub + dt / (steps[step].ms || 1));
@@ -1732,15 +1810,94 @@ function loopStep(m){
   })(last);
 }
 
+/* ---------------- the story ----------------
+   Wink tells it. The chapter bar holds the question, the drawing answers it, and the
+   last step of each run is where Wink says what it came to. Nothing here is a second
+   explanation: every number in a chapter is read out of the capture. */
+function renderChapter(){
+  const rail = $('#chRail');
+  rail.innerHTML = '';
+  CHAPTERS.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'ch-dot' + (story && i === chapter ? ' now' : story && i < chapter ? ' done' : '');
+    b.setAttribute('aria-label', 'Chapter ' + (i + 1) + ': ' + c.title);
+    b.onclick = () => goChapter(i);
+    rail.appendChild(b);
+  });
+  const count = document.createElement('span');
+  count.className = 'ch-count';
+  count.textContent = story
+    ? (chapter + 1) + ' of ' + CHAPTERS.length
+    : 'off the path';
+  rail.appendChild(count);
+
+  const C0 = CHAPTERS[chapter];
+  $('#chTitle').textContent = story ? C0.title : 'Your own way round';
+  $('#chAsk').innerHTML = story ? C0.ask
+    : 'Both knobs are yours. Every pair below was really run — turn them and see what ' +
+      'each design does to the people waiting.';
+  $('#knobs').hidden = story;
+  $('#roamOpen').innerHTML = story
+    ? 'Rather poke at it yourself? <button type="button" data-roam="off">Skip to the ' +
+      'knobs</button>'
+    : '<button type="button" data-roam="on">← Back to the story</button>';
+}
+function goChapter(i){
+  chapter = Math.max(0, Math.min(CHAPTERS.length - 1, i));
+  story = true;
+  const C0 = CHAPTERS[chapter];
+  srv = C0.srv; n = C0.n;
+  closeDoor(); closeBranch();
+  renderChapter(); syncKnobs(); renderGrid(); rebuild();
+  play(true);
+}
+function setStory(on){
+  story = on;
+  closeDoor(); closeBranch();
+  renderChapter(); syncKnobs();
+  if (on){ goChapter(chapter); } else { $('#chNext').hidden = true; }
+}
+/* The button beside Wink only exists once the run has actually played out - it is the
+   way on from an answer, not a way past the question. */
+/* Where this chapter's run ends: the step its point lands on, which is not always the
+   last step the program has. The slider still reaches everything past it. */
+function chapterEnd(){
+  if (!story) return steps.length - 1;
+  const at = CHAPTERS[chapter].stopAt;
+  if (at == null) return steps.length - 1;
+  const i = steps.findIndex(x => x.art === at);
+  return i < 0 ? steps.length - 1 : i;
+}
+function syncNext(){
+  const btn = $('#chNext');
+  const done = story && step >= chapterEnd() && sub >= 1;
+  btn.hidden = !done;
+  if (!done) return;
+  const last = chapter >= CHAPTERS.length - 1;
+  btn.className = 'ch-next' + (last ? ' ghost' : '');
+  btn.textContent = last ? 'Explore on your own →' : 'Next: ' + CHAPTERS[chapter + 1].title + ' →';
+}
+$('#chNext').addEventListener('click', () => {
+  if (chapter >= CHAPTERS.length - 1) return setStory(false);
+  goChapter(chapter + 1);
+});
+$('#roamOpen').addEventListener('click', e => {
+  const b = e.target.closest('[data-roam]');
+  if (b) setStory(b.dataset.roam === 'on');
+});
+
 /* ---------------- the knobs ---------------- */
 function syncKnobs(){
   const srvHost = $('#knobSrv'); srvHost.innerHTML = '';
   for (const [id, blurb] of D.servers){
     const b = document.createElement('button');
-    b.className = 'opt'; b.type = 'button'; b.textContent = SRV[id].short;
+    b.className = 'opt'; b.type = 'button';
+    b.innerHTML = '<span class="tag">' + SRV[id].file + '</span>' + SRV[id].short;
     b.title = blurb;
     b.setAttribute('aria-pressed', String(id === srv));
-    b.onclick = () => { srv = id; syncKnobs(); renderGrid(); rebuild(); play(true); };
+    b.onclick = () => { srv = id; story = false; renderChapter(); syncKnobs();
+      renderGrid(); rebuild(); play(true); };
     srvHost.appendChild(b);
   }
   const nHost = $('#knobN'); nHost.innerHTML = '';
@@ -1749,7 +1906,8 @@ function syncKnobs(){
     b.className = 'opt'; b.type = 'button';
     b.textContent = k + (k === 1 ? ' client' : ' clients');
     b.setAttribute('aria-pressed', String(k === n));
-    b.onclick = () => { n = k; syncKnobs(); renderGrid(); rebuild(); play(true); };
+    b.onclick = () => { n = k; story = false; renderChapter(); syncKnobs();
+      renderGrid(); rebuild(); play(true); };
     nHost.appendChild(b);
   }
   const more = document.createElement('button');
@@ -1853,9 +2011,10 @@ $('#play').addEventListener('click', () => (playing || looping) ? stopPlay() : p
 function updateVocabulary(){
   $('#serverLabel').textContent = unfamiliar.size ? 'THE PROGRAM' : 'THE SERVER';
   $('#lede').textContent = unfamiliar.size
-    ? 'Change how many people ask at once, and watch what each design does to them.'
-    : "Six servers from the article, every one really run. Turn either knob and watch "
-      + 'what breaks — and how long it stays broken.';
+    ? 'A program that can only help one person at a time, and the single line that fixes '
+      + 'it — along with everything that line quietly breaks.'
+    : 'A server that serves one person at a time, and the single line that fixes it — '
+      + 'along with everything that line quietly breaks. Seven chapters, all really run.';
 }
 let exchangeReady = false, tapCount = 0, lastTap = 0, tapResetTimer = 0;
 const mascot = $('#wink');
@@ -1887,6 +2046,9 @@ function revealExchange(){
   if (exchangeReady) return;
   unfamiliar = new Set(new FormData($('#termForm')).getAll('term'));
   updateVocabulary();
+  chapter = 0; story = true;
+  srv = CHAPTERS[0].srv; n = CHAPTERS[0].n;
+  renderChapter();
   syncKnobs();
   renderGrid();
   rebuild();
@@ -1950,7 +2112,9 @@ mascot.addEventListener('keyup', e => {
   if (W.release()) registerWinkTap();
 });
 
+srv = CHAPTERS[0].srv; n = CHAPTERS[0].n;
 rebuild();
+renderChapter();
 syncKnobs();
 renderGrid();
 </script>
