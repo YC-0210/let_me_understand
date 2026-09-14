@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Two requests, one server</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:dark;--canvas:#08090a;--s1:#101112;--s2:#17181a;--s3:#202124;
+  --hair:#292b2f;--hair-strong:#3a3c42;--ink:#f7f8f8;--muted:#c2c5ca;--sub:#8a8f98;
+  --tert:#62666d;--accent:#5e6ad2;--accent-hover:#7180ee;--ok:#27a644;--no:#d95448;
+  --sans:Inter,system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--ink);font:14px/1.5 var(--sans);letter-spacing:0}
+button,input,select{font:inherit}button{letter-spacing:0}
+.wrap{width:min(1040px,calc(100% - 40px));margin:auto;padding:48px 0 80px}
+header{margin-bottom:28px}.eyebrow{margin:0 0 8px;color:var(--sub);font-size:12px;font-weight:600;text-transform:uppercase}
+h1{max-width:850px;margin:0;font-size:clamp(32px,5vw,54px);line-height:1.08;font-weight:650;letter-spacing:0}
+.lede{max-width:720px;margin:16px 0 0;color:var(--muted);font-size:17px}
+.experience{position:relative;min-height:510px}
+.briefing{min-height:510px;display:grid;place-items:center;border-top:1px solid var(--hair)}
+.briefing-inner{display:grid;justify-items:center;width:min(650px,100%);padding:40px 12px;text-align:center}
+.briefing-copy{margin:14px 0 20px;color:var(--muted);font-size:15px;line-height:1.55}.briefing-copy strong{color:var(--ink)}
+.term-form{width:100%;text-align:left}.term-form fieldset{margin:0;padding:0;border:0}.term-form legend{width:100%;text-align:center;font-weight:600}
+.term-help{margin:4px 0 15px;color:var(--sub);text-align:center;font-size:12px}
+.term-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 12px;margin-bottom:20px}
+.term-choice{display:flex;gap:9px;align-items:center;min-width:0;padding:7px 9px;color:var(--muted);cursor:pointer}
+.term-choice:hover{color:var(--ink)}.term-choice input{width:15px;height:15px;margin:0;accent-color:var(--accent)}
+.term-choice code,code{font-family:var(--mono);font-size:.92em}.actions{text-align:center}
+.primary,.secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:6px;cursor:pointer;font-weight:600}
+.primary{padding:9px 14px;border:0;background:var(--accent);color:white}.primary:hover{background:var(--accent-hover)}
+.secondary{padding:7px 10px;border:1px solid var(--hair-strong);background:var(--s2);color:var(--muted)}
+.secondary:hover{color:var(--ink);border-color:var(--sub)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent-hover);outline-offset:3px}
+.briefing.leaving{position:absolute;inset:0;z-index:3;pointer-events:none;animation:fadeOut .35s ease forwards}
+.lesson{opacity:0;transform:translateY(16px)}.lesson.entering{animation:enter .68s cubic-bezier(.2,.8,.2,1) forwards}.lesson.ready{opacity:1;transform:none}
+@keyframes fadeOut{to{opacity:0;transform:translateY(-8px)}}@keyframes enter{to{opacity:1;transform:none}}
+
+.chapter-nav{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--hair);margin-bottom:20px}
+.chapter-tab{position:relative;min-height:58px;padding:9px 12px;border:0;border-right:1px solid var(--hair);background:transparent;color:var(--sub);cursor:pointer;text-align:left}
+.chapter-tab:last-child{border-right:0}.chapter-tab:hover{color:var(--muted)}.chapter-tab[aria-current=step]{color:var(--ink);background:var(--s1)}
+.chapter-tab[aria-current=step]::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;background:var(--accent)}
+.chapter-tab .num{display:block;color:var(--tert);font:11px var(--mono);margin-bottom:2px}.chapter-tab .label{display:block;font-size:12px;font-weight:600}
+.panel{border:1px solid var(--hair);border-radius:8px;background:var(--s1);overflow:hidden}
+.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:14px 16px;border-bottom:1px solid var(--hair)}
+.panel-head h2{margin:0;font-size:16px;font-weight:600}.panel-head p{margin:3px 0 0;color:var(--sub);font-size:12px}
+.source-map{display:flex;align-items:center;gap:5px;flex:none;padding-top:3px}.source-map i{width:5px;height:5px;border-radius:50%;background:var(--hair-strong)}
+.source-map i.done{background:var(--sub)}.source-map i.now{width:7px;height:7px;background:var(--accent)}
+.viz-controls{display:flex;align-items:end;gap:18px;flex-wrap:wrap;padding:11px 16px;border-bottom:1px solid var(--hair)}
+.control{display:grid;gap:5px}.control label{color:var(--sub);font-size:11px;font-weight:600;text-transform:uppercase}
+.control select{min-width:190px;padding:6px 28px 6px 8px;border:1px solid var(--hair-strong);border-radius:5px;background:var(--s2);color:var(--ink)}
+.toggle{display:flex;align-items:center;gap:8px;color:var(--muted);cursor:pointer}.toggle input{accent-color:var(--accent)}
+.drawing{display:block;width:100%;height:auto;aspect-ratio:820/310;background:var(--s1)}
+.channel{stroke:var(--hair-strong);stroke-width:2;stroke-linecap:round}.trace{stroke:var(--sub);stroke-width:1.5;stroke-dasharray:3 5;opacity:.45}
+.place{fill:none;stroke:var(--sub);stroke-width:2}.disc{fill:var(--accent)}.disc.ok{fill:var(--ok)}.held{fill:color-mix(in srgb,var(--accent) 22%,transparent);stroke:var(--accent);stroke-width:2}
+.ring{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round}.ring.ok{stroke:var(--ok)}
+.cross{fill:none;stroke:var(--no);stroke-width:2.5;stroke-linecap:round}.arrow{fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.svg-label{fill:var(--sub);font:12px var(--sans)}.svg-value{fill:var(--ink);font:11px var(--mono)}
+.svg-door{fill:var(--accent);font:12px var(--sans);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px;cursor:pointer}
+.svg-door:hover{fill:var(--accent-hover)}.svg-door:focus{outline:none}.svg-door:focus-visible{text-decoration-thickness:2px}
+.transport{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:12px 16px;border-top:1px solid var(--hair)}
+.play{width:34px;height:32px;padding:0;border:1px solid var(--hair-strong);border-radius:5px;background:var(--s2);color:var(--accent-hover);cursor:pointer;font-size:15px}
+#scrub{width:100%;accent-color:var(--accent);cursor:pointer}.step-count{min-width:56px;color:var(--sub);font:12px var(--mono);text-align:right}
+.study{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(230px,.75fr);gap:18px;padding:16px;border-top:1px solid var(--hair)}
+.narration{margin:0;color:var(--muted);font-size:14px;line-height:1.6}.narration b{color:var(--ink);font-weight:600}
+.term-door,.source-door{padding:0;border:0;border-bottom:1px dotted currentColor;background:none;color:var(--accent-hover);cursor:pointer}
+.source-row{display:flex;gap:12px;align-items:center;margin-top:12px;color:var(--sub);font-size:12px}
+.code-lens{margin:0;padding:10px 12px;border:1px solid var(--hair);border-radius:6px;background:var(--canvas);overflow:auto;color:var(--sub);font:11.5px/1.65 var(--mono)}
+.code-line{display:block;padding:0 6px;border-left:2px solid transparent;white-space:pre}.code-line.on{color:var(--ink);background:var(--s3);border-left-color:var(--accent)}
+.next-row{display:flex;justify-content:flex-end;padding:0 16px 16px}.next-row .primary{font-size:12px}
+
+.wink-host{display:flex;gap:10px;align-items:center;margin-top:14px}.wink{position:relative;flex:none;display:grid;place-items:center;width:46px;height:46px;padding:0;border:0;border-radius:50%;background:transparent;cursor:pointer;opacity:.55;touch-action:none;transition:opacity .3s}
+.briefing .wink{width:74px;height:74px;opacity:1}.wink.speaking{opacity:1}.wink-svg{width:100%;height:100%;overflow:visible;transition:transform .16s cubic-bezier(.2,.8,.2,1)}
+.wink.squish .wink-svg{transform:scale(1.12,.84)}.wink.pop .wink-svg{animation:pop .45s cubic-bezier(.18,.9,.2,1.25)}
+.wk-body{fill:#f5f0ff}.wk-eye,.eye-fill{fill:#4b3869}.face-line{fill:none;stroke:#4b3869;stroke-width:3.2;stroke-linecap:round}.wk-spark{fill:#b491f5}
+.face{opacity:0;transform:translate(var(--gx,0),var(--gy,0));transition:opacity .15s,transform .26s}.face-rest{opacity:1}
+.wink[data-expression=curious] .face-curious,.wink[data-expression=delighted] .face-delighted,.wink[data-expression=focused] .face-focused{opacity:1}
+.wink[data-expression]:not([data-expression=rest]) .face-rest{opacity:0}.bubble{position:relative;max-width:58ch;margin:0;padding:9px 13px;border:1px solid var(--hair-strong);border-radius:7px;background:var(--s2);color:var(--muted)}
+.bubble:before{content:"";position:absolute;left:-6px;top:calc(50% - 5px);width:9px;height:9px;transform:rotate(45deg);border-left:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);background:var(--s2)}
+@keyframes pop{35%{transform:translateY(-6px) scale(.92,1.1)}65%{transform:translateY(1px) scale(1.05,.96)}}
+
+.scrim{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:#000b}.modal{position:relative;width:min(720px,100%);max-height:min(760px,90vh);overflow:auto;padding:24px;border:1px solid var(--hair-strong);border-radius:8px;background:var(--s2);box-shadow:0 20px 70px #0009}
+.modal .close{position:absolute;right:12px;top:12px;width:32px;height:32px;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--sub);cursor:pointer;font-size:18px}.modal .close:hover{background:var(--s3);color:var(--ink)}
+.tier{display:inline-block;margin:0 0 10px;padding:3px 8px;border:1px solid var(--hair-strong);border-radius:999px;color:var(--sub);font-size:10px;font-weight:600;text-transform:uppercase}
+.modal h3{margin:0 38px 10px 0;font-size:20px}.modal p{color:var(--muted);line-height:1.6}.source-image{display:block;width:100%;margin-top:14px;border-radius:4px;background:white}.citation{font-size:12px}.citation a{color:var(--accent-hover)}
+[hidden]{display:none!important}
+@media(max-width:700px){.wrap{width:min(100% - 24px,1040px);padding-top:28px}.term-grid{grid-template-columns:1fr}.chapter-nav{grid-template-columns:1fr 1fr}.chapter-tab:nth-child(2){border-right:0}.study{grid-template-columns:1fr}.drawing{aspect-ratio:820/420}.panel-head{align-items:center}.chapter-tab .label{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.lesson{opacity:1;transform:none}}
+
+#guideTitle:focus{outline:none}
+.playback-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}#playbackStatus{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+@media(max-width:700px){.playback-meta{justify-content:flex-start}.panel-head{flex-wrap:wrap}}
+.mobile-hint{display:none;margin:12px 16px;color:var(--sub);font-size:12px} @media(max-width:700px){.mobile-hint{display:block}}
+/* Guidance is the main line; the drawing is its evidence. */
+.wrap{max-width:1040px;padding-top:30px}h1{font-size:clamp(30px,4vw,46px);letter-spacing:-1.4px;max-width:800px}.lede{max-width:680px;font-size:16px}
+header .source-link{color:var(--sub);text-decoration:none;border-bottom:1px dotted var(--sub)}
+.briefing{min-height:360px}.briefing-inner{width:min(660px,100%);padding:36px 18px}.briefing-copy{font-size:17px;line-height:1.75;margin:18px 0 22px}.briefing-copy strong{font-size:22px;letter-spacing:-.4px}.briefing-note{font-size:12px;color:var(--sub);margin-top:12px}
+body.started header{margin-bottom:22px}body.started h1{font-size:29px;letter-spacing:-.7px}body.started .lede{display:none}
+.guide-card{display:flex;gap:18px;align-items:flex-start;padding:24px 26px;border-bottom:1px solid var(--hair);background:var(--s2)}.guide-card .wink{width:56px;height:56px;opacity:1;margin-top:6px}.guide-copy{flex:1;min-width:0}.guide-copy .eyebrow{font-size:10px;margin-bottom:6px}.guide-copy h2{font-size:22px;font-weight:600;line-height:1.25;letter-spacing:-.4px;margin:0 0 10px}.guide-copy p{font-size:15px;line-height:1.65;margin:0;max-width:80ch;color:var(--muted)}.guide-copy b{color:var(--ink)}
+.panel-head{padding:10px 24px;align-items:center}.panel-head p{font-size:11px}.panel-head h3{font-size:12px;font-weight:500;margin:0;color:var(--muted)}
+.drawing{aspect-ratio:820/310}.drawing-scroll{overflow:auto}.legend{display:flex;gap:16px;flex-wrap:wrap;padding:0 24px 13px;color:var(--sub);font-size:11px}.legend button{font-size:11px}.legend .sample{display:inline-block;width:12px;height:12px;border:1px solid var(--sub);border-radius:50%;vertical-align:-2px;margin-right:5px}.legend .sample.dot{width:7px;height:7px;background:var(--accent);border:0;vertical-align:0}.legend .sample.answer{background:var(--ok)}
+.outcomes{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}.outcome{padding:12px 24px;background:var(--s1);font-size:12px;color:var(--sub)}.outcome strong{display:block;color:var(--ink);font-size:13px;font-weight:500;margin-bottom:3px}.transport{border:0;grid-template-columns:auto 1fr auto;padding:10px 24px}.play{width:auto;padding:0 10px;color:var(--muted);font-size:12px}.step-name{font-size:12px;color:var(--sub);padding:0 24px 10px}.step-name b{color:var(--muted);font-weight:500}.next-row{padding:15px 24px;border-top:1px solid var(--hair);align-items:center;justify-content:space-between;gap:12px}.next-row .primary{font-size:13px;padding:10px 15px}.next-row button:disabled{opacity:.4;cursor:default}
+.support{margin:14px 0}.support summary{color:var(--sub);cursor:pointer;font-size:12px;padding:10px 0}.support .code-lens{font-size:12px;max-height:300px}.code-caption{font-size:12px;color:var(--sub)}.evidence{font-size:11px;color:var(--sub);line-height:1.6;margin:14px 0}.evidence a{color:var(--muted)}.source-row{flex-wrap:wrap;justify-content:space-between;margin-top:10px}.viz-controls:empty{display:none}.viz-controls{padding:14px 24px}.control-note{color:var(--sub);font-size:12px;margin:0;flex-basis:100%}
+.checkpoint{padding:20px 24px;border-top:1px solid var(--hair);background:var(--s2)}.checkpoint h3{font-size:15px;margin:0 0 12px}.checkpoint .choices{display:flex;flex-wrap:wrap;gap:8px}.checkpoint .secondary{font-size:12px;font-weight:400}.feedback{font-size:13px;color:var(--muted);margin:12px 0 0}.complete{margin-top:20px;padding:24px;border:1px solid var(--hair);border-radius:8px}.complete h2{margin:0 0 8px;font-size:24px}.complete p{color:var(--muted)}.complete ol{padding-left:20px;color:var(--muted)}.complete li{padding:5px}.complete a{color:var(--accent-hover)}
+.svg-door{fill:var(--accent-hover);font-size:12px}.svg-value{font-size:12px}.wk-body{fill:var(--ink)}.wk-eye,.eye-fill{fill:var(--s3)}.face-line{stroke:var(--s3)}.wk-spark{fill:var(--accent)}
+@media(max-width:700px){.wrap{padding-top:22px}.guide-card{padding:18px 16px;gap:12px}.guide-card .wink{width:38px;height:38px}.guide-copy h2{font-size:19px}.guide-copy p{font-size:14px}.drawing{min-width:660px;aspect-ratio:820/310}.panel-head{padding:10px 16px}.outcome{padding:10px 12px}.next-row{padding:14px 12px}.next-row .primary{max-width:75%;text-align:left}.legend{padding:0 12px 12px;gap:10px}.transport{padding:10px 12px}.step-name{padding-left:12px}.evidence{font-size:11px}.source-map{display:none}.chapter-nav{gap:0}.chapter-tab .label{font-size:12px}.checkpoint{padding:16px}.viz-controls{padding:12px}.briefing-copy{font-size:16px}.briefing-copy strong{font-size:20px}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<p class="eyebrow">Let me understand / <a class="source-link" href="https://ruslanspivak.com/lsbaws-part3/" target="_blank" rel="noopener">Let’s Build a Web Server · Part 3 ↗</a></p>
+<h1>One busy server.<br>Another person waiting.</h1>
+<p class="lede">Why does the second request get stuck—and what changes when the server can share its work?</p>
+</header>
+<main class="experience">
+<section class="briefing" id="briefing" aria-label="Start here">
+<div class="briefing-inner"><div id="briefingWink"></div>
+<p class="briefing-copy"><strong>Let’s start with two people opening a page.</strong><br>Each person’s browser asks a server for that page. That ask is a <b>request</b>; what the server sends back is a <b>response</b>.<br><br>Our server can only look after one request at a time. I’ll show you where the other one waits, then we’ll change the server together.</p>
+<button class="primary" id="start" type="button">Show me where the wait begins →</button>
+<p class="briefing-note">No article or coding knowledge needed. Four ideas, at your pace.</p>
+</div></section>
+<section class="lesson ready" id="lesson" hidden>
+<nav class="chapter-nav" id="chapterNav" aria-label="Explore the four ideas"></nav>
+<article class="panel">
+<div class="guide-card"><div id="winkHost"></div><div class="guide-copy" aria-live="polite" aria-atomic="true"><p class="eyebrow" id="guideLabel">Wink · Let’s look together</p><h2 id="guideTitle" tabindex="-1"></h2><p id="narration"></p></div></div>
+<div class="panel-head"><div><h3 id="chapterTitle"></h3><p id="chapterSource"></p></div><div class="playback-meta"><span id="playbackStatus"></span><div class="source-map" id="sourceMap" aria-hidden="true"></div></div></div>
+<div class="viz-controls" id="vizControls"></div>
+<p class="mobile-hint">The diagram extends sideways. Swipe to follow the whole system →</p><div class="drawing-scroll" tabindex="0" role="region" aria-label="System drawing; scroll horizontally on a small screen">
+<svg class="drawing" id="drawing" viewBox="0 0 820 310" role="group" aria-labelledby="drawingTitle drawingDesc"><title id="drawingTitle"></title><desc id="drawingDesc"></desc></svg></div>
+<div class="legend"><button class="term-door" data-door="place"><span class="sample"></span>A place</button><button class="term-door" data-door="request"><span class="sample dot"></span>Request</button><button class="term-door" data-door="response"><span class="sample dot answer"></span>Response</button><button class="term-door" data-door="ring">Arc = occupied</button><button class="term-door" data-door="trace">Dashes = history</button><span>Underlined names explain more.</span></div>
+<div class="outcomes" id="outcomes" aria-live="polite"></div>
+<div class="transport"><button class="play" id="play" type="button" aria-label="Play steps" aria-pressed="false">▶ Play steps</button><input id="scrub" type="range" min="0" max="7" value="0" step="1" aria-label="Choose a step"><span class="step-count" id="stepCount"></span></div>
+<div class="step-name" id="stepName"></div>
+<div class="checkpoint" id="checkpoint" hidden><p class="eyebrow">Make the idea yours · optional</p><h3 id="question"></h3><div class="choices" id="answers"></div><p class="feedback" id="feedback" aria-live="polite" hidden></p></div>
+<div class="next-row"><button class="secondary" id="back" type="button">← Back</button><button class="primary" id="next" type="button"></button></div>
+</article>
+<details class="support" id="codeDetails"><summary>Connect this step to the Python code</summary><p class="code-caption" id="codeCaption"></p><pre class="code-lens" id="codeLens" aria-label="Code for this step"></pre></details>
+<div class="source-row"><span id="sourceBridge"></span><button class="source-door" id="sourceDoor" type="button">Source &amp; what this model leaves out</button></div>
+<p class="evidence">An authored explanation backed by the article and Python documentation, not a live server recording. Steps show one possible ordering; animation time is illustrative.</p>
+<section class="complete" id="complete" hidden tabindex="-1"><p class="eyebrow">You’ve followed the whole chain</p><h2>Share the work. Finish the cleanup.</h2><ol><li>One busy process leaves later requests waiting.</li><li>A child process handles each connection while the parent accepts more.</li><li>Each process closes the socket references it no longer needs.</li><li>The parent collects every finished child’s exit record.</li></ol><p>Concurrency solves the wait. Socket ownership and child cleanup let the server keep doing it.</p><button class="secondary" id="restart" type="button">Walk through it again</button> <a href="https://ruslanspivak.com/lsbaws-part3/" target="_blank" rel="noopener">Now read Part 3 ↗</a></section>
+</section>
+</main></div>
+
+<div class="scrim" id="scrim" hidden>
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="close" id="modalClose" type="button" aria-label="Close">×</button>
+    <span class="tier" id="modalTier">From the article</span>
+    <h3 id="modalTitle"></h3><div id="modalBody"></div>
+  </section>
+</div>
+
+<template id="winkTemplate">
+  <button class="wink" id="wink" type="button" data-expression="rest" aria-label="Interact with Wink">
+    <svg class="wink-svg" viewBox="0 0 100 100" aria-hidden="true">
+      <circle class="wk-body" cx="50" cy="50" r="46"/>
+      <g class="face face-rest"><ellipse class="wk-eye" cx="38" cy="45" rx="6" ry="9" transform="rotate(-10 38 45)"/><path class="face-line" d="M59 43 Q67 55 75 43"/></g>
+      <g class="face face-curious"><circle class="eye-fill" cx="37" cy="45" r="6"/><circle class="eye-fill" cx="66" cy="45" r="6"/><circle class="face-line" cx="52" cy="65" r="4"/></g>
+      <g class="face face-delighted"><path class="face-line" d="M29 48 Q37 38 45 48 M58 48 Q66 38 74 48 M39 64 Q52 76 65 64"/></g>
+      <g class="face face-focused"><path class="face-line" d="M29 43 L44 47 M59 47 L74 43 M43 65 L61 65"/></g>
+      <path class="wk-spark" d="M76 11 Q77 16 81 17 Q77 19 76 24 Q75 19 71 17 Q75 16 76 11Z"/>
+    </svg>
+  </button>
+</template>
+
+<script>
+const D = /*__DATA__*/ null;
+/*__SCRIPT__*/
+</script>
+</body>
+</html>

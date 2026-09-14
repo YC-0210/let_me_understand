@@ -1,0 +1,34 @@
+{
+  "source": "https://ruslanspivak.com/lsbaws-part3/",
+  "chapters": [
+    {
+      "id": "queue",
+      "plain": "Why request B waits",
+      "technical": "Iterative server",
+      "sourceStep": "The server handles one client request at a time",
+      "image": "https://ruslanspivak.com/lsbaws-part3/lsbaws_part3_it4.png"
+    },
+    {
+      "id": "fork",
+      "plain": "How both requests move",
+      "technical": "Fork concurrency",
+      "sourceStep": "The parent accepts; a child handles each request",
+      "image": "https://ruslanspivak.com/lsbaws-part3/lsbaws_part3_conc2_service_clients.png"
+    },
+    {
+      "id": "descriptors",
+      "plain": "Why both copies close",
+      "technical": "Descriptor references",
+      "sourceStep": "Parent and child close duplicate descriptors",
+      "image": "https://ruslanspivak.com/lsbaws-part3/lsbaws_part3_conc2_shared_descriptors.png"
+    },
+    {
+      "id": "reap",
+      "plain": "How finished workers clear",
+      "technical": "SIGCHLD and waitpid",
+      "sourceStep": "The parent collects every terminated child",
+      "image": "https://ruslanspivak.com/lsbaws-part3/lsbaws_part3_conc5_signals_not_queued.png"
+    }
+  ]
+}
+
