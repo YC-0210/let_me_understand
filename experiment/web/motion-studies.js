@@ -83,6 +83,13 @@ window.MotionStudies = (() => {
       {at:10,x:320,y:324,say:'The loop collected all ready records. The parent can return to accepting requests.'}
     ]
   ];
+  // Authored docks are in scene coordinates, beside the object being discussed.
+  const docks=[
+    [[220,65],[420,65],[220,65],[390,290],[245,220],[390,343]],
+    [[190,135],[525,106],[525,300],[525,106],[190,135]],
+    [[220,100],[245,252],[490,175],[490,175],[395,324]]
+  ];
+  let resizeObserver;
   // Each arrival gets a full ten-second hold. Travel takes one extra second.
   function tourState(clock,points){
     if(clock<10)return {step:0,at:points[0].at,remaining:10-clock,travel:false,done:false};
@@ -96,7 +103,7 @@ window.MotionStudies = (() => {
   const startOf=n=>n===0?0:10+(n-1)*11+1;
   function stop(){playing=false;cancelAnimationFrame(frame);}
   const face='<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#F5F0FF"/><ellipse cx="38" cy="45" rx="6" ry="9" fill="#4B3869"/><path d="M59 43 Q67 55 75 43" fill="none" stroke="#4B3869" stroke-width="3"/></svg>';
-  function mount(){stop();lastStep=-1;const s=studies[selected];$('#app').innerHTML=`<div class="eyebrow">ANIMATION VARIATIONS / 04–06</div><h1>Follow Wink through the system.</h1><p class="intro">Wink flies beside the focus, explains it, and waits ten seconds. You can pause or move on yourself.</p><div class="study-tabs">${studies.map((x,i)=>`<button data-study="${i}" class="${selected===i?'selected':''}">${x.id.slice(1)} · ${['Shared handles','Parallel work','Cleanup'][i]}</button>`).join('')}</div><section class="study-shell"><h2>${s.title}</h2><div class="study-details" id="study-detail" ${expanded?'':'hidden'}><p>${s.note}</p><p>${s.credit} <a href="${s.url}" target="_blank" rel="noreferrer">Study the source ↗</a></p></div><div class="study-views ${compare?'comparing':''}"><div class="study-new"><div class="guided-stage"><div class="guided-canvas"><svg id="study-svg" viewBox="${selected===1?'0 0 550 410':'80 0 480 410'}" role="img" aria-label="${s.title}"></svg></div><aside class="wink-flight-lane" aria-label="Wink’s guidance"><div id="wink-flight"><button id="study-wink" aria-label="${expanded?'Close':'Open'} Wink’s explanation" aria-expanded="${expanded}">${face}</button><div class="flying-speech"><p id="study-cue" aria-live="polite"></p><span id="wink-countdown"></span></div></div></aside></div></div>${compare?'<div class="study-old"><div class="study-label">ORIGINAL PATTERN</div><div id="study-original"></div></div>':''}</div><div class="study-controls"><button id="study-play" class="primary">Start guided tour</button><button id="study-back">Back</button><button id="study-step">Next step</button><button id="study-reset" aria-label="Restart study">↺</button><input id="study-scrub" type="range" min="0" max="${tours[selected].length-1}" step="1" value="0" aria-label="Guided step"><span id="study-time"></span></div><label class="study-compare"><input type="checkbox" id="study-compare" ${compare?'checked':''}> Compare with original pattern</label><p class="study-note">The diagram holds still while Wink explains. These ten-second pauses are reading time, not server timing.${reduced?' Reduced motion: Wink changes position without a flight animation.':''}</p></section>`;
+  function mount(){stop();resizeObserver?.disconnect();lastStep=-1;const s=studies[selected];$('#app').innerHTML=`<div class="eyebrow">ANIMATION VARIATIONS / 04–06</div><h1>Follow Wink through the system.</h1><p class="intro">Wink flies beside the focus, explains it, and waits ten seconds. You can pause or move on yourself.</p><div class="study-tabs">${studies.map((x,i)=>`<button data-study="${i}" class="${selected===i?'selected':''}">${x.id.slice(1)} · ${['Shared handles','Parallel work','Cleanup'][i]}</button>`).join('')}</div><section class="study-shell"><h2>${s.title}</h2><div class="study-details" id="study-detail" ${expanded?'':'hidden'}><p>${s.note}</p><p>${s.credit} <a href="${s.url}" target="_blank" rel="noreferrer">Study the source ↗</a></p></div><div class="study-views ${compare?'comparing':''}"><div class="study-new"><div class="guided-stage"><div class="guided-canvas"><svg id="study-svg" viewBox="${selected===1?'0 0 550 410':'80 0 480 410'}" role="img" aria-label="${s.title}"></svg><aside aria-label="Wink’s guidance"><div id="wink-flight"><button id="study-wink" aria-label="${expanded?'Close':'Open'} Wink’s explanation" aria-expanded="${expanded}">${face}</button></div><div class="flying-speech"><p id="study-cue" aria-live="polite"></p><span id="wink-countdown"></span></div></aside></div></div></div>${compare?'<div class="study-old"><div class="study-label">ORIGINAL PATTERN</div><div id="study-original"></div></div>':''}</div><div class="study-controls"><button id="study-play" class="primary">Start guided tour</button><button id="study-back">Back</button><button id="study-step">Next step</button><button id="study-reset" aria-label="Restart study">↺</button><input id="study-scrub" type="range" min="0" max="${tours[selected].length-1}" step="1" value="0" aria-label="Guided step"><span id="study-time"></span></div><label class="study-compare"><input type="checkbox" id="study-compare" ${compare?'checked':''}> Compare with original pattern</label><p class="study-note">The diagram holds still while Wink explains. These ten-second pauses are reading time, not server timing.${reduced?' Reduced motion: Wink changes position without a flight animation.':''}</p></section>`;
     document.querySelectorAll('[data-study]').forEach(b=>b.onclick=()=>{selected=+b.dataset.study;clock=0;expanded=false;mount();});
     $('#study-play').onclick=play;
     $('#study-step').onclick=()=>seek(Math.min(tours[selected].length-1,tourState(clock,tours[selected]).step+1));
@@ -105,6 +112,7 @@ window.MotionStudies = (() => {
     $('#study-scrub').oninput=x=>seek(+x.target.value);
     $('#study-compare').onchange=x=>{compare=x.target.checked;mount();};
     $('#study-wink').onclick=()=>{expanded=!expanded;stop();$('#study-detail').hidden=!expanded;$('#study-wink').setAttribute('aria-expanded',String(expanded));$('#study-wink').setAttribute('aria-label',`${expanded?'Close':'Open'} Wink’s explanation`);draw();};
+    resizeObserver=new ResizeObserver(()=>draw());resizeObserver.observe($('.guided-canvas'));
     draw();
   }
   function seek(n){stop();clock=startOf(n);draw();}
@@ -114,20 +122,48 @@ window.MotionStudies = (() => {
     const result=s.model(reduced?focus.at:state.at);
     const halo=`<circle cx="${focus.x}" cy="${focus.y}" r="43" fill="none" stroke="#eee3ff" stroke-width="1.5" stroke-dasharray="3 5" opacity=".8"/>`;
     $('#study-svg').innerHTML=result.svg+halo;
-    const from=points[Math.max(0,state.step-1)],travel=state.travel?state.travelProgress:1;
-    const eased=reduced?1:travel*travel*(3-2*travel);
-    const fx=lerp(from.x,focus.x,eased),fy=lerp(from.y,focus.y,eased);
-    $('#wink-flight').style.setProperty('--flight-y',`${clamp((fy-65)/300)*55}%`);
-    $('#wink-flight').style.setProperty('--flight-x',`${clamp((fx-60)/500)*65}%`);
+    const from=docks[selected][Math.max(0,state.step-1)],to=docks[selected][state.step];
+    const travel=state.travel?state.travelProgress:1,eased=reduced?1:travel*travel*(3-2*travel);
+    const fx=lerp(from[0],to[0],eased),fy=lerp(from[1],to[1],eased);
+    // Map the scene to the real rendered SVG, including its aspect-ratio padding.
+    const svg=$('#study-svg'),canvas=$('.guided-canvas'),bounds=canvas.getBoundingClientRect();
+    const point=new DOMPoint(fx,fy).matrixTransform(svg.getScreenCTM());
+    const avatar=$('#wink-flight');
+    avatar.style.left=`${point.x-bounds.left}px`;avatar.style.top=`${point.y-bounds.top}px`;
+    avatar.classList.toggle('in-flight',state.travel&&!reduced);
     const spoken=state.travel?'Let’s look here…':focus.say;
     if($('#study-cue').textContent!==spoken)$('#study-cue').textContent=spoken;
-    lastStep=state.step;
+
     $('#wink-countdown').textContent=state.done?'Tour complete':state.travel?'Flying to the next focus…':playing?`Next step in ${Math.ceil(state.remaining)}s`:`${clock===0?'Ready':'Paused'} · ${Math.ceil(state.remaining)}s reading time`;
     $('#study-time').textContent=`${state.step+1} / ${points.length}`;
     $('#study-scrub').value=state.step;
     $('#study-play').textContent=playing?'Pause':state.done?'Replay tour':clock?'Continue':'Start guided tour';
     $('#study-step').disabled=state.step===points.length-1;$('#study-back').disabled=state.step===0;
     if(compare)$('#study-original').innerHTML=s.old(state.at);
+    positionSpeech(state.travel&&!reduced);
+    lastStep=state.step;
+  }
+  function positionSpeech(travel){
+    const canvas=$('.guided-canvas'),speech=$('.flying-speech'),avatar=$('#study-wink');
+    speech.style.visibility=travel?'hidden':'visible';
+    if(travel)return;
+    const box=canvas.getBoundingClientRect(),a=avatar.getBoundingClientRect();
+    const w=speech.offsetWidth,h=speech.offsetHeight,ax=a.left-box.left+a.width/2,ay=a.top-box.top+a.height/2;
+    const overlaps=(r,o)=>r.x<o.x+o.w+8&&r.x+r.w>o.x-8&&r.y<o.y+o.h+8&&r.y+r.h>o.y-8;
+    // Protect all visible shapes, labels and connection paths, not just the focused node.
+    const obstacles=[...$('#study-svg').children].filter(n=>+n.getAttribute('opacity')!==0||!n.hasAttribute('opacity')).map(n=>{
+      const r=n.getBoundingClientRect();return {x:r.left-box.left,y:r.top-box.top,w:r.width,h:r.height};
+    });
+    obstacles.push({x:a.left-box.left,y:a.top-box.top,w:a.width,h:a.height});
+    const candidates=[];
+    for(let y=8;y+h<=box.height-8;y+=12)for(let x=8;x+w<=box.width-8;x+=12){
+      const r={x,y,w,h};if(!obstacles.some(o=>overlaps(r,o)))candidates.push(r);
+    }
+    candidates.sort((r,q)=>Math.hypot(r.x+w/2-ax,r.y+h/2-ay)-Math.hypot(q.x+w/2-ax,q.y+h/2-ay));
+    const dock=candidates[0]||{x:Math.max(0,Math.min(box.width-w,ax-w/2)),y:box.height+8};
+    speech.style.left=`${dock.x}px`;speech.style.top=`${dock.y}px`;
+    // Only reserve a caption area when there is no safe space inside the diagram.
+    $('.guided-stage').style.paddingBottom=candidates.length?'16px':`${h+24}px`;
   }
   function play(){if(playing){stop();draw();return;}if(tourState(clock,tours[selected]).done)clock=0;playing=true;last=performance.now();draw();frame=requestAnimationFrame(tick);}
   function tick(now){

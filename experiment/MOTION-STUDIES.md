@@ -8,7 +8,7 @@ Open `/experiment/web/#studies`. These are independent comparison demos; the exi
 
 All SVG artwork and motion here are authored adaptations. Their behaviors follow the already recorded Unix probes; the ten-second timing is explanatory, not measured wall time. A filled circle denotes a running child; a hollow circle denotes an exit record. Request and reply dots have different colors and travel in distinct directions. A04’s short transverse bar denotes the end of the sending stream; Wink explains it as it happens.
 
-All positions and states are computed from one deterministic clock, including arbitrary scrubbing, restart, pause, and manual advancement. Reduced-motion mode advances manually. Wink expands the interpretation and source notes without playing over the reader. There are no idle animations.
+All positions and states are computed from one deterministic clock, including arbitrary scrubbing, restart, pause, and manual advancement. Reduced-motion mode skips animated travel. Wink expands the interpretation and source notes without playing over the reader. There are no idle animations.
 
 Validation: `node experiment/tests/test_motion.cjs` checks handle/record counts and renders 303 clock samples across the three models. This establishes state and rendering consistency, not whether viewers understand the idea within ten seconds; that is the user's comparison task.
 
@@ -16,4 +16,4 @@ Validation: `node experiment/tests/test_motion.cjs` checks handle/record counts 
 
 The default playback is now a guided tour, with five or six authored focal stops per study. Wink travels for one second, then the scene holds still for a full ten-second reading interval. A dashed, unfilled ring identifies the focus without covering it. Speech appears when Wink arrives. Play/pause stops the shared clock, including flights. Back, Next step, and the step slider allow manual inspection.
 
-Wink and the speech bubble occupy a reserved side lane on wide screens and a reserved strip above the canvas on narrow screens. Neither crosses the diagram; a small viewport never forces a bubble over a node. Reduced-motion mode relocates without animated travel. Hidden tabs do not consume reading time. Existing model timing remains schematic and is separate from presentation pauses.
+Wink uses authored docks beside the actual focus object, mapped through the SVG coordinate transform on every screen size. Speech selects nearby empty space after checking all visible SVG shapes, labels, paths, and Wink. When no safe space fits, only speech moves below the diagram. During flight the diagram renders in front of Wink, so moving guidance cannot obscure system marks. Reduced-motion mode relocates without animated travel. Hidden tabs do not consume reading time. Existing model timing remains schematic and is separate from presentation pauses.

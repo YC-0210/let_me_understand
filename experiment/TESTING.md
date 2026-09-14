@@ -64,6 +64,11 @@ Browser checks confirmed that opening Wink pauses playback, expansion exposes th
 
 ## Flying Wink
 
-The tour-clock tests assert a complete ten-second hold before each automatic advance, a separate one-second travel interval, and a final ten-second hold before completion in all three studies. Existing 303 model samples still pass. Browser inspection confirmed targeted text and a focus ring on the coalesced notification, step navigation, and no overlap between Wink's occupied rectangle and the diagram at a 390px viewport.
+The tour-clock tests assert a complete ten-second hold before each automatic advance, a separate one-second travel interval, and a final ten-second hold before completion in all three studies. Existing 303 model samples still pass. Browser inspection confirmed targeted text and a focus ring on the coalesced notification, step navigation, and manual step navigation. The earlier side-lane placement was superseded by the spatial guidance revision below.
 
 All 16 tour stops were checked in the desktop browser: every stop had a cue and none overlapped the SVG canvas. Starting the guided tour displayed the ten-second countdown.
+
+
+## Spatial Wink guidance revision
+
+Wink now docks beside the specific scene object, rather than moving through a separate strip. Browser geometry checks covered all 16 stops at 390px and 1280px: no mascot or speech overlap with visible diagram marks, and no horizontal overflow. Screenshots confirmed the mascot beside the parent, running child, and coalesced notice. Playback advanced automatically from the first stop to the notice and paused with reading time remaining; console checks returned no warnings or errors. The 303 model samples and all ten-second tour timing assertions still pass.
