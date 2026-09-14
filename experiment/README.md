@@ -68,3 +68,7 @@ The new library components show ownership, staged responsibilities, and notifica
 ## Wink guides the course
 
 Each teaching step has a concise `wink_cue`. The course shows that cue next to the mascot, then updates it with the current visual moment. Click Wink or “Wink, tell me more” to pause and open the full explanation, code, evidence, and available event history. Diagram labels stay visible; repetitive prose is folded into Wink.
+
+## Motion comparison studies
+
+Open `/experiment/web/#studies` or choose Motion studies. Three ten-second alternatives to A04–A06 use explicit connecting lines, moving requests and worker progress rings, and disappearing exit records. Each has play/pause, scrubbing, manual stepping, Wink source notes, and an optional original-pattern comparison. The existing course remains available for comparison. See `MOTION-STUDIES.md` for sources and scope.

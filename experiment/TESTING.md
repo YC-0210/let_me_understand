@@ -57,3 +57,7 @@ The final browser pass also checked the three added gallery demos, source-code l
 Part 3 now shows one short Wink cue instead of the full introductory paragraph and a second visual caption. Full explanations, current-moment detail, code snippets, history, and evidence are available inside Wink. Essential object labels and state changes remain on the canvas. The mascot reuses the earlier Part 1 Wink design without idle motion.
 
 Browser checks confirmed that opening Wink pauses playback, expansion exposes the full explanation, visual stepping updates the cue, and the ownership scene fits a 390px layout without horizontal overflow.
+
+## Motion studies
+
+`node experiment/tests/test_motion.cjs` verifies 303 clock samples across three deterministic SVG models, including handle counts 1→2→1→0 and uncollected-record counts 3→2→1→0. Browser checks verify play/pause, actual completion at ten seconds, manual stepping, original-pattern comparison at one remaining handle, and the two-record intermediate cleanup state. These are visual variations awaiting the user's judgment, not evidence of ten-second comprehension.
