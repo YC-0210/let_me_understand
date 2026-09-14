@@ -26,7 +26,17 @@ python3 -c "import json;d=json.load(open('pages.json'));open('ask.html','w').wri
 
 ## Still open
 
-Nothing.
+| File | Question under test |
+|---|---|
+| `part3/part3.html` | Can Part 3's concurrency mechanism unfold in four ideas without making a new reader carry its operating-system vocabulary all at once? |
+| `part3/part3.template.html` | Layout source for Part 3; `part3.js` supplies Wink’s guided steps and the Model. |
+| `part3/INVENTORY.md` | Every Part 3 mechanism classified before the drawing was made. |
+
+Rebuild the Part 3 prototype after changing its template or source map:
+
+```
+python3 prototype/part3/build.py
+```
 
 ## Settled and deleted
 
@@ -46,3 +56,25 @@ One idea from the time-runs-down motion is worth taking without taking the motio
 **leave the journey on screen when the run finishes.** Today it ends with only the answer
 held, and both strokes are gone — so the reader cannot see the whole exchange at once,
 which is the thing the project keeps saying matters. Not built.
+
+### Part 3: standalone guided walkthrough
+
+Open `part3/part3.html`. Wink explains the situation before the diagram, then leads
+through 32 named states across four ideas. The main line assumes no prior article
+reading. Code, terminology doors, and comprehension questions are optional.
+
+- Edit `part3/part3.template.html` for layout, `part3/part3.js` for the authored Model
+  and guidance; `part3/build.py` embeds both data and script in the standalone HTML.
+- Build with `python3 prototype/part3/build.py`.
+- Serve locally with `python3 -m http.server 8765 --bind 127.0.0.1`, then visit
+  `http://127.0.0.1:8765/prototype/part3/part3.html`.
+- Next/Back and the step slider show completed states. Play advances with reading
+  time and illustrative message travel; it pauses for doors and stops at each idea's
+  end. Reduced motion removes message interpolation.
+- The missing parent close and three collection strategies are inspectable comparisons.
+  The child-count parameter covers 1–8; one/all collection visibly changes the records.
+- Evidence is citation-backed, explicitly labelled, with no claims of live captures.
+
+The previous Part 3 inventory remains as source coverage history; its original
+vocabulary-checklist entry and automatic looping motion are superseded by this revision.
+See ADR 0005 and MISSION.md's standalone-guidance principle.

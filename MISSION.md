@@ -79,3 +79,16 @@ Five, and they decide arguments rather than describe them.
   until that works.
 - Automatic extraction. A Model is authored and checked by a person; nothing draws a
   picture straight from prose.
+
+## Standalone guidance
+
+Assume the reader has not read the Source. Wink establishes the situation and the
+problem before asking the reader to operate anything. At each step, explain what
+changed, why it matters, and what to do next. Essential explanations stay visible;
+clickable terms add depth. Each new idea follows from a limitation the reader has
+already seen. Do not make a vocabulary quiz the entrance requirement.
+
+Before naming a new concept, establish the problem that makes it necessary and show
+a concrete instance. Introduce its name by pointing to that instance. A definition
+alone is not enough if it requires other unexplained concepts. Apply this sequence
+to diagram labels and controls as well as to Wink’s narration.
