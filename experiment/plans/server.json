@@ -1,15 +1,65 @@
 {
   "id": "server",
-  "title": "Why is the second person still waiting?",
-  "subtitle": "Two people open a page. One gets an answer. The other waits.",
+  "title": "Build a server that keeps working",
+  "subtitle": "A guided journey through all of Let’s Build A Web Server, Part 3.",
   "assumed_knowledge": [
     "web-page"
+  ],
+  "chapters": [
+    {
+      "id": "wait",
+      "title": "Why does B wait?",
+      "promise": "Start with two people opening the same page.",
+      "recall": "No article knowledge needed."
+    },
+    {
+      "id": "connect",
+      "title": "Connect two programs",
+      "promise": "Before adding workers, understand what they will share.",
+      "recall": "A request can be waiting even while the connection is open."
+    },
+    {
+      "id": "fork",
+      "title": "Give each request a worker",
+      "promise": "Keep accepting new people while earlier work finishes.",
+      "recall": "The listening socket welcomes connections; accepted sockets carry their data."
+    },
+    {
+      "id": "copies",
+      "title": "Close the extra handles",
+      "promise": "Two workers can hold access to one connection.",
+      "recall": "A descriptor is a numbered entry belonging to one process."
+    },
+    {
+      "id": "children",
+      "title": "Collect finished children",
+      "promise": "A finished job can still leave a record behind.",
+      "recall": "Parent and child are separate running instances of the program."
+    },
+    {
+      "id": "interrupt",
+      "title": "Resume after a signal",
+      "promise": "Cleanup can happen while the parent is waiting for a client.",
+      "recall": "SIGCHLD is a notification that prompts the parent to check its children."
+    },
+    {
+      "id": "burst",
+      "title": "Handle a burst of exits",
+      "promise": "One notification can stand for several things to clean up.",
+      "recall": "Collecting a child’s exit status is called reaping."
+    },
+    {
+      "id": "together",
+      "title": "Put it all together",
+      "promise": "Follow one request through the complete server.",
+      "recall": "Separate work, close unused handles, and collect finished children."
+    }
   ],
   "steps": [
     {
       "id": "first",
       "title": "An answer is only part of the job.",
-      "explanation": "A opens a web page. Their browser connects to a server: a program that answers page requests. This connection is the link between them. Our server sends \u201cHello World!\u201d immediately, then deliberately pauses before closing the link. During that pause, the program is still occupied with A. Watch the answer arrive before the connection closes.",
+      "explanation": "A opens a web page. Their browser connects to a server: a program that answers page requests. This connection is the link between them. Our server sends “Hello World!” immediately, then deliberately pauses before closing the link. During that pause, the program is still occupied with A. Watch the answer arrive before the connection closes.",
       "teaching_card": "T01",
       "requires": [
         "web-page"
@@ -22,12 +72,14 @@
         "preserve-history"
       ],
       "scene": "one",
-      "action": "Watch A\u2019s request"
+      "action": "Watch A’s request",
+      "chapter": "wait",
+      "frames": []
     },
     {
       "id": "bottleneck",
       "title": "B arrives while the program is occupied.",
-      "explanation": "B opens the same page shortly after A. B\u2019s request can wait in a queue\u2014a waiting line\u2014 but this program does not pick it up until it finishes with A. Watch when B gets an answer. The amber interval is time B spends waiting for that answer.",
+      "explanation": "B opens the same page shortly after A. B’s request can wait in a queue—a waiting line— but this program does not pick it up until it finishes with A. Watch when B gets an answer. The amber interval is time B spends waiting for that answer.",
       "teaching_card": "T02",
       "requires": [
         "connection",
@@ -41,12 +93,14 @@
         "show-overlap"
       ],
       "scene": "serial",
-      "action": "Watch both requests"
+      "action": "Watch both requests",
+      "chapter": "wait",
+      "frames": []
     },
     {
       "id": "predict",
       "title": "Would a bigger waiting room help?",
-      "explanation": "The queue already has room for B. Suppose we give it even more room, while the program still finishes A before taking another request. What happens to B\u2019s wait for an answer?",
+      "explanation": "The queue already has room for B. Suppose we give it even more room, while the program still finishes A before taking another request. What happens to B’s wait for an answer?",
       "teaching_card": "T03",
       "requires": [
         "queue",
@@ -55,19 +109,297 @@
       "introduces": [],
       "visual_requirements": [],
       "scene": "prediction",
-      "action": "Check my prediction"
+      "action": "Check my prediction",
+      "chapter": "wait",
+      "frames": [],
+      "question": {
+        "options": [
+          "B gets an answer sooner.",
+          "B waits about as long."
+        ],
+        "correct": 1,
+        "feedback": [
+          "More queue space can hold more waiting requests. It does not free the occupied program to answer B.",
+          "Yes. B already fits in the queue. The occupied program is what delays the answer."
+        ]
+      }
     },
     {
-      "id": "change",
-      "title": "Let a separate process finish A\u2019s job.",
-      "explanation": "A process is a running instance of a program. The original process can start a child process to handle A, then return to accepting requests. It can give B a child process too. Now their work overlaps: this is concurrency. Compare when B receives its answer in the two versions.",
+      "chapter": "connect",
+      "id": "socket",
+      "title": "What carries a request?",
+      "explanation": "The browser and server need places to send and receive bytes. Each program uses a socket: an endpoint for communication. The operating system’s core, called the kernel, manages the network connection for them. We will follow one connection from creation to its reply.",
+      "requires": [
+        "connection"
+      ],
+      "introduces": [
+        "socket",
+        "kernel"
+      ],
+      "scene": "network",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "Two programs want to exchange a request and a reply.",
+          "phase": 0
+        },
+        {
+          "caption": "Each program creates a socket: its place to send and receive bytes.",
+          "phase": 1
+        },
+        {
+          "caption": "TCP links their endpoints and delivers an ordered stream of bytes. HTTP is the request-and-response format carried inside that stream.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T01",
+      "action": "Play these moments",
+      "code": "socket.socket(socket.AF_INET, socket.SOCK_STREAM)",
+      "evidence": "Conceptual sequence; TCP setup packets are omitted."
+    },
+    {
+      "chapter": "connect",
+      "id": "listen",
+      "title": "Give the server an address people can reach.",
+      "explanation": "An IP address identifies a network location. A port number selects a service there. The server binds its socket to an address, then listens for arriving connections. This listening socket stays available while separate connected sockets carry conversations.",
+      "requires": [
+        "socket",
+        "kernel"
+      ],
+      "introduces": [
+        "address",
+        "port",
+        "listening-socket"
+      ],
+      "scene": "setup",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "socket(): create an endpoint. AF_INET selects IPv4; SOCK_STREAM selects a byte stream, normally TCP here.",
+          "phase": 0
+        },
+        {
+          "caption": "setsockopt(): the example enables SO_REUSEADDR to help reuse the address when restarting. It does not let arbitrary servers share one occupied address.",
+          "phase": 1
+        },
+        {
+          "caption": "bind(): choose the server’s local IP and port, such as 127.0.0.1:8888. 127.0.0.1 means this computer.",
+          "phase": 2
+        },
+        {
+          "caption": "listen(): make it a listening socket. The kernel can now hold arriving connections until the program takes them.",
+          "phase": 3
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "code": "listener.bind((\"127.0.0.1\", 8888))\nlistener.listen(5)",
+      "evidence": "Illustrated address 8888 matches the tutorial; the probes use an available local port."
+    },
+    {
+      "chapter": "connect",
+      "id": "endpoints",
+      "title": "Two visitors can use the same server port.",
+      "explanation": "A client calls connect with the server’s address. The kernel chooses the client’s local address and a temporary port, called an ephemeral port. A connection is identified by both ends: client IP + port and server IP + port. That pair keeps A’s conversation distinct from B’s.",
+      "requires": [
+        "address",
+        "port",
+        "listening-socket"
+      ],
+      "introduces": [
+        "endpoint-pair",
+        "ephemeral-port"
+      ],
+      "scene": "endpoints",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "A chooses the server address. A does not need to choose its own temporary port.",
+          "phase": 0
+        },
+        {
+          "caption": "The recorded connection has two endpoints. Read the client address on the left and the server address on the right.",
+          "phase": 1
+        },
+        {
+          "caption": "B reaches the same server endpoint using a different client port. These are two connections, not two server listening ports.",
+          "phase": 2
+        }
+      ],
       "teaching_card": "T04",
+      "action": "Play these moments",
+      "code": "client.connect((\"127.0.0.1\", 8888))\nclient.getsockname()  # local endpoint\nclient.getpeername()  # remote endpoint",
+      "evidence": "Actual endpoint pairs from two local TCP connections. Server port differs from the article because the probe asks for a free port."
+    },
+    {
+      "chapter": "connect",
+      "id": "accept",
+      "title": "Accept takes a connection, not a whole request.",
+      "explanation": "The client can connect before the server calls accept. Accept takes a queued connection and returns a new connected socket. The server reads request bytes with recv and writes response bytes with sendall on that socket. The original listening socket keeps its separate job.",
+      "requires": [
+        "listening-socket",
+        "queue",
+        "socket"
+      ],
+      "introduces": [
+        "accepted-socket",
+        "recv-send"
+      ],
+      "scene": "accept",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "B’s connection is waiting with the kernel. Connecting is not the same as the application answering.",
+          "phase": 0
+        },
+        {
+          "caption": "accept() gives the server a connected socket for B. The listening socket remains available for future visitors.",
+          "phase": 1
+        },
+        {
+          "caption": "recv() reads request bytes. One recv is not guaranteed to contain a whole HTTP request; a real implementation must handle partial data.",
+          "phase": 2
+        },
+        {
+          "caption": "sendall() writes the response bytes. Closing this connected socket finishes this example’s conversation; the listener stays open.",
+          "phase": 3
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "code": "connection, address = listener.accept()\nrequest_bytes = connection.recv(4096)\nconnection.sendall(response)\nconnection.close()",
+      "evidence": "Illustrated sequence. Backlog controls queued connections, not active worker count; exact queue limits and overflow behavior depend on the OS."
+    },
+    {
+      "chapter": "fork",
+      "id": "process",
+      "title": "The program needs another running instance.",
+      "explanation": "A process is a running instance of a program. The kernel gives it a process ID, or PID. A process that creates another is its parent; the new one is its child. The child also records its parent’s ID, or PPID. These labels let us keep the two workers straight.",
       "requires": [
         "occupied-program",
-        "answer-wait"
+        "kernel"
       ],
       "introduces": [
         "process",
+        "pid",
+        "ppid"
+      ],
+      "scene": "process",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "One server program is running in one process. Its PID identifies this running instance.",
+          "phase": 0
+        },
+        {
+          "caption": "A second process can run the same program with a different PID.",
+          "phase": 1
+        },
+        {
+          "caption": "The recorded child’s PPID equals the parent’s PID. The relationship does not mean the two are one running process.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T04",
+      "action": "Play these moments",
+      "code": "os.getpid()   # this process\nos.getppid()  # its parent\n# In a terminal: ps -o pid,ppid,stat,command -p PID",
+      "evidence": "Actual IDs from an isolated parent/child probe. IDs change between runs."
+    },
+    {
+      "chapter": "fork",
+      "id": "descriptors",
+      "title": "How does a process refer to its sockets?",
+      "explanation": "The kernel gives a process small integer handles for open files and sockets. Such a handle is called a file descriptor. Think of the number as an entry in this process’s list of open resources. A Python socket object uses that entry underneath; fileno() reveals its number.",
+      "requires": [
+        "process",
+        "kernel",
+        "socket",
+        "accepted-socket"
+      ],
+      "introduces": [
+        "descriptor"
+      ],
+      "scene": "descriptors",
+      "visual_requirements": [
+        "show-ownership"
+      ],
+      "frames": [
+        {
+          "caption": "A typical shell starts a process with 0 for input, 1 for normal output, and 2 for error output. These can be redirected.",
+          "phase": 0
+        },
+        {
+          "caption": "Creating a listening socket adds another numbered entry. That number is local to this process, not a port number.",
+          "phase": 1
+        },
+        {
+          "caption": "Accepting a connection adds a different entry. The program must know which handle welcomes visitors and which one talks to A.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T04",
+      "action": "Play these moments",
+      "code": "listener.fileno()\nconnection.fileno()\nos.write(1, b\"hello\\n\")  # write to standard output",
+      "evidence": "Illustrated descriptor numbers 3 and 4; actual numbers depend on what is already open. Numbered entries point to resources, not copied network connections."
+    },
+    {
+      "chapter": "fork",
+      "id": "fork-return",
+      "title": "One call, two continuations.",
+      "explanation": "The Unix fork() call creates the child. Both processes continue just after that call. The parent gets the child’s PID as the return value; the child gets 0. That lets the same code take two different branches. The child’s actual PID is not 0.",
+      "requires": [
+        "process",
+        "pid",
+        "ppid",
+        "descriptor"
+      ],
+      "introduces": [
+        "fork",
+        "fork-return"
+      ],
+      "scene": "fork",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "Before fork(), only the parent is running this server path.",
+          "phase": 0
+        },
+        {
+          "caption": "fork() creates a child. Both resume after the call, with different return values.",
+          "phase": 1
+        },
+        {
+          "caption": "The child sees 0 and handles this request. The parent sees the child’s PID and returns to accepting more connections.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "code": "child_pid = os.fork()\nif child_pid == 0:\n    print(\"child branch\")\nelse:\n    print(\"parent branch\")",
+      "evidence": "Return values and IDs are recorded from a real fork. The diagram does not promise which branch runs first."
+    },
+    {
+      "id": "overlap",
+      "title": "Let a separate process finish A’s job.",
+      "explanation": "The parent can give A’s request to one child, then give B’s request to another. Their work overlaps: this is concurrency. It does not require two instructions to run at exactly the same instant; the operating system may alternate between workers. The program does not guarantee which independent worker finishes first.",
+      "teaching_card": "T04",
+      "requires": [
+        "fork",
+        "answer-wait"
+      ],
+      "introduces": [
         "concurrency"
       ],
       "visual_requirements": [
@@ -75,15 +407,18 @@
         "compare-amounts"
       ],
       "scene": "compare",
-      "action": "Compare the two versions"
+      "action": "Compare the two versions",
+      "chapter": "fork",
+      "frames": []
     },
     {
-      "id": "transfer",
+      "id": "arrival",
       "title": "The benefit depends on when B arrives.",
-      "explanation": "Change B\u2019s arrival time. If B arrives after A\u2019s connection is already closed, even the original version can answer B promptly. Concurrency helps here because requests overlap, not because every individual job gets faster.",
+      "explanation": "Change B’s arrival time. If B arrives after A’s connection is already closed, even the original version can answer B promptly. Concurrency helps here because requests overlap, not because every individual job gets faster.",
       "teaching_card": "T03",
       "requires": [
-        "concurrency"
+        "fork",
+        "answer-wait"
       ],
       "introduces": [],
       "visual_requirements": [
@@ -91,7 +426,681 @@
         "compare-amounts"
       ],
       "scene": "explore",
-      "action": "Replay this case"
+      "action": "Replay this case",
+      "chapter": "fork",
+      "frames": []
+    },
+    {
+      "chapter": "copies",
+      "id": "shared",
+      "title": "The child gets another handle to the same socket.",
+      "explanation": "Fork copies the parent’s descriptor entries into the child’s own list. The two entries can point to the same underlying socket. It does not create a second connection to A. Follow the two arrows to one resource before thinking about what close should do.",
+      "requires": [
+        "fork",
+        "descriptor",
+        "accepted-socket"
+      ],
+      "introduces": [
+        "shared-socket",
+        "reference"
+      ],
+      "scene": "shared",
+      "visual_requirements": [
+        "show-ownership"
+      ],
+      "frames": [
+        {
+          "caption": "Before fork: the parent holds one numbered handle to A’s connection.",
+          "phase": 0
+        },
+        {
+          "caption": "After fork: parent and child each have a handle to that same connection. There is still only one connection to A.",
+          "phase": 1
+        },
+        {
+          "caption": "Each arrow is a reference: an open handle keeping this shared socket available. In this small example, two arrows mean two references.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T01",
+      "action": "Play these moments",
+      "evidence": "Explanatory model checked by the real inherited-descriptor/EOF probe. We collapse the intermediate open-file description into one arrow."
+    },
+    {
+      "chapter": "copies",
+      "id": "close-copies",
+      "title": "Close an unused handle, not the other worker’s access.",
+      "explanation": "The parent will accept new arrivals, so it keeps the listener and closes its handle to A. The child will serve A, so it closes its unused listener handle. A’s connection remains usable while the child still holds it. Only after the final server handle closes can this example finish sending and signal the end.",
+      "requires": [
+        "shared-socket",
+        "descriptor"
+      ],
+      "introduces": [
+        "last-close"
+      ],
+      "scene": "close-copies",
+      "visual_requirements": [
+        "show-ownership"
+      ],
+      "frames": [
+        {
+          "caption": "Both processes start with handles to the listener and to A’s connection.",
+          "phase": 0
+        },
+        {
+          "caption": "The parent closes its handle to A. One reference to A remains in the child, so the child can still send a reply.",
+          "phase": 1
+        },
+        {
+          "caption": "The child closes its listener handle. The parent still has the listener and can accept B.",
+          "phase": 2
+        },
+        {
+          "caption": "After replying, the child closes its handle to A. No server handle to A remains; after buffered bytes, the client can observe end-of-stream.",
+          "phase": 3
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "code": "# Parent\nconnection.close()\n# Child\nlistener.close()\nhandle_request(connection)\nconnection.close()",
+      "evidence": "Arrows count only the server-side handles in this case. Normal TCP close is not instantaneous removal of every TCP bookkeeping state."
+    },
+    {
+      "chapter": "copies",
+      "id": "missing-close",
+      "title": "The reply arrives, but the client never sees the end.",
+      "explanation": "Now deliberately leave the parent’s handle open. The child sends the reply, closes its handle, and exits. The client has the text, but the connection has not ended. This response has no stated body length, so the client relies on the stream ending to know the reply is complete.",
+      "requires": [
+        "reference",
+        "last-close",
+        "recv-send"
+      ],
+      "introduces": [
+        "eof",
+        "fin"
+      ],
+      "scene": "missing-close",
+      "visual_requirements": [
+        "show-ownership"
+      ],
+      "frames": [
+        {
+          "caption": "Both processes can access A’s connection. The parent forgets to close its handle.",
+          "phase": 0
+        },
+        {
+          "caption": "The child sends the text, closes its handle, and exits. The parent’s one remaining reference keeps the server socket open.",
+          "phase": 1
+        },
+        {
+          "caption": "The real client received “Hello!” but timed out waiting for end-of-stream. TCP’s FIN indicates the end of the sending stream; it has not happened here.",
+          "phase": 2
+        },
+        {
+          "caption": "Close the parent’s retained handle. The real client now reads zero bytes: end-of-stream (EOF). The reply can finish.",
+          "phase": 3
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "evidence": "Real TCP probe: child exited; no EOF with parent handle retained; EOF after that handle closed. Responses with explicit lengths can be delimited differently."
+    },
+    {
+      "chapter": "copies",
+      "id": "copies-question",
+      "title": "Does closing the parent’s handle break the child’s reply?",
+      "explanation": "Both processes have an open handle to A’s socket. The parent closes only its own entry. What can the child do next?",
+      "requires": [
+        "reference",
+        "last-close"
+      ],
+      "introduces": [],
+      "scene": "prediction",
+      "visual_requirements": [],
+      "frames": [],
+      "teaching_card": "T03",
+      "action": "Play these moments",
+      "question": {
+        "options": [
+          "It can still send using its own handle.",
+          "It must reconnect to A first."
+        ],
+        "correct": 0,
+        "feedback": [
+          "Yes. The child’s entry still points to the shared socket. One close removes one reference.",
+          "Fork did not create a new conversation. The child still has access to the existing socket through its own handle."
+        ]
+      }
+    },
+    {
+      "chapter": "copies",
+      "id": "file-limit",
+      "title": "Small leaks become a full list of open handles.",
+      "explanation": "If the parent keeps one unused connection handle per request, its list keeps growing. Each process has an open-file limit, which also counts sockets. Eventually it cannot open or accept another resource. Closing unused handles keeps capacity available for the next request.",
+      "requires": [
+        "descriptor",
+        "last-close"
+      ],
+      "introduces": [
+        "descriptor-limit"
+      ],
+      "scene": "file-limit",
+      "visual_requirements": [
+        "compare-amounts"
+      ],
+      "frames": [
+        {
+          "caption": "A few leaked handles are easy to miss. They remain allocated after the useful work has finished.",
+          "phase": 0
+        },
+        {
+          "caption": "The isolated probe lowered only its own limit to 32, then opened files until the kernel refused another one.",
+          "phase": 1
+        },
+        {
+          "caption": "The error was EMFILE: too many open files. After closing the probe’s handles, opening a new file succeeded.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "code": "# Inspect limits in your own terminal:\nulimit -n\n# Do not lower the current shell limit for this lesson.",
+      "evidence": "Real bounded file-descriptor exhaustion in an isolated subprocess, using /dev/null rather than hundreds of network clients. User shell limits are unchanged."
+    },
+    {
+      "chapter": "children",
+      "id": "exit-record",
+      "title": "The child stops, but its result still matters.",
+      "explanation": "Closing sockets is one kind of cleanup. The parent also needs to learn how its child finished: successfully, with an error, or because of a signal. When a child exits, the kernel can retain a small record of its identity and termination status for the parent to collect.",
+      "requires": [
+        "process",
+        "pid",
+        "fork"
+      ],
+      "introduces": [
+        "exit-status"
+      ],
+      "scene": "exit-record",
+      "visual_requirements": [
+        "show-records"
+      ],
+      "frames": [
+        {
+          "caption": "A child is running and serving a request. Its process occupies a place in the kernel’s records.",
+          "phase": 0
+        },
+        {
+          "caption": "The child finishes and exits. Its code is no longer running; its ordinary open handles are closed on exit.",
+          "phase": 1
+        },
+        {
+          "caption": "The kernel keeps an exit record until the parent collects it. The finished task and the uncollected record are different things.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T01",
+      "action": "Play these moments",
+      "evidence": "Lifecycle reconstruction checked by real child exit statuses. The diagram represents records, not the child’s old memory footprint."
+    },
+    {
+      "chapter": "children",
+      "id": "zombie",
+      "title": "A zombie is the leftover record, not a running worker.",
+      "explanation": "An exited child whose status has not been collected is called a zombie. In ps, its state is Z and it may be labeled defunct. Sending it a kill signal cannot make it exit again. The parent must collect the status. Too many uncollected records can consume process slots and stop further forks.",
+      "requires": [
+        "exit-status"
+      ],
+      "introduces": [
+        "zombie",
+        "process-limit"
+      ],
+      "scene": "zombie",
+      "visual_requirements": [
+        "show-records"
+      ],
+      "frames": [
+        {
+          "caption": "Three children have exited in the probe. Their ps states are Z: none is still doing request work.",
+          "phase": 0
+        },
+        {
+          "caption": "The records remain available so their parent can learn the exit results. More requests do not clean these records automatically.",
+          "phase": 1
+        },
+        {
+          "caption": "Collecting the status removes the leftover record. This is different from closing a socket handle.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T04",
+      "action": "Play these moments",
+      "code": "ps -o pid,ppid,stat,command -p PID\n# Z or <defunct>: exited, awaiting collection\n# ulimit -u shows a user process limit where supported.",
+      "evidence": "Three real zombie states were recorded and then all were reaped. Process-limit exhaustion is explained, not induced on this computer."
+    },
+    {
+      "chapter": "children",
+      "id": "wait",
+      "title": "Collect the result without trapping the parent.",
+      "explanation": "Calling wait collects one child’s termination status; this cleanup is called reaping. But if children are still running and none is ready, ordinary wait blocks. If the parent waits immediately after every fork, it cannot keep accepting clients while that child works. We need cleanup that does not undo concurrency.",
+      "requires": [
+        "zombie",
+        "concurrency"
+      ],
+      "introduces": [
+        "wait",
+        "reaping",
+        "blocking-wait"
+      ],
+      "scene": "wait",
+      "visual_requirements": [
+        "show-records"
+      ],
+      "frames": [
+        {
+          "caption": "A child is still working. There is no exit result to collect yet.",
+          "phase": 0
+        },
+        {
+          "caption": "A blocking wait keeps the parent here until a child finishes. New arrivals can queue, but the parent is not accepting them.",
+          "phase": 1
+        },
+        {
+          "caption": "After the child exits, wait returns its PID and status. Cleanup succeeds, but doing this immediately for every request reintroduces a bottleneck.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "code": "pid, status = os.wait()\n# May block while children are still running.",
+      "evidence": "Illustrated blocked state. The nonblocking probe confirms no result is ready before its child is allowed to exit."
+    },
+    {
+      "chapter": "children",
+      "id": "signal",
+      "title": "Let the kernel notify the parent when work finishes.",
+      "explanation": "A signal is a notification to a process. When a child exits, the kernel sends its parent SIGCHLD. The parent can register a handler: a function to run when that notification is handled. It can then check for finished children while spending the rest of its time accepting connections.",
+      "requires": [
+        "reaping",
+        "kernel"
+      ],
+      "introduces": [
+        "signal",
+        "sigchld",
+        "handler"
+      ],
+      "scene": "signal",
+      "visual_requirements": [
+        "show-records"
+      ],
+      "frames": [
+        {
+          "caption": "The parent is available for incoming connections while the child works.",
+          "phase": 0
+        },
+        {
+          "caption": "The child exits. SIGCHLD notifies the parent that a child changed state; in this lesson, it exited.",
+          "phase": 1
+        },
+        {
+          "caption": "The handler collects a finished child’s status, then the parent returns to its normal work. The arrival time of the notification was not fixed in advance: it is asynchronous.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T04",
+      "action": "Play these moments",
+      "code": "signal.signal(signal.SIGCHLD, reap_children)",
+      "evidence": "Signals can also report other child-state changes. The later cleanup loop checks for actual available exit results rather than assuming each signal equals one exit."
+    },
+    {
+      "chapter": "interrupt",
+      "id": "interrupted",
+      "title": "What if the parent is inside accept when notified?",
+      "explanation": "With no visitor waiting, accept can block. A child may finish during that wait, so the signal handler runs. In the article’s older Python environment, accept could then fail with EINTR, meaning “interrupted system call.” If unhandled, that exception stops the server even though nothing is wrong with the next client.",
+      "requires": [
+        "handler",
+        "sigchld",
+        "accepted-socket"
+      ],
+      "introduces": [
+        "eintr"
+      ],
+      "scene": "interrupted",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "The parent is blocked inside accept, waiting for a visitor.",
+          "phase": 0
+        },
+        {
+          "caption": "A child exits. SIGCHLD runs the cleanup handler.",
+          "phase": 1
+        },
+        {
+          "caption": "Historical path: accept reports EINTR after the handler. The server must decide how to resume.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "evidence": "Historical reconstruction, not the observed behavior of current Python. The article tested Python 2.7/3.4; modern Python handles many such retries automatically."
+    },
+    {
+      "chapter": "interrupt",
+      "id": "retry",
+      "title": "Retry the interrupted operation; preserve other errors.",
+      "explanation": "The article catches EINTR and goes around the loop to accept again. Other errors should still be reported. Python 3.5 and later normally retry socket calls automatically if the signal handler returns without raising. Our current-Python probe shows the handler running and accept still returning the next connection.",
+      "requires": [
+        "eintr"
+      ],
+      "introduces": [
+        "retry"
+      ],
+      "scene": "retry",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "Historical code: recognize EINTR and retry accept. A different error is not silently ignored.",
+          "phase": 0
+        },
+        {
+          "caption": "Modern Python: a returning handler allows the socket call to be retried automatically.",
+          "phase": 1
+        },
+        {
+          "caption": "Recorded on this machine: accept began, SIGCHLD was handled, and accept returned a connection. No interrupted-call exception escaped.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "code": "# Historical pattern, if EINTR reaches application code:\ntry:\n    connection, address = listener.accept()\nexcept InterruptedError:\n    continue",
+      "evidence": "PEP 475 introduced retries in Python 3.5. A handler that raises an exception can still interrupt normal control flow."
+    },
+    {
+      "chapter": "burst",
+      "id": "one-notice",
+      "title": "Three finished children can produce one pending notice.",
+      "explanation": "A standard signal such as SIGCHLD is not a counted inbox. If several notifications arrive while one is already pending, they can merge into one pending notification. So a handler that calls wait only once can collect one child and leave other finished children behind.",
+      "requires": [
+        "sigchld",
+        "wait",
+        "zombie"
+      ],
+      "introduces": [
+        "coalescing"
+      ],
+      "scene": "burst",
+      "visual_requirements": [
+        "show-records"
+      ],
+      "frames": [
+        {
+          "caption": "Three child records are present. The probe briefly blocks delivery of SIGCHLD so the exits can accumulate.",
+          "phase": 0
+        },
+        {
+          "caption": "All three children exit. Their results are separate, but there is only one pending SIGCHLD indication.",
+          "phase": 1
+        },
+        {
+          "caption": "Delivery resumes: the handler runs once. Collecting just one child leaves two exit records behind.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "evidence": "Recorded controlled case: three exited children, one notification, two still uncollected after one wait. This demonstrates a possible burst, not that all groups of three always merge."
+    },
+    {
+      "chapter": "burst",
+      "id": "burst-question",
+      "title": "What should one notification make us do?",
+      "explanation": "Suppose a single SIGCHLD notification arrives after several children have finished. Which cleanup rule is reliable?",
+      "requires": [
+        "coalescing",
+        "reaping"
+      ],
+      "introduces": [],
+      "scene": "prediction",
+      "visual_requirements": [],
+      "frames": [],
+      "teaching_card": "T03",
+      "action": "Play these moments",
+      "question": {
+        "options": [
+          "Collect exactly one result for that notification.",
+          "Keep checking until no finished result is available."
+        ],
+        "correct": 1,
+        "feedback": [
+          "One notification is not a count. Additional finished children could remain without another notification arriving.",
+          "Yes. Use the notification as a reason to check the actual child records, then collect every result that is ready."
+        ]
+      }
+    },
+    {
+      "chapter": "burst",
+      "id": "drain",
+      "title": "Keep collecting ready results, without waiting for future ones.",
+      "explanation": "waitpid(-1, WNOHANG) asks for any child’s available status without blocking. The -1 means “any child”; WNOHANG means “return even if none is ready.” Repeat while it returns a child PID. That drains all currently available results, even when several exits share one notification.",
+      "requires": [
+        "coalescing",
+        "wait",
+        "reaping"
+      ],
+      "introduces": [
+        "waitpid",
+        "wnohang"
+      ],
+      "scene": "drain",
+      "visual_requirements": [
+        "show-records"
+      ],
+      "frames": [
+        {
+          "caption": "All three children have finished. One notification is enough to begin checking.",
+          "phase": 0
+        },
+        {
+          "caption": "First call returns one child’s PID and status. Collect its record.",
+          "phase": 1
+        },
+        {
+          "caption": "Second call returns another finished child. Keep going.",
+          "phase": 2
+        },
+        {
+          "caption": "Third call collects the last finished child. No zombie records remain.",
+          "phase": 3
+        },
+        {
+          "caption": "The next call finds no children left: Python raises ChildProcessError (ECHILD). End this cleanup pass and return to accepting.",
+          "phase": 4
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "code": "while True:\n    try:\n        pid, status = os.waitpid(-1, os.WNOHANG)\n    except ChildProcessError:\n        break\n    if pid == 0:\n        break",
+      "evidence": "The probe drains actual exit records. The kernel may return ready children in a different order; the loop does not depend on their order."
+    },
+    {
+      "chapter": "burst",
+      "id": "not-ready",
+      "title": "“Still running” is different from “no children left.”",
+      "explanation": "If a child still exists but has no exit result ready, WNOHANG returns PID 0. Stop this cleanup pass so the parent can do other work. If no waitable children remain, Python raises ChildProcessError instead. Both end the pass; neither requires waiting for a future child to finish.",
+      "requires": [
+        "waitpid",
+        "wnohang"
+      ],
+      "introduces": [
+        "wait-outcomes"
+      ],
+      "scene": "not-ready",
+      "visual_requirements": [
+        "show-records"
+      ],
+      "frames": [
+        {
+          "caption": "A child is still running. The parent asks for a ready result with WNOHANG.",
+          "phase": 0
+        },
+        {
+          "caption": "The real probe returned (0, 0) immediately. No result is ready, so return to normal work.",
+          "phase": 1
+        },
+        {
+          "caption": "Later the child exits. A new cleanup pass can collect its real PID and status. With no children left, the next wait reports ECHILD.",
+          "phase": 2
+        }
+      ],
+      "teaching_card": "T03",
+      "action": "Play these moments",
+      "evidence": "Real controlled child probe. WNOHANG does not return an EWOULDBLOCK error here; the article’s inline comment is misleading."
+    },
+    {
+      "chapter": "together",
+      "id": "lifecycle",
+      "title": "One request, with both kinds of cleanup.",
+      "explanation": "The parent accepts and forks, then releases its connected handle and returns to accept. The child releases its listening handle, replies, closes the connection, and exits. The parent’s signal handler collects all available exit records. Socket lifetime and process lifetime each have their own cleanup.",
+      "requires": [
+        "fork",
+        "last-close",
+        "reaping",
+        "wait-outcomes",
+        "retry"
+      ],
+      "introduces": [
+        "complete-server"
+      ],
+      "scene": "lifecycle",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "Parent: accept one queued connection. Keep the listening socket for the next visitor.",
+          "phase": 0
+        },
+        {
+          "caption": "Parent: fork a child, close this connected handle, and return to accept.",
+          "phase": 1
+        },
+        {
+          "caption": "Child: close the inherited listener, read the request, and send the response.",
+          "phase": 2
+        },
+        {
+          "caption": "Child: close the connected socket and exit. The client can finish this close-delimited reply.",
+          "phase": 3
+        },
+        {
+          "caption": "Parent: on SIGCHLD, reap every ready child with nonblocking waitpid, then resume accepting.",
+          "phase": 4
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "evidence": "Responsibility map for the runnable modern Python example. Actual parent/child scheduling may interleave these events."
+    },
+    {
+      "chapter": "together",
+      "id": "code",
+      "title": "Read the complete loop with a reason for every part.",
+      "explanation": "The downloadable example implements this structure on modern Unix Python. Select each moment to connect the code to the problem it solves. It is a small learning server: production HTTP parsing, worker limits, security, and graceful shutdown need more work.",
+      "requires": [
+        "complete-server"
+      ],
+      "introduces": [],
+      "scene": "code",
+      "visual_requirements": [
+        "show-stages"
+      ],
+      "frames": [
+        {
+          "caption": "Register cleanup before serving requests, so finished children have a handler.",
+          "phase": 0
+        },
+        {
+          "caption": "Accept a connected socket and fork. Different return values select the parent and child branches.",
+          "phase": 1
+        },
+        {
+          "caption": "In the parent, close the connection handle after forking. The parent’s job is to keep accepting.",
+          "phase": 2
+        },
+        {
+          "caption": "In the child, close the listener; handle and close the connection; exit without returning into the parent loop.",
+          "phase": 3
+        },
+        {
+          "caption": "In the signal handler, repeat nonblocking waitpid until no ready child remains. Handle no-children and interrupted-wait cases explicitly.",
+          "phase": 4
+        }
+      ],
+      "teaching_card": "T02",
+      "action": "Play these moments",
+      "evidence": "Runnable authored code tested with overlapping local clients. It uses modern Python retry behavior and a close-delimited response."
+    },
+    {
+      "chapter": "together",
+      "id": "wsgi",
+      "title": "Where would your web application run?",
+      "explanation": "Part 2 used WSGI: a calling convention between a Python web server and an application. The server turns a request into an environment, calls the application, then sends its returned bytes. To make that server concurrent with this design, keep that request work in the child. The parent still accepts, forks, and cleans up.",
+      "requires": [
+        "complete-server"
+      ],
+      "introduces": [
+        "wsgi"
+      ],
+      "scene": "prediction",
+      "visual_requirements": [],
+      "frames": [],
+      "teaching_card": "T03",
+      "action": "Play these moments",
+      "question": {
+        "options": [
+          "Call the application in the parent before forking.",
+          "Call the application in the child’s request handler."
+        ],
+        "correct": 1,
+        "feedback": [
+          "That keeps the parent busy running the application before it can accept the next request, recreating the bottleneck.",
+          "Yes. Replace the child’s simple response handler with the WSGI request path. Keep descriptor cleanup and child reaping around it."
+        ]
+      },
+      "evidence": "Transfer exercise from the end of Part 3. The downloadable example serves a fixed response, not a complete WSGI implementation."
+    },
+    {
+      "chapter": "together",
+      "id": "finish",
+      "title": "Explain the two failures that survive a successful reply.",
+      "explanation": "A visitor received the response text, and its child process exited. That does not prove the server cleaned up correctly. Which pair of actions prevents both the lingering connection and the leftover child record?",
+      "requires": [
+        "complete-server",
+        "reference",
+        "reaping"
+      ],
+      "introduces": [],
+      "scene": "prediction",
+      "visual_requirements": [],
+      "frames": [],
+      "teaching_card": "T03",
+      "action": "Play these moments",
+      "question": {
+        "options": [
+          "Increase backlog and send another kill signal.",
+          "Close every unused server handle and collect the child’s exit status."
+        ],
+        "correct": 1,
+        "feedback": [
+          "Backlog affects queued connections. A zombie has already exited. Neither action releases the forgotten handle and collects the exit record.",
+          "Exactly. Closing handles fixes socket lifetime; reaping fixes child records. You now have the full explanation behind the final server."
+        ]
+      }
     }
   ],
   "question": {

@@ -1,0 +1,100 @@
+{
+  "endpoints": [
+    {
+      "client": [
+        "127.0.0.1",
+        61178
+      ],
+      "server": [
+        "127.0.0.1",
+        61177
+      ],
+      "accepted_fd": 6,
+      "listener_fd": 3
+    },
+    {
+      "client": [
+        "127.0.0.1",
+        61179
+      ],
+      "server": [
+        "127.0.0.1",
+        61177
+      ],
+      "accepted_fd": 7,
+      "listener_fd": 3
+    }
+  ],
+  "ownership": {
+    "parent_pid": 79471,
+    "parent_fork_return": 79477,
+    "parent_fd": 5,
+    "child": {
+      "pid": 79477,
+      "ppid": 79471,
+      "fork_return": 0,
+      "connection_fd": 5
+    },
+    "response": "Hello!",
+    "eof_while_retained": false,
+    "eof_after_close": true
+  },
+  "fd_limit": {
+    "limit": 32,
+    "opened_before_error": 29,
+    "errno": 24,
+    "error": "EMFILE",
+    "open_after_cleanup": true,
+    "scope": "isolated subprocess only"
+  },
+  "burst": {
+    "children": [
+      79485,
+      79486,
+      79487
+    ],
+    "states": {
+      "79485": "Z",
+      "79486": "Z",
+      "79487": "Z"
+    },
+    "pending": true,
+    "notifications": 1,
+    "first": {
+      "pid": 79485,
+      "exit_code": 0
+    },
+    "remaining_after_one": 2,
+    "drained": [
+      {
+        "pid": 79487,
+        "exit_code": 7
+      },
+      {
+        "pid": 79486,
+        "exit_code": 3
+      }
+    ],
+    "terminal": "ECHILD"
+  },
+  "nonblocking": {
+    "while_running": [
+      0,
+      0
+    ],
+    "after_exit": {
+      "pid": 79500,
+      "exit_code": 0
+    }
+  },
+  "accept_retry": {
+    "python": "3.14.6",
+    "events": [
+      "accept entered",
+      "SIGCHLD handled",
+      "accept returned a connection",
+      "SIGCHLD handled"
+    ],
+    "interrupted_exception": false
+  }
+}

@@ -37,3 +37,17 @@ Reduced-motion behavior is implemented as manual discrete advancement; its opera
 ## What remains unproven
 
 Whether the examples teach better than the earlier prototypes; whether these few patterns transfer broadly; whether a new agent can reliably choose and apply them with less intervention. Those are the next evaluation questions, not claims established by passing tests.
+
+## Full Part 3 extension — 2026-09-14
+
+16 Python tests pass, including a fresh four-client run of the downloadable server. All four responses arrive before the first connection closes, verifying real overlap while the artificial pause is active. The finite server exits after collecting its children.
+
+The added evidence checks verify distinct endpoint pairs sharing one server address, fork return values, inherited descriptor numbers, no EOF while the parent retains a socket, EOF after its close, EMFILE and recovery inside an isolated limit, three zombie records, one coalesced notice, full reaping, WNOHANG returning PID 0 for a running child, and a returning SIGCHLD handler during modern accept.
+
+`node experiment/tests/test_models.cjs` checks ownership and cleanup invariants and renders 73 authored visual states without undefined values. It checks that closing one handle leaves one reference, last close leaves none, and one wait after a burst leaves two records.
+
+Browser verification traversed all 31 course steps, completed all visual timelines, and exercised the explanatory feedback on every question. Pause was verified. Chapter navigation and mobile ownership layout were inspected at 390px without horizontal overflow. No console warnings or errors were observed. The previous search lesson remains available.
+
+Historical EINTR behavior is labeled as a reconstruction and was not executed under Python 2.7/3.4. The measured modern result uses Python 3.14.6. Process-slot exhaustion is explained without exhausting the machine. These checks establish technical behavior and UI operation, not learner comprehension.
+
+The final browser pass also checked the three added gallery demos, source-code line highlighting, and code-panel containment at 390px. The temporary viewport override was reset before delivery.

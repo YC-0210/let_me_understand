@@ -1,6 +1,6 @@
 {
   "id": "server",
-  "title": "Why is the second person still waiting?",
+  "title": "Build a server that keeps working",
   "domain": "web servers",
   "learner": "Has opened a web page; has not read the article.",
   "tags": [
@@ -9,8 +9,12 @@
     "comparison",
     "bottleneck",
     "prediction",
-    "terminology"
+    "terminology",
+    "terminology",
+    "lifecycle",
+    "ownership",
+    "notification"
   ],
-  "goal": "Explain why adding queue space does not remove a wait caused by one occupied process.",
+  "goal": "Explain and operate the complete Part 3 progression: waiting, connections, fork, descriptor ownership, zombies, signals, interrupted calls, and robust cleanup.",
   "source": "https://ruslanspivak.com/lsbaws-part3/"
 }

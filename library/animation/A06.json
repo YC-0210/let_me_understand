@@ -1,0 +1,36 @@
+{
+  "id": "A06",
+  "type": "animation",
+  "title": "Separate a notification from the records behind it",
+  "tags": [
+    "show-records"
+  ],
+  "capabilities": [
+    "show-records"
+  ],
+  "renderer": "recordLedger",
+  "inputs": [
+    "records",
+    "notice",
+    "result"
+  ],
+  "communicates": "Keep individual records visible while notification and collection counts change independently.",
+  "source": {
+    "url": "https://man7.org/linux/man-pages/man7/signal.7.html",
+    "title": "signal(7), queueing of standard signals",
+    "locator": "Technical constraint for an authored visual pattern",
+    "kind": "primary technical reference"
+  },
+  "observation": "Repeated pending standard signals coalesce rather than forming a counted queue.",
+  "interpretation": "Authored ledger pattern: one notice indicator beside several separately collectible records.",
+  "avoid": [
+    "Do not equate one notification with one record.",
+    "Do not depict an exited child as executing code."
+  ],
+  "demo": {},
+  "review": {
+    "source_checked": true,
+    "implementation": "authored HTML/CSS renderer",
+    "learner_validated": false
+  }
+}

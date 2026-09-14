@@ -1,0 +1,35 @@
+{
+  "id": "A04",
+  "type": "animation",
+  "title": "Show separate handles to one shared thing",
+  "tags": [
+    "show-ownership"
+  ],
+  "capabilities": [
+    "show-ownership"
+  ],
+  "renderer": "relationshipMap",
+  "inputs": [
+    "owners",
+    "resources"
+  ],
+  "communicates": "Separate ownership from resource identity. Keep the resource in place as access paths close.",
+  "source": {
+    "url": "https://man7.org/linux/man-pages/man2/fork.2.html",
+    "title": "fork(2), inherited file descriptors",
+    "locator": "Technical constraint for an authored visual pattern",
+    "kind": "primary technical reference"
+  },
+  "observation": "A child inherits descriptors referring to the same open-file descriptions.",
+  "interpretation": "Authored diagram: keep two lists separate, and identify one shared resource below them. This source supplies a technical constraint, not an animation to copy.",
+  "avoid": [
+    "Do not draw a new connection merely because a handle was copied.",
+    "Do not label a handle closed while its owner still has access."
+  ],
+  "demo": {},
+  "review": {
+    "source_checked": true,
+    "implementation": "authored HTML/CSS renderer",
+    "learner_validated": false
+  }
+}

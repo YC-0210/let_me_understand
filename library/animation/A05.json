@@ -1,0 +1,35 @@
+{
+  "id": "A05",
+  "type": "animation",
+  "title": "Reveal a sequence while keeping the roles visible",
+  "tags": [
+    "show-stages"
+  ],
+  "capabilities": [
+    "show-stages"
+  ],
+  "renderer": "stageFlow",
+  "inputs": [
+    "actors",
+    "history"
+  ],
+  "communicates": "Show who acts and how far the sequence has progressed. Preserve the history so a later result can be traced back.",
+  "source": {
+    "url": "https://docs.python.org/3/library/socket.html",
+    "title": "Python socket documentation, example and socket methods",
+    "locator": "Technical constraint for an authored visual pattern",
+    "kind": "primary technical reference"
+  },
+  "observation": "Server and client use different socket operations.",
+  "interpretation": "Authored animation pattern constrained by the documented sequence: role cards stay in place while one action is added at a time.",
+  "avoid": [
+    "Do not imply a total order between independent concurrent actions.",
+    "Do not let a code label replace the explanation of its purpose."
+  ],
+  "demo": {},
+  "review": {
+    "source_checked": true,
+    "implementation": "authored HTML/CSS renderer",
+    "learner_validated": false
+  }
+}

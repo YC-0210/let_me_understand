@@ -51,28 +51,160 @@
       "reason": "Required capability: show-overlap"
     },
     {
-      "step": "change",
+      "step": "socket",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
+    },
+    {
+      "step": "listen",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
+    },
+    {
+      "step": "endpoints",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
+    },
+    {
+      "step": "accept",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
+    },
+    {
+      "step": "process",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
+    },
+    {
+      "step": "descriptors",
+      "card": "A04",
+      "renderer": "relationshipMap",
+      "reason": "Required capability: show-ownership"
+    },
+    {
+      "step": "fork-return",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
+    },
+    {
+      "step": "overlap",
       "card": "A02",
       "renderer": "timeline",
       "reason": "Required capability: show-overlap"
     },
     {
-      "step": "change",
+      "step": "overlap",
       "card": "A01",
       "renderer": "comparisonBars",
       "reason": "Required capability: compare-amounts"
     },
     {
-      "step": "transfer",
+      "step": "arrival",
       "card": "A02",
       "renderer": "timeline",
       "reason": "Required capability: show-overlap"
     },
     {
-      "step": "transfer",
+      "step": "arrival",
       "card": "A01",
       "renderer": "comparisonBars",
       "reason": "Required capability: compare-amounts"
+    },
+    {
+      "step": "shared",
+      "card": "A04",
+      "renderer": "relationshipMap",
+      "reason": "Required capability: show-ownership"
+    },
+    {
+      "step": "close-copies",
+      "card": "A04",
+      "renderer": "relationshipMap",
+      "reason": "Required capability: show-ownership"
+    },
+    {
+      "step": "missing-close",
+      "card": "A04",
+      "renderer": "relationshipMap",
+      "reason": "Required capability: show-ownership"
+    },
+    {
+      "step": "file-limit",
+      "card": "A01",
+      "renderer": "comparisonBars",
+      "reason": "Required capability: compare-amounts"
+    },
+    {
+      "step": "exit-record",
+      "card": "A06",
+      "renderer": "recordLedger",
+      "reason": "Required capability: show-records"
+    },
+    {
+      "step": "zombie",
+      "card": "A06",
+      "renderer": "recordLedger",
+      "reason": "Required capability: show-records"
+    },
+    {
+      "step": "wait",
+      "card": "A06",
+      "renderer": "recordLedger",
+      "reason": "Required capability: show-records"
+    },
+    {
+      "step": "signal",
+      "card": "A06",
+      "renderer": "recordLedger",
+      "reason": "Required capability: show-records"
+    },
+    {
+      "step": "interrupted",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
+    },
+    {
+      "step": "retry",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
+    },
+    {
+      "step": "one-notice",
+      "card": "A06",
+      "renderer": "recordLedger",
+      "reason": "Required capability: show-records"
+    },
+    {
+      "step": "drain",
+      "card": "A06",
+      "renderer": "recordLedger",
+      "reason": "Required capability: show-records"
+    },
+    {
+      "step": "not-ready",
+      "card": "A06",
+      "renderer": "recordLedger",
+      "reason": "Required capability: show-records"
+    },
+    {
+      "step": "lifecycle",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
+    },
+    {
+      "step": "code",
+      "card": "A05",
+      "renderer": "stageFlow",
+      "reason": "Required capability: show-stages"
     }
   ]
 }

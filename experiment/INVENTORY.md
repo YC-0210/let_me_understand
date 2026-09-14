@@ -1,4 +1,6 @@
-# Scope and evidence before drawing
+# Initial experiment inventory (historical)
+
+The waiting lesson below was the initial experiment. The server course now covers all of Part 3; `PART3-COVERAGE.md` is the current inventory and supersedes the earlier scope limits below.
 
 ## Server lesson
 Source: https://ruslanspivak.com/lsbaws-part3/

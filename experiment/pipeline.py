@@ -30,7 +30,7 @@ def build():
                 if not matches: raise ValueError(f'No animation supports {capability}')
                 chosen=matches[0]
                 p['animation_selections'].append({'step':step['id'],'card':chosen['id'],'renderer':chosen['renderer'],'reason':f'Required capability: {capability}'})
-    data={'teaching':cards('teaching'),'animation':cards('animation'),'lessons':plans,'traces':read(ROOT/'experiment/runs/search-traces.json'),'server_traces':read(ROOT/'experiment/runs/server-traces.json')}
+    data={'teaching':cards('teaching'),'animation':cards('animation'),'lessons':plans,'traces':read(ROOT/'experiment/runs/search-traces.json'),'server_traces':read(ROOT/'experiment/runs/server-traces.json'),'part3_evidence':read(ROOT/'experiment/runs/part3-evidence.json'),'server_code':(ROOT/'experiment/complete_server.py').read_text()}
     (ROOT/'experiment/web/data.js').write_text('window.LIBRARY_DATA = '+json.dumps(data)+';\n')
     (ROOT/'experiment/runs/selection-manifest.json').write_text(json.dumps({p['id']:p['animation_selections'] for p in plans},indent=2))
 if __name__=='__main__':
