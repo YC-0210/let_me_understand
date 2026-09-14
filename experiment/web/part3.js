@@ -75,13 +75,13 @@ window.Part3 = (() => {
     const s=current(),n=timeline()?null:Math.min(s.frames.length-1,Math.floor(progress*(s.frames.length-1)+1e-7));
     if(timeline()||n!==lastDraw){restoreWink();$('#course-board').innerHTML=timeline()?timelineHTML():frameHTML(n);lastDraw=n;if(s.scene==='code'){const panel=$('.course-code'),lit=panel.querySelector('.lit');if(lit)panel.scrollTop=Math.max(0,lit.offsetTop-panel.offsetTop-35);}}
     updateWink();
-    $('#course-scrub').value=Math.round(progress*1000);$('#course-status').textContent=playing?`Next moment in ${Math.ceil(guideRemaining())}s`:guideClock>=10+(momentCount()-1)*11?'Complete':progress===0?'Ready · 10s per moment':'Paused';
+    $('#course-scrub').value=Math.round(progress*1000);$('#course-status').textContent=playing?`Next moment in ${Math.ceil(guideRemaining())}s`:guideClock>=6+(momentCount()-1)*7?'Complete':progress===0?'Ready · 6s per moment':'Paused';
     $('#course-play').textContent=playing?'Pause':progress===1?'Replay':progress?'Continue':'Play these moments';
     $('#course-moment').disabled=progress===1;
   }
   const momentCount=()=>timeline()?7:current().frames.length;
-  const clockFor=n=>n===0?0:11*n;
-  function guideRemaining(){return guideClock<10?10-guideClock:11-((guideClock-10)%11);}
+  const clockFor=n=>n===0?0:7*n;
+  function guideRemaining(){return guideClock<6?6-guideClock:7-((guideClock-6)%7);}
   function syncClock(){guideClock=clockFor(Math.round(progress*(momentCount()-1)));}
   function advance(){stop();const parts=momentCount()-1;progress=Math.min(1,Math.round(progress*parts+1)/parts);syncClock();draw();}
   function play(){
@@ -98,10 +98,10 @@ window.Part3 = (() => {
     draw();if(playing)frame=requestAnimationFrame(tick);
   }
   function tourState(clock,count,interpolate=false){
-    const end=10+(count-1)*11;
+    const end=6+(count-1)*7;
     if(clock>=end)return {progress:1,done:true};
-    const n=clock<10?0:Math.min(count-1,Math.floor((clock-10)/11)+1);
-    const travel=clock<10?1:Math.min(1,(clock-10)%11);
+    const n=clock<6?0:Math.min(count-1,Math.floor((clock-6)/7)+1);
+    const travel=clock<6?1:Math.min(1,(clock-6)%7);
     return {progress:interpolate&&n>0?(n-1+travel)/(count-1):n/(count-1),done:false};
   }
   // Each selector names the object that this moment's explanation discusses.
