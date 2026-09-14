@@ -72,3 +72,10 @@ All 16 tour stops were checked in the desktop browser: every stop had a cue and 
 ## Spatial Wink guidance revision
 
 Wink now docks beside the specific scene object, rather than moving through a separate strip. Browser geometry checks covered all 16 stops at 390px and 1280px: no mascot or speech overlap with visible diagram marks, and no horizontal overflow. Screenshots confirmed the mascot beside the parent, running child, and coalesced notice. Playback advanced automatically from the first stop to the notice and paused with reading time remaining; console checks returned no warnings or errors. The 303 model samples and all ten-second tour timing assertions still pass.
+
+
+## Full-course spatial guidance
+
+Browser walkthroughs visited all 31 course steps and all 104 selectable visual stops at the normal desktop viewport and at 390px. Every visual stop had an authored focus and no horizontal overflow. Screenshots checked Wink beside a timeline lane, a numbered connection handle, and the shared socket. Expanded explanations, automatic advancement, pause, and manual controls were exercised without console warnings or errors. Prediction questions retain their existing non-animated guidance.
+
+`node experiment/tests/test_course_guide.cjs` checks full ten-second holds, interpolated timeline transitions, and retaining the final state after completion. Existing checks still pass: 73 authored model states, 303 motion samples, and all 16 Python tests.

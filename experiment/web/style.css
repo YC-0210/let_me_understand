@@ -16,3 +16,14 @@
 .flying-speech p{font-size:14px;line-height:1.5;margin:0;color:#ece5f5}#wink-countdown{display:block;font-size:10px;color:#b6a9c8;margin-top:8px;font-variant-numeric:tabular-nums}
 .study-views.comparing{grid-template-columns:1fr}.study-views.comparing .study-old{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:18px}
 @media(max-width:700px){#wink-flight,#study-wink{width:30px;height:30px;min-width:30px}.flying-speech{width:230px;padding:10px 12px}.guided-canvas>svg{max-height:none}}
+
+/* Course guidance sits beside its authored focus, with speech after that visual row. */
+.spatial-course{position:relative}.spatial-course>.wink-guide{margin:0}.spatial-course .wink-row{display:none}.spatial-course #wink-detail{margin:12px 0}
+.spatial-course #course-board{padding-left:52px}.spatial-course .owner-grid,.spatial-course .actor-grid,.spatial-course .record-grid,.spatial-course .resource-grid{column-gap:52px}
+.spatial-course>#wink-toggle{position:absolute;z-index:2;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:none;transition:left .7s ease-in-out,top .7s ease-in-out}
+.spatial-course>#wink-toggle svg{display:block;width:32px;height:32px}.course-focus{outline:1px dashed #c3afe9;outline-offset:5px}
+.course-speech-slot{grid-column:1/-1;margin:15px 0 18px;min-width:0}.course-speech-slot .wink-speech{max-width:560px;margin:0;padding:10px 13px}.course-speech-slot .wink-speech p{font-size:14px}
+@media(max-width:700px){.spatial-course #course-board{padding-left:38px;padding-right:10px}.spatial-course>#wink-toggle{width:28px;height:28px}.spatial-course>#wink-toggle svg{width:28px;height:28px}.spatial-course .comparison{grid-template-columns:1fr}.course-speech-slot .wink-speech{padding:9px}.course-speech-slot .wink-speech p{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.spatial-course>#wink-toggle{transition:none}}
+
+.spatial-course .resource-grid:not(:has(.resource ~ .resource))>.resource{grid-column:1/-1}

@@ -74,3 +74,8 @@ Each teaching step has a concise `wink_cue`. The course shows that cue next to t
 Open `/experiment/web/#studies` or choose Motion studies. Three guided alternatives to A04–A06 use explicit connecting lines, moving requests and worker progress rings, and disappearing exit records. Each has play/pause, scrubbing, manual stepping, Wink source notes, and an optional original-pattern comparison. The existing course remains available for comparison. See `MOTION-STUDIES.md` for sources and scope.
 
 Wink now moves through authored focus stops. Each stop has a full ten-second hold, with a separate one-second flight to the next. Back, Next step, and a step slider allow manual pacing; pause also freezes the flight clock. Wink docks directly beside the current object inside the diagram. Speech uses the nearest clear space; if the screen is too narrow, only the speech moves below the diagram.
+
+
+## Spatial guidance in the full course
+
+The original eight-chapter Part 3 course now uses authored focus targets for every visual moment. Wink moves beside the current timeline lane, process, numbered handle, exit record, or code responsibility. A dashed outline identifies the exact target. Speech is placed after its visual row so it cannot cover another object; expanded explanations and code remain available through Wink. Playback holds each moment for ten seconds, with a separate transition interval. Manual stepping, scrubbing, restart, prediction questions, and reduced-motion support remain available.
