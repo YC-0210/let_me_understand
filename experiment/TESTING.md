@@ -61,3 +61,9 @@ Browser checks confirmed that opening Wink pauses playback, expansion exposes th
 ## Motion studies
 
 `node experiment/tests/test_motion.cjs` verifies 303 clock samples across three deterministic SVG models, including handle counts 1→2→1→0 and uncollected-record counts 3→2→1→0. Browser checks verify play/pause, actual completion at ten seconds, manual stepping, original-pattern comparison at one remaining handle, and the two-record intermediate cleanup state. These are visual variations awaiting the user's judgment, not evidence of ten-second comprehension.
+
+## Flying Wink
+
+The tour-clock tests assert a complete ten-second hold before each automatic advance, a separate one-second travel interval, and a final ten-second hold before completion in all three studies. Existing 303 model samples still pass. Browser inspection confirmed targeted text and a focus ring on the coalesced notification, step navigation, and no overlap between Wink's occupied rectangle and the diagram at a 390px viewport.
+
+All 16 tour stops were checked in the desktop browser: every stop had a cue and none overlapped the SVG canvas. Starting the guided tour displayed the ten-second countdown.

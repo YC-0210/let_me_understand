@@ -11,3 +11,9 @@ All SVG artwork and motion here are authored adaptations. Their behaviors follow
 All positions and states are computed from one deterministic clock, including arbitrary scrubbing, restart, pause, and manual advancement. Reduced-motion mode advances manually. Wink expands the interpretation and source notes without playing over the reader. There are no idle animations.
 
 Validation: `node experiment/tests/test_motion.cjs` checks handle/record counts and renders 303 clock samples across the three models. This establishes state and rendering consistency, not whether viewers understand the idea within ten seconds; that is the user's comparison task.
+
+## Wink-guided playback
+
+The default playback is now a guided tour, with five or six authored focal stops per study. Wink travels for one second, then the scene holds still for a full ten-second reading interval. A dashed, unfilled ring identifies the focus without covering it. Speech appears when Wink arrives. Play/pause stops the shared clock, including flights. Back, Next step, and the step slider allow manual inspection.
+
+Wink and the speech bubble occupy a reserved side lane on wide screens and a reserved strip above the canvas on narrow screens. Neither crosses the diagram; a small viewport never forces a bubble over a node. Reduced-motion mode relocates without animated travel. Hidden tabs do not consume reading time. Existing model timing remains schematic and is separate from presentation pauses.

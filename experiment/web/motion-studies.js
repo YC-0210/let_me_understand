@@ -59,15 +59,81 @@ window.MotionStudies = (() => {
     {id:'A05',title:'The parent keeps the door open.',intro:'Dots are requests. Growing rings show work in progress.',source:'RaftScope',url:'https://raft.github.io/raftscope/index.html',credit:'Borrowed technique: moving messages among stable process locations. Request handoff and worker creation are our adaptation, not Raft behavior.',model:workers,old:t=>Animations.stageFlow({actors:[{label:'PARENT',title:'Accept requests',detail:t<1.2?'A arrives':t<3.3?'Give A to a child; take B':'Available for new arrivals',active:true},...(t>=2?[{label:'CHILD A',title:t<8?'Working':'Finished',detail:t<6.6?'Handles A’s request':'Reply sent',active:t<8}]:[]),...(t>=4.1?[{label:'CHILD B',title:t<9.6?'Working':'Finished',detail:t<7.9?'Handles B’s request':'Reply sent',active:t<9.6}]:[])],history:[workers(t).cue]}),note:'This is a responsibility diagram. Dots mark requests being assigned, not literal TCP packet routes. Replies bypass the parent. Worker cleanup is covered separately; scheduling and durations are illustrative.'},
     {id:'A06',title:'One notice can leave work behind.',intro:'Filled circles work. Hollow circles are finished children awaiting collection.',source:'Mike Bostock · Visualizing Algorithms',url:'https://bost.ocks.org/mike/algorithms/#shuffling',credit:'Borrowed technique: individual items visibly change membership as an algorithm progresses. The notification and cleanup sequence is our adaptation.',model:cleanup,old:t=>Animations.recordLedger({records:[1.6,2,2.4].map((end,i)=>({label:'Child '+String.fromCharCode(65+i),state:t<[4.7,7.6,9][i]?(t<end?'running':'ready'):'collected',title:t<[4.7,7.6,9][i]?(t<end?'Still running':'Exited · uncollected'):'Status collected',detail:''})),notice:{label:'Notice count',value:t<1.6?'0':'1'},result:cleanup(t).cue}),note:'This shows a possible coalesced-signal case: three child exits occur before notification handling. One pending notice is not an exit count. The first wait leaves two records; continuing the nonblocking loop collects them. Verified with the three-child probe.'}
   ];
-  let selected=0,time=0,playing=false,frame=0,last=0,compare=false,expanded=false;
-  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,$=s=>document.querySelector(s);
-  function stop(){playing=false;cancelAnimationFrame(frame);}
-  function mount(){stop();const s=studies[selected];$('#app').innerHTML=`<div class="eyebrow">ANIMATION VARIATIONS / 04–06</div><h1>See the mechanism move.</h1><p class="intro">Three ten-second studies. Try the motion, then compare the original.</p><div class="study-tabs">${studies.map((x,i)=>`<button data-study="${i}" class="${selected===i?'selected':''}">${x.id.slice(1)} · ${['Shared handles','Parallel work','Cleanup'][i]}</button>`).join('')}</div><section class="study-shell"><h2>${s.title}</h2><div class="study-wink"><button id="study-wink" aria-label="${expanded?'Close':'Open'} Wink’s explanation" aria-expanded="${expanded}"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#F5F0FF"/><ellipse cx="38" cy="45" rx="6" ry="9" fill="#4B3869"/><path d="M59 43 Q67 55 75 43" fill="none" stroke="#4B3869" stroke-width="3"/></svg></button><p id="study-cue">${s.intro}</p></div><div class="study-details" id="study-detail" ${expanded?'':'hidden'}><p>${s.note}</p><p>${s.credit} <a href="${s.url}" target="_blank" rel="noreferrer">Study the source ↗</a></p></div><div class="study-views ${compare?'comparing':''}"><div class="study-new"><div class="study-label">VARIATION · MOTION</div><svg id="study-svg" viewBox="${selected===1?'0 0 550 410':'80 0 480 410'}" role="img" aria-label="${s.title}"></svg></div>${compare?'<div class="study-old"><div class="study-label">ORIGINAL · TEXT AND BOXES</div><div id="study-original"></div></div>':''}</div><div class="study-controls"><button id="study-play" class="primary">Play 10 seconds</button><button id="study-step">Step +</button><button id="study-reset" aria-label="Restart study">↺</button><input id="study-scrub" type="range" min="0" max="1000" value="${time*100}" aria-label="Study timeline"><span id="study-time"></span></div><label class="study-compare"><input type="checkbox" id="study-compare" ${compare?'checked':''}> Compare with original pattern</label><p class="study-note">Schematic playback · ${s.id} alternative · ${reduced?'Reduced motion: advance manually.':'Pause or scrub any moment.'}</p></section><p class="study-review">After one viewing: can you explain what stayed open, what overlapped, or what remained to clean up?</p>`;
-    document.querySelectorAll('[data-study]').forEach(b=>b.onclick=()=>{selected=+b.dataset.study;time=0;expanded=false;mount();});
-    $('#study-play').onclick=play;$('#study-step').onclick=()=>{stop();time=Math.min(10,time+1);draw();};$('#study-reset').onclick=()=>{stop();time=0;draw();};$('#study-scrub').oninput=x=>{stop();time=+x.target.value/100;draw();};$('#study-compare').onchange=x=>{compare=x.target.checked;mount();};$('#study-wink').onclick=()=>{expanded=!expanded;stop();$('#study-detail').hidden=!expanded;$('#study-wink').setAttribute('aria-expanded',String(expanded));$('#study-wink').setAttribute('aria-label',`${expanded?'Close':'Open'} Wink’s explanation`);draw();};draw();
+  const tours=[
+    [
+      {at:0,x:145,y:82,say:'The parent holds one handle to this socket.'},
+      {at:2.2,x:495,y:82,say:'Fork gives the child a second handle. Both reach the same socket.'},
+      {at:4.4,x:145,y:82,say:'The parent closes its handle. The child’s handle still keeps the socket open.'},
+      {at:5.6,x:320,y:280,say:'The child can still send the reply through that open socket.'},
+      {at:7.7,x:320,y:211,say:'The child closes the last handle. The sending stream can now end.'},
+      {at:10,x:320,y:343,say:'The browser sees the end of the stream. The reply is complete.'}
+    ],
+    [
+      {at:.7,x:190,y:205,say:'The parent accepts A’s request. Watch where the work goes next.'},
+      {at:2.1,x:455,y:106,say:'Child A takes the work. The parent can return to accepting requests.'},
+      {at:4.4,x:455,y:300,say:'Child B starts while Child A is still working. Their work overlaps.'},
+      {at:6,x:455,y:106,say:'Child A sends its own reply. It does not send the reply through the parent.'},
+      {at:10,x:190,y:205,say:'Both requests finished while the parent stayed available for new arrivals.'}
+    ],
+    [
+      {at:0,x:150,y:100,say:'These filled circles are running children. Each will leave a record when it exits.'},
+      {at:2.8,x:320,y:252,say:'Three children finished, but their notifications merged into one pending notice.'},
+      {at:5,x:490,y:100,say:'One wait collected one record. These two hollow circles still need cleanup.'},
+      {at:7.7,x:490,y:100,say:'The parent repeats nonblocking waitpid. Another record is collected; one remains.'},
+      {at:10,x:320,y:324,say:'The loop collected all ready records. The parent can return to accepting requests.'}
+    ]
+  ];
+  // Each arrival gets a full ten-second hold. Travel takes one extra second.
+  function tourState(clock,points){
+    if(clock<10)return {step:0,at:points[0].at,remaining:10-clock,travel:false,done:false};
+    const n=Math.floor((clock-10)/11)+1;
+    if(n>=points.length)return {step:points.length-1,at:points.at(-1).at,remaining:0,travel:false,done:true};
+    const within=(clock-10)%11;
+    return {step:n,at:within<1?lerp(points[n-1].at,points[n].at,within):points[n].at,remaining:within<1?10:11-within,travel:within<1,travelProgress:Math.min(1,within),done:false};
   }
-  function draw(){if(!$('#study-svg'))return;const s=studies[selected],result=s.model(time);$('#study-svg').innerHTML=result.svg;$('#study-cue').textContent=time===0?s.intro:result.cue;$('#study-time').textContent=time.toFixed(1)+' / 10 s';$('#study-scrub').value=Math.round(time*100);$('#study-play').textContent=playing?'Pause':time===10?'Replay':reduced?'Next second':time?'Continue':'Play 10 seconds';$('#study-step').disabled=time===10;if(compare)$('#study-original').innerHTML=s.old(time);}
-  function play(){if(playing){stop();draw();return;}if(time===10)time=0;if(reduced){time=Math.min(10,time+1);draw();return;}playing=true;if(time===0)time=.1;last=performance.now();draw();frame=requestAnimationFrame(tick);}
-  function tick(now){time=Math.min(10,time+(now-last)/1000);last=now;if(time===10)playing=false;draw();if(playing)frame=requestAnimationFrame(tick);}
-  return {mount,stop,models:{shared,workers,cleanup}};
+  let selected=0,clock=0,playing=false,frame=0,last=0,compare=false,expanded=false,lastStep=-1;
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,$=s=>document.querySelector(s);
+  const startOf=n=>n===0?0:10+(n-1)*11+1;
+  function stop(){playing=false;cancelAnimationFrame(frame);}
+  const face='<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#F5F0FF"/><ellipse cx="38" cy="45" rx="6" ry="9" fill="#4B3869"/><path d="M59 43 Q67 55 75 43" fill="none" stroke="#4B3869" stroke-width="3"/></svg>';
+  function mount(){stop();lastStep=-1;const s=studies[selected];$('#app').innerHTML=`<div class="eyebrow">ANIMATION VARIATIONS / 04–06</div><h1>Follow Wink through the system.</h1><p class="intro">Wink flies beside the focus, explains it, and waits ten seconds. You can pause or move on yourself.</p><div class="study-tabs">${studies.map((x,i)=>`<button data-study="${i}" class="${selected===i?'selected':''}">${x.id.slice(1)} · ${['Shared handles','Parallel work','Cleanup'][i]}</button>`).join('')}</div><section class="study-shell"><h2>${s.title}</h2><div class="study-details" id="study-detail" ${expanded?'':'hidden'}><p>${s.note}</p><p>${s.credit} <a href="${s.url}" target="_blank" rel="noreferrer">Study the source ↗</a></p></div><div class="study-views ${compare?'comparing':''}"><div class="study-new"><div class="guided-stage"><div class="guided-canvas"><svg id="study-svg" viewBox="${selected===1?'0 0 550 410':'80 0 480 410'}" role="img" aria-label="${s.title}"></svg></div><aside class="wink-flight-lane" aria-label="Wink’s guidance"><div id="wink-flight"><button id="study-wink" aria-label="${expanded?'Close':'Open'} Wink’s explanation" aria-expanded="${expanded}">${face}</button><div class="flying-speech"><p id="study-cue" aria-live="polite"></p><span id="wink-countdown"></span></div></div></aside></div></div>${compare?'<div class="study-old"><div class="study-label">ORIGINAL PATTERN</div><div id="study-original"></div></div>':''}</div><div class="study-controls"><button id="study-play" class="primary">Start guided tour</button><button id="study-back">Back</button><button id="study-step">Next step</button><button id="study-reset" aria-label="Restart study">↺</button><input id="study-scrub" type="range" min="0" max="${tours[selected].length-1}" step="1" value="0" aria-label="Guided step"><span id="study-time"></span></div><label class="study-compare"><input type="checkbox" id="study-compare" ${compare?'checked':''}> Compare with original pattern</label><p class="study-note">The diagram holds still while Wink explains. These ten-second pauses are reading time, not server timing.${reduced?' Reduced motion: Wink changes position without a flight animation.':''}</p></section>`;
+    document.querySelectorAll('[data-study]').forEach(b=>b.onclick=()=>{selected=+b.dataset.study;clock=0;expanded=false;mount();});
+    $('#study-play').onclick=play;
+    $('#study-step').onclick=()=>seek(Math.min(tours[selected].length-1,tourState(clock,tours[selected]).step+1));
+    $('#study-back').onclick=()=>seek(Math.max(0,tourState(clock,tours[selected]).step-1));
+    $('#study-reset').onclick=()=>{stop();clock=0;draw();};
+    $('#study-scrub').oninput=x=>seek(+x.target.value);
+    $('#study-compare').onchange=x=>{compare=x.target.checked;mount();};
+    $('#study-wink').onclick=()=>{expanded=!expanded;stop();$('#study-detail').hidden=!expanded;$('#study-wink').setAttribute('aria-expanded',String(expanded));$('#study-wink').setAttribute('aria-label',`${expanded?'Close':'Open'} Wink’s explanation`);draw();};
+    draw();
+  }
+  function seek(n){stop();clock=startOf(n);draw();}
+  function draw(){
+    if(!$('#study-svg'))return;
+    const points=tours[selected],s=studies[selected],state=tourState(clock,points),focus=points[state.step];
+    const result=s.model(reduced?focus.at:state.at);
+    const halo=`<circle cx="${focus.x}" cy="${focus.y}" r="43" fill="none" stroke="#eee3ff" stroke-width="1.5" stroke-dasharray="3 5" opacity=".8"/>`;
+    $('#study-svg').innerHTML=result.svg+halo;
+    const from=points[Math.max(0,state.step-1)],travel=state.travel?state.travelProgress:1;
+    const eased=reduced?1:travel*travel*(3-2*travel);
+    const fx=lerp(from.x,focus.x,eased),fy=lerp(from.y,focus.y,eased);
+    $('#wink-flight').style.setProperty('--flight-y',`${clamp((fy-65)/300)*55}%`);
+    $('#wink-flight').style.setProperty('--flight-x',`${clamp((fx-60)/500)*65}%`);
+    const spoken=state.travel?'Let’s look here…':focus.say;
+    if($('#study-cue').textContent!==spoken)$('#study-cue').textContent=spoken;
+    lastStep=state.step;
+    $('#wink-countdown').textContent=state.done?'Tour complete':state.travel?'Flying to the next focus…':playing?`Next step in ${Math.ceil(state.remaining)}s`:`${clock===0?'Ready':'Paused'} · ${Math.ceil(state.remaining)}s reading time`;
+    $('#study-time').textContent=`${state.step+1} / ${points.length}`;
+    $('#study-scrub').value=state.step;
+    $('#study-play').textContent=playing?'Pause':state.done?'Replay tour':clock?'Continue':'Start guided tour';
+    $('#study-step').disabled=state.step===points.length-1;$('#study-back').disabled=state.step===0;
+    if(compare)$('#study-original').innerHTML=s.old(state.at);
+  }
+  function play(){if(playing){stop();draw();return;}if(tourState(clock,tours[selected]).done)clock=0;playing=true;last=performance.now();draw();frame=requestAnimationFrame(tick);}
+  function tick(now){
+    // A background tab must not silently use up the learner's reading time.
+    if(!document.hidden)clock+=(now-last)/1000;
+    last=now;if(tourState(clock,tours[selected]).done)playing=false;draw();if(playing)frame=requestAnimationFrame(tick);
+  }
+  return {mount,stop,models:{shared,workers,cleanup},tourState,tours};
 })();

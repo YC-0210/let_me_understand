@@ -71,4 +71,6 @@ Each teaching step has a concise `wink_cue`. The course shows that cue next to t
 
 ## Motion comparison studies
 
-Open `/experiment/web/#studies` or choose Motion studies. Three ten-second alternatives to A04–A06 use explicit connecting lines, moving requests and worker progress rings, and disappearing exit records. Each has play/pause, scrubbing, manual stepping, Wink source notes, and an optional original-pattern comparison. The existing course remains available for comparison. See `MOTION-STUDIES.md` for sources and scope.
+Open `/experiment/web/#studies` or choose Motion studies. Three guided alternatives to A04–A06 use explicit connecting lines, moving requests and worker progress rings, and disappearing exit records. Each has play/pause, scrubbing, manual stepping, Wink source notes, and an optional original-pattern comparison. The existing course remains available for comparison. See `MOTION-STUDIES.md` for sources and scope.
+
+Wink now moves through authored focus stops. Each stop has a full ten-second hold, with a separate one-second flight to the next. Back, Next step, and a step slider allow manual pacing; pause also freezes the flight clock. The mascot and speech bubble remain in reserved space beside or above the diagram.
