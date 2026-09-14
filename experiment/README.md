@@ -64,3 +64,7 @@ The new library components show ownership, staged responsibilities, and notifica
 `probe_part3.py` records six bounded Unix probes: local endpoints, inherited descriptors/EOF, isolated descriptor-limit exhaustion, three-child SIGCHLD coalescing and reaping, WNOHANG before a child exits, and current Python accept retry. `runs/part3-evidence.json` records their results. The SIGCHLD burst is made reproducible by temporarily blocking delivery in the isolated probe; the process-status inspection also creates a briefly-lived ps process. All probe children are collected.
 
 `complete_server.py` is an authored runnable modern-Python learning example. It is not a production HTTP server or a complete WSGI implementation. The WSGI section is the article's transfer exercise, with explanatory feedback. The course saves the current step locally in the browser; it does not send learner progress anywhere.
+
+## Wink guides the course
+
+Each teaching step has a concise `wink_cue`. The course shows that cue next to the mascot, then updates it with the current visual moment. Click Wink or “Wink, tell me more” to pause and open the full explanation, code, evidence, and available event history. Diagram labels stay visible; repetitive prose is folded into Wink.

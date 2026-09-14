@@ -51,3 +51,9 @@ Browser verification traversed all 31 course steps, completed all visual timelin
 Historical EINTR behavior is labeled as a reconstruction and was not executed under Python 2.7/3.4. The measured modern result uses Python 3.14.6. Process-slot exhaustion is explained without exhausting the machine. These checks establish technical behavior and UI operation, not learner comprehension.
 
 The final browser pass also checked the three added gallery demos, source-code line highlighting, and code-panel containment at 390px. The temporary viewport override was reset before delivery.
+
+## Wink guidance revision
+
+Part 3 now shows one short Wink cue instead of the full introductory paragraph and a second visual caption. Full explanations, current-moment detail, code snippets, history, and evidence are available inside Wink. Essential object labels and state changes remain on the canvas. The mascot reuses the earlier Part 1 Wink design without idle motion.
+
+Browser checks confirmed that opening Wink pauses playback, expansion exposes the full explanation, visual stepping updates the cue, and the ownership scene fits a 390px layout without horizontal overflow.

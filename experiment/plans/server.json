@@ -74,7 +74,8 @@
       "scene": "one",
       "action": "Watch A’s request",
       "chapter": "wait",
-      "frames": []
+      "frames": [],
+      "wink_cue": "A opens a page. The server replies, then keeps their connection open. Watch the reply and the close."
     },
     {
       "id": "bottleneck",
@@ -95,7 +96,8 @@
       "scene": "serial",
       "action": "Watch both requests",
       "chapter": "wait",
-      "frames": []
+      "frames": [],
+      "wink_cue": "B arrives while the only program is still busy with A. Watch B’s wait."
     },
     {
       "id": "predict",
@@ -122,7 +124,8 @@
           "More queue space can hold more waiting requests. It does not free the occupied program to answer B.",
           "Yes. B already fits in the queue. The occupied program is what delays the answer."
         ]
-      }
+      },
+      "wink_cue": "B already fits in the waiting line. Would making that line bigger help?"
     },
     {
       "chapter": "connect",
@@ -157,7 +160,8 @@
       "teaching_card": "T01",
       "action": "Play these moments",
       "code": "socket.socket(socket.AF_INET, socket.SOCK_STREAM)",
-      "evidence": "Conceptual sequence; TCP setup packets are omitted."
+      "evidence": "Conceptual sequence; TCP setup packets are omitted.",
+      "wink_cue": "A socket is where a program sends and receives bytes. Follow the two endpoints."
     },
     {
       "chapter": "connect",
@@ -198,7 +202,8 @@
       "teaching_card": "T02",
       "action": "Play these moments",
       "code": "listener.bind((\"127.0.0.1\", 8888))\nlistener.listen(5)",
-      "evidence": "Illustrated address 8888 matches the tutorial; the probes use an available local port."
+      "evidence": "Illustrated address 8888 matches the tutorial; the probes use an available local port.",
+      "wink_cue": "The server needs an address, then a listening socket to welcome connections."
     },
     {
       "chapter": "connect",
@@ -235,7 +240,8 @@
       "teaching_card": "T04",
       "action": "Play these moments",
       "code": "client.connect((\"127.0.0.1\", 8888))\nclient.getsockname()  # local endpoint\nclient.getpeername()  # remote endpoint",
-      "evidence": "Actual endpoint pairs from two local TCP connections. Server port differs from the article because the probe asks for a free port."
+      "evidence": "Actual endpoint pairs from two local TCP connections. Server port differs from the article because the probe asks for a free port.",
+      "wink_cue": "Both visitors reach one server port. Their different client ports keep the conversations separate."
     },
     {
       "chapter": "connect",
@@ -276,7 +282,8 @@
       "teaching_card": "T02",
       "action": "Play these moments",
       "code": "connection, address = listener.accept()\nrequest_bytes = connection.recv(4096)\nconnection.sendall(response)\nconnection.close()",
-      "evidence": "Illustrated sequence. Backlog controls queued connections, not active worker count; exact queue limits and overflow behavior depend on the OS."
+      "evidence": "Illustrated sequence. Backlog controls queued connections, not active worker count; exact queue limits and overflow behavior depend on the OS.",
+      "wink_cue": "Accept gives the program a connected socket. The listening socket keeps welcoming visitors."
     },
     {
       "chapter": "fork",
@@ -313,7 +320,8 @@
       "teaching_card": "T04",
       "action": "Play these moments",
       "code": "os.getpid()   # this process\nos.getppid()  # its parent\n# In a terminal: ps -o pid,ppid,stat,command -p PID",
-      "evidence": "Actual IDs from an isolated parent/child probe. IDs change between runs."
+      "evidence": "Actual IDs from an isolated parent/child probe. IDs change between runs.",
+      "wink_cue": "A process is one running program. PID names it; PPID identifies its parent."
     },
     {
       "chapter": "fork",
@@ -350,7 +358,8 @@
       "teaching_card": "T04",
       "action": "Play these moments",
       "code": "listener.fileno()\nconnection.fileno()\nos.write(1, b\"hello\\n\")  # write to standard output",
-      "evidence": "Illustrated descriptor numbers 3 and 4; actual numbers depend on what is already open. Numbered entries point to resources, not copied network connections."
+      "evidence": "Illustrated descriptor numbers 3 and 4; actual numbers depend on what is already open. Numbered entries point to resources, not copied network connections.",
+      "wink_cue": "A file descriptor is a numbered handle to an open file or socket. It is not a port."
     },
     {
       "chapter": "fork",
@@ -388,7 +397,8 @@
       "teaching_card": "T02",
       "action": "Play these moments",
       "code": "child_pid = os.fork()\nif child_pid == 0:\n    print(\"child branch\")\nelse:\n    print(\"parent branch\")",
-      "evidence": "Return values and IDs are recorded from a real fork. The diagram does not promise which branch runs first."
+      "evidence": "Return values and IDs are recorded from a real fork. The diagram does not promise which branch runs first.",
+      "wink_cue": "Fork creates a child. Both continue here, but receive different return values."
     },
     {
       "id": "overlap",
@@ -409,7 +419,8 @@
       "scene": "compare",
       "action": "Compare the two versions",
       "chapter": "fork",
-      "frames": []
+      "frames": [],
+      "wink_cue": "Two children can handle overlapping requests. That overlap is concurrency."
     },
     {
       "id": "arrival",
@@ -428,7 +439,8 @@
       "scene": "explore",
       "action": "Replay this case",
       "chapter": "fork",
-      "frames": []
+      "frames": [],
+      "wink_cue": "Change when B arrives. Does having another worker still help?"
     },
     {
       "chapter": "copies",
@@ -464,7 +476,8 @@
       ],
       "teaching_card": "T01",
       "action": "Play these moments",
-      "evidence": "Explanatory model checked by the real inherited-descriptor/EOF probe. We collapse the intermediate open-file description into one arrow."
+      "evidence": "Explanatory model checked by the real inherited-descriptor/EOF probe. We collapse the intermediate open-file description into one arrow.",
+      "wink_cue": "Two numbered handles can reach one socket. Each open handle is a reference to it."
     },
     {
       "chapter": "copies",
@@ -503,7 +516,8 @@
       "teaching_card": "T02",
       "action": "Play these moments",
       "code": "# Parent\nconnection.close()\n# Child\nlistener.close()\nhandle_request(connection)\nconnection.close()",
-      "evidence": "Arrows count only the server-side handles in this case. Normal TCP close is not instantaneous removal of every TCP bookkeeping state."
+      "evidence": "Arrows count only the server-side handles in this case. Normal TCP close is not instantaneous removal of every TCP bookkeeping state.",
+      "wink_cue": "Close only the handles each process does not need. Watch which access remains."
     },
     {
       "chapter": "copies",
@@ -543,7 +557,8 @@
       ],
       "teaching_card": "T02",
       "action": "Play these moments",
-      "evidence": "Real TCP probe: child exited; no EOF with parent handle retained; EOF after that handle closed. Responses with explicit lengths can be delimited differently."
+      "evidence": "Real TCP probe: child exited; no EOF with parent handle retained; EOF after that handle closed. Responses with explicit lengths can be delimited differently.",
+      "wink_cue": "The child is done, but the parent still holds the connection open. Watch the last handle."
     },
     {
       "chapter": "copies",
@@ -570,7 +585,8 @@
           "Yes. The child’s entry still points to the shared socket. One close removes one reference.",
           "Fork did not create a new conversation. The child still has access to the existing socket through its own handle."
         ]
-      }
+      },
+      "wink_cue": "The parent closes its handle. The child still has one. Can it reply?"
     },
     {
       "chapter": "copies",
@@ -605,7 +621,8 @@
       "teaching_card": "T02",
       "action": "Play these moments",
       "code": "# Inspect limits in your own terminal:\nulimit -n\n# Do not lower the current shell limit for this lesson.",
-      "evidence": "Real bounded file-descriptor exhaustion in an isolated subprocess, using /dev/null rather than hundreds of network clients. User shell limits are unchanged."
+      "evidence": "Real bounded file-descriptor exhaustion in an isolated subprocess, using /dev/null rather than hundreds of network clients. User shell limits are unchanged.",
+      "wink_cue": "Unused handles add up. Eventually the process cannot open another one."
     },
     {
       "chapter": "children",
@@ -640,7 +657,8 @@
       ],
       "teaching_card": "T01",
       "action": "Play these moments",
-      "evidence": "Lifecycle reconstruction checked by real child exit statuses. The diagram represents records, not the child’s old memory footprint."
+      "evidence": "Lifecycle reconstruction checked by real child exit statuses. The diagram represents records, not the child’s old memory footprint.",
+      "wink_cue": "The child has finished. Its exit result remains for the parent to collect."
     },
     {
       "chapter": "children",
@@ -675,7 +693,8 @@
       "teaching_card": "T04",
       "action": "Play these moments",
       "code": "ps -o pid,ppid,stat,command -p PID\n# Z or <defunct>: exited, awaiting collection\n# ulimit -u shows a user process limit where supported.",
-      "evidence": "Three real zombie states were recorded and then all were reaped. Process-limit exhaustion is explained, not induced on this computer."
+      "evidence": "Three real zombie states were recorded and then all were reaped. Process-limit exhaustion is explained, not induced on this computer.",
+      "wink_cue": "A zombie is an exited child’s uncollected record. Its code has already stopped."
     },
     {
       "chapter": "children",
@@ -712,7 +731,8 @@
       "teaching_card": "T02",
       "action": "Play these moments",
       "code": "pid, status = os.wait()\n# May block while children are still running.",
-      "evidence": "Illustrated blocked state. The nonblocking probe confirms no result is ready before its child is allowed to exit."
+      "evidence": "Illustrated blocked state. The nonblocking probe confirms no result is ready before its child is allowed to exit.",
+      "wink_cue": "Wait collects a child’s result. But waiting too early can block the parent."
     },
     {
       "chapter": "children",
@@ -749,7 +769,8 @@
       "teaching_card": "T04",
       "action": "Play these moments",
       "code": "signal.signal(signal.SIGCHLD, reap_children)",
-      "evidence": "Signals can also report other child-state changes. The later cleanup loop checks for actual available exit results rather than assuming each signal equals one exit."
+      "evidence": "Signals can also report other child-state changes. The later cleanup loop checks for actual available exit results rather than assuming each signal equals one exit.",
+      "wink_cue": "SIGCHLD is a notification about a child. A handler is the function that responds."
     },
     {
       "chapter": "interrupt",
@@ -784,7 +805,8 @@
       ],
       "teaching_card": "T02",
       "action": "Play these moments",
-      "evidence": "Historical reconstruction, not the observed behavior of current Python. The article tested Python 2.7/3.4; modern Python handles many such retries automatically."
+      "evidence": "Historical reconstruction, not the observed behavior of current Python. The article tested Python 2.7/3.4; modern Python handles many such retries automatically.",
+      "wink_cue": "A notification can interrupt a waiting operation. Older Python could report EINTR."
     },
     {
       "chapter": "interrupt",
@@ -818,7 +840,8 @@
       "teaching_card": "T02",
       "action": "Play these moments",
       "code": "# Historical pattern, if EINTR reaches application code:\ntry:\n    connection, address = listener.accept()\nexcept InterruptedError:\n    continue",
-      "evidence": "PEP 475 introduced retries in Python 3.5. A handler that raises an exception can still interrupt normal control flow."
+      "evidence": "PEP 475 introduced retries in Python 3.5. A handler that raises an exception can still interrupt normal control flow.",
+      "wink_cue": "Older code retries accept explicitly. Modern Python normally retries it automatically."
     },
     {
       "chapter": "burst",
@@ -853,7 +876,8 @@
       ],
       "teaching_card": "T02",
       "action": "Play these moments",
-      "evidence": "Recorded controlled case: three exited children, one notification, two still uncollected after one wait. This demonstrates a possible burst, not that all groups of three always merge."
+      "evidence": "Recorded controlled case: three exited children, one notification, two still uncollected after one wait. This demonstrates a possible burst, not that all groups of three always merge.",
+      "wink_cue": "Three exit records, but only one pending notification. Watch what one cleanup misses."
     },
     {
       "chapter": "burst",
@@ -880,7 +904,8 @@
           "One notification is not a count. Additional finished children could remain without another notification arriving.",
           "Yes. Use the notification as a reason to check the actual child records, then collect every result that is ready."
         ]
-      }
+      },
+      "wink_cue": "One signal is not a count of finished children. What should cleanup check?"
     },
     {
       "chapter": "burst",
@@ -925,7 +950,8 @@
       "teaching_card": "T02",
       "action": "Play these moments",
       "code": "while True:\n    try:\n        pid, status = os.waitpid(-1, os.WNOHANG)\n    except ChildProcessError:\n        break\n    if pid == 0:\n        break",
-      "evidence": "The probe drains actual exit records. The kernel may return ready children in a different order; the loop does not depend on their order."
+      "evidence": "The probe drains actual exit records. The kernel may return ready children in a different order; the loop does not depend on their order.",
+      "wink_cue": "Use waitpid to collect any ready child. WNOHANG means: don’t wait for a future result."
     },
     {
       "chapter": "burst",
@@ -959,7 +985,8 @@
       ],
       "teaching_card": "T03",
       "action": "Play these moments",
-      "evidence": "Real controlled child probe. WNOHANG does not return an EWOULDBLOCK error here; the article’s inline comment is misleading."
+      "evidence": "Real controlled child probe. WNOHANG does not return an EWOULDBLOCK error here; the article’s inline comment is misleading.",
+      "wink_cue": "PID 0 means no result is ready. No children left is a different outcome."
     },
     {
       "chapter": "together",
@@ -1004,7 +1031,8 @@
       ],
       "teaching_card": "T02",
       "action": "Play these moments",
-      "evidence": "Responsibility map for the runnable modern Python example. Actual parent/child scheduling may interleave these events."
+      "evidence": "Responsibility map for the runnable modern Python example. Actual parent/child scheduling may interleave these events.",
+      "wink_cue": "Follow one request. Its socket and its child record each need cleanup."
     },
     {
       "chapter": "together",
@@ -1043,7 +1071,8 @@
       ],
       "teaching_card": "T02",
       "action": "Play these moments",
-      "evidence": "Runnable authored code tested with overlapping local clients. It uses modern Python retry behavior and a close-delimited response."
+      "evidence": "Runnable authored code tested with overlapping local clients. It uses modern Python retry behavior and a close-delimited response.",
+      "wink_cue": "Follow the highlighted code. Every part solves a problem you have seen."
     },
     {
       "chapter": "together",
@@ -1072,7 +1101,8 @@
           "Yes. Replace the child’s simple response handler with the WSGI request path. Keep descriptor cleanup and child reaping around it."
         ]
       },
-      "evidence": "Transfer exercise from the end of Part 3. The downloadable example serves a fixed response, not a complete WSGI implementation."
+      "evidence": "Transfer exercise from the end of Part 3. The downloadable example serves a fixed response, not a complete WSGI implementation.",
+      "wink_cue": "WSGI connects a Python server to its application. Which process should run that application?"
     },
     {
       "chapter": "together",
@@ -1100,7 +1130,8 @@
           "Backlog affects queued connections. A zombie has already exited. Neither action releases the forgotten handle and collects the exit record.",
           "Exactly. Closing handles fixes socket lifetime; reaping fixes child records. You now have the full explanation behind the final server."
         ]
-      }
+      },
+      "wink_cue": "The reply arrived and the child exited. What cleanup could still be missing?"
     }
   ],
   "question": {
