@@ -16,7 +16,96 @@
     "goal": "Explain why sorted order allows a comparison to rule out half of the remaining candidates.",
     "source": "https://docs.python.org/3/library/bisect.html"
   },
-  "instruction": "Author a concrete lesson plan. Introduce prerequisites before using them. Specify visual capabilities, never renderer names. Animation selection happens after this plan.",
+  "instruction": "Apply library principles before choosing cards. Carry relevant prior knowledge forward, author one causal story, and choose an intuition boundary with article reading destinations. Introduce prerequisites before using them. Specify visual capabilities, never renderer names. Establish a whole-lesson visual vocabulary before implementing motion; capability matching alone is insufficient.",
+  "principles": {
+    "version": 2,
+    "status": "User-approved design direction; not a measured claim of learning effectiveness.",
+    "precedence": "Apply these principles before individual cards. Cards are optional techniques within one connected lesson, not a requirement to animate every topic.",
+    "teaching": [
+      {
+        "id": "T-P01",
+        "title": "Carry learning forward",
+        "rule": "Identify what the learner knows from earlier parts. Briefly recall the relevant model and explicitly connect each new idea to it. Not having read this article does not mean knowing nothing.",
+        "check": "Can the learner say what stayed the same and what this part adds?"
+      },
+      {
+        "id": "T-P02",
+        "title": "Teach one connected problem",
+        "rule": "Organize the lesson as a causal chain: familiar system, limitation, change, consequences, resolution. Explain why later sections follow from earlier ones.",
+        "check": "Can the learner explain why this section is needed in the same story?"
+      },
+      {
+        "id": "T-P03",
+        "title": "Intuition before completeness",
+        "rule": "Choose the few relationships needed to understand the article. Leave exact code, exhaustive cases, derivations, and mechanics to clearly identified reading destinations. Do not animate every paragraph.",
+        "check": "Can the learner state the big idea, then locate its details in the source?"
+      },
+      {
+        "id": "T-P04",
+        "title": "Earn new terms and representations",
+        "rule": "Show the concrete meaning before relying on its name or symbol. Explain changes of abstraction, simplifications, and departures from previous parts when they occur.",
+        "check": "Can the learner connect the new term or picture to something already understood?"
+      },
+      {
+        "id": "T-P05",
+        "title": "Overview, then guided attention",
+        "rule": "For a multi-step process, establish its high-level purpose first. Keep a compact progress map beside the sequence. Wink points out the current causal change; additional prose lives behind its explanation.",
+        "check": "Does the reader know both where to look and how that moment fits the whole?"
+      },
+      {
+        "id": "T-P06",
+        "title": "Check understanding selectively",
+        "rule": "Use a prediction or explanation only when it tests the central relationship using established knowledge. Offer a reveal; avoid compulsory quizzes on every detail.",
+        "check": "Does the answer require reasoning about the model rather than recalling a label?"
+      }
+    ],
+    "animation": [
+      {
+        "id": "A-P01",
+        "title": "One visual vocabulary for the whole lesson",
+        "rule": "Define each concept\u2019s shape, label, color role, and identity before selecting motion techniques. Reuse that meaning across sections. Distinct concepts need distinguishable representations, not the same generic circle.",
+        "check": "Can the reader recognize the concept without relearning the legend?"
+      },
+      {
+        "id": "A-P02",
+        "title": "Use shape and labels as well as color",
+        "rule": "Color reinforces identity; it is not the only distinction. Keep identity colors separate from transient emphasis or state. Related instances can share a shape with different labels.",
+        "check": "Are process, socket, handle, record, and notification still distinguishable without color?"
+      },
+      {
+        "id": "A-P03",
+        "title": "Preserve the same system through change",
+        "rule": "Keep object identities and spatial anchors when useful. Show what changes and what remains. Explain any remapping; replay or zoom-out must be announced.",
+        "check": "Can the reader follow the same object before and after the change?"
+      },
+      {
+        "id": "A-P04",
+        "title": "Motion must explain the relationship",
+        "rule": "Aim for the main idea to be graspable in roughly ten seconds of viewing. Use transfer, separation, overlap, release, or collection to show causality. Text adds detail; prose appearing in boxes is not the main demonstration.",
+        "check": "After a short viewing, can the reader describe what happened without reading a paragraph?"
+      },
+      {
+        "id": "A-P05",
+        "title": "Reveal only what this moment needs",
+        "rule": "Do not visualize every detail or keep a growing text history on screen. Preserve essential context in the diagram and compact map; disclose secondary details on demand.",
+        "check": "Does every visible element help identify the current change or its context?"
+      },
+      {
+        "id": "A-P06",
+        "title": "Wink guides the actual focus",
+        "rule": "Place Wink beside the object being discussed. Keep mascot and speech clear of objects, labels, and paths. On narrow screens speech may dock below while Wink stays with the target.",
+        "check": "Can the learner immediately locate the important element without it being obscured?"
+      },
+      {
+        "id": "A-P07",
+        "title": "Pace for observation and control",
+        "rule": "Use six-second guided stops as the current prototype default, with manual stepping, replay, pause, and reduced-motion support. Preserve causal order; do not imply a total ordering of concurrent events.",
+        "check": "Can the learner pause and revisit the change without losing the story?"
+      }
+    ],
+    "research": "experiment/CONNECTED-INTUITION.md",
+    "scope_note": "These are our design rules informed by the user\u2019s feedback and the 16-chapter text-and-figure review. They are not a universal color system attributed to 3Blue1Brown."
+  },
   "teaching_examples": [
     {
       "id": "T02",
@@ -32,7 +121,8 @@
       "sequence": [
         "Try the simple approach on one concrete case.",
         "Show where it stops meeting the goal.",
-        "Change the part responsible for that limitation."
+        "Change the part responsible for that limitation.",
+        "Carry the changed system forward: explain the new responsibilities or consequences it creates."
       ],
       "source": {
         "url": "https://www.3blue1brown.com/lessons/derivatives/",
@@ -45,7 +135,8 @@
       "example": "A single car snapshot cannot reveal its speed. Comparing two times provides the missing information.",
       "avoid": [
         "Artificially making the baseline worse.",
-        "Changing the task while comparing solutions."
+        "Changing the task while comparing solutions.",
+        "Restarting with an unrelated model to explain the consequences of the change."
       ],
       "check": "Can the learner identify which part of the first approach causes the limitation?",
       "type": "teaching",
@@ -53,7 +144,13 @@
         "source_checked": true,
         "interpretation": "agent-authored; awaiting user review",
         "learner_validated": false
-      }
+      },
+      "principles": [
+        "T-P01",
+        "T-P02",
+        "T-P03",
+        "T-P04"
+      ]
     },
     {
       "id": "T03",
@@ -82,7 +179,8 @@
       "example": "A learner predicts which part of a journey has the greatest speed before seeing the corresponding velocity.",
       "avoid": [
         "Testing a fact that has not been introduced.",
-        "Treating a correct guess as proof of understanding."
+        "Treating a correct guess as proof of understanding.",
+        "Adding compulsory predictions for every implementation detail."
       ],
       "check": "Ask for a reason or a new case, not only the answer.",
       "type": "teaching",
@@ -90,7 +188,11 @@
         "source_checked": true,
         "interpretation": "agent-authored; awaiting user review",
         "learner_validated": false
-      }
+      },
+      "principles": [
+        "T-P04",
+        "T-P06"
+      ]
     },
     {
       "id": "T01",
@@ -100,12 +202,12 @@
         "familiar-situation",
         "motivation"
       ],
-      "before": "The learner has everyday experience but no technical vocabulary.",
+      "before": "The learner has relevant knowledge from earlier lessons or everyday experience; establish which applies.",
       "after": "They can state the question in their own words.",
       "sequence": [
-        "Use a specific familiar situation.",
-        "Ask what should happen.",
-        "Identify the missing explanation before introducing its name."
+        "Recall the relevant model from previous parts; offer a short refresher if needed.",
+        "Introduce one specific question that this known model does not yet answer.",
+        "State what carries forward and what new relationship this section will add."
       ],
       "source": {
         "url": "https://www.3blue1brown.com/about/",
@@ -115,10 +217,12 @@
       },
       "observation": "Sanderson recommends examples before general frameworks and putting the key exercise near the opening.",
       "interpretation": "Begin with a judgment the learner can make before asking them to adopt new terminology.",
-      "example": "In the derivative lesson, a moving car gives a familiar starting point for discussing speed.",
+      "example": "Recall browser \u2192 server \u2192 WSGI application before asking how several visitors can be served.",
       "avoid": [
         "Assuming everyday experience supplies technical understanding.",
-        "Using a story that adds more unfamiliar things than it explains."
+        "Using a story that adds more unfamiliar things than it explains.",
+        "Resetting the learner to zero at each chapter.",
+        "Treating no prior article reading as no prior knowledge."
       ],
       "check": "Can a beginner describe the problem without using the new term?",
       "type": "teaching",
@@ -126,7 +230,13 @@
         "source_checked": true,
         "interpretation": "agent-authored; awaiting user review",
         "learner_validated": false
-      }
+      },
+      "principles": [
+        "T-P01",
+        "T-P02",
+        "T-P03",
+        "T-P04"
+      ]
     },
     {
       "id": "T04",
@@ -141,7 +251,8 @@
       "sequence": [
         "Recall the concrete example.",
         "Identify the shared relationship.",
-        "Introduce the conventional name with its scope."
+        "Introduce the conventional name with its scope.",
+        "If the representation changes, map the new picture back to the old one explicitly."
       ],
       "source": {
         "url": "https://www.3blue1brown.com/about/",
@@ -154,13 +265,139 @@
       "example": "After seeing work overlap, introduce concurrency as the name for that overlap.",
       "avoid": [
         "Replacing a missing explanation with a glossary.",
-        "Introducing several dependent terms at once."
+        "Introducing several dependent terms at once.",
+        "Changing a symbol\u2019s meaning silently between chapters."
       ],
       "check": "Can the learner point to an instance of the named idea?",
       "type": "teaching",
       "review": {
         "source_checked": true,
         "interpretation": "agent-authored; awaiting user review",
+        "learner_validated": false
+      },
+      "principles": [
+        "T-P01",
+        "T-P02",
+        "T-P03",
+        "T-P04"
+      ]
+    },
+    {
+      "id": "T05",
+      "type": "teaching",
+      "title": "Build the next idea from the same model",
+      "tags": [
+        "continuity",
+        "foundation",
+        "lifecycle"
+      ],
+      "before": "The learner recognizes the system and its earlier behavior.",
+      "after": "They can explain why the next topic follows from the previous one.",
+      "sequence": [
+        "Recall the relevant earlier relationship.",
+        "Introduce the smallest change that answers the current question.",
+        "Follow its consequences in the same story."
+      ],
+      "source": {
+        "url": "https://www.3blue1brown.com/lessons/eigenvalues/",
+        "title": "Eigenvectors and eigenvalues",
+        "locator": "Written lesson; reviewed in experiment/CONNECTED-INTUITION.md",
+        "kind": "text and figure review"
+      },
+      "observation": "The opening explicitly recalls transformations, determinants, linear systems, and change of basis.",
+      "interpretation": "Treat prerequisites as reusable mental models; explicitly connect later difficulties to earlier changes.",
+      "example": "Adding a worker leads to two follow-up questions: who still has socket access, and what remains after the worker exits?",
+      "avoid": [
+        "An isolated demonstration for every concept.",
+        "Leaving the connection to previous parts until the final exercise."
+      ],
+      "check": "Can the learner explain why this chapter comes next?",
+      "principles": [
+        "T-P01",
+        "T-P02"
+      ],
+      "review": {
+        "source_checked": true,
+        "interpretation": "user-approved design direction; application needs learner review",
+        "learner_validated": false
+      }
+    },
+    {
+      "id": "T06",
+      "type": "teaching",
+      "title": "Set the boundary at useful intuition",
+      "tags": [
+        "intuition",
+        "scope",
+        "article-companion"
+      ],
+      "before": "The source contains more detail than the reader needs for a first mental picture.",
+      "after": "They understand the main relationship and know what to read next.",
+      "sequence": [
+        "Choose one high-level takeaway.",
+        "Show the smallest example that explains it.",
+        "Point to the source for mechanics, exact cases, and deeper study."
+      ],
+      "source": {
+        "url": "https://www.3blue1brown.com/lessons/inverse-matrices/",
+        "title": "Inverse matrices, column space, and null space",
+        "locator": "Written lesson; reviewed in experiment/CONNECTED-INTUITION.md",
+        "kind": "text and figure review"
+      },
+      "observation": "The lesson explicitly prioritizes intuition and leaves computational methods to other resources.",
+      "interpretation": "A guide can make later reading easier without reproducing a complete technical course.",
+      "example": "Show why exit records need collecting; leave the exact waitpid return cases to the article.",
+      "avoid": [
+        "Treating article coverage as a checklist of required animations.",
+        "Omitting a fact that would make the high-level picture misleading."
+      ],
+      "check": "Can the reader state the main idea and identify where to deepen it?",
+      "principles": [
+        "T-P03"
+      ],
+      "review": {
+        "source_checked": true,
+        "interpretation": "user-approved design direction; application needs learner review",
+        "learner_validated": false
+      }
+    },
+    {
+      "id": "T07",
+      "type": "teaching",
+      "title": "Keep the current step connected to the whole",
+      "tags": [
+        "overview",
+        "guidance",
+        "sequence"
+      ],
+      "before": "The reader knows the goal but can lose their place in a sequence.",
+      "after": "They know the role of the current change in the whole process.",
+      "sequence": [
+        "Introduce a small overview using familiar roles.",
+        "Keep a compact progress map while revealing one change.",
+        "Use Wink to direct attention; disclose extra explanation on demand."
+      ],
+      "source": {
+        "url": "https://www.3blue1brown.com/lessons/span/",
+        "title": "Linear combinations, span, and basis vectors",
+        "locator": "Written lesson; reviewed in experiment/CONNECTED-INTUITION.md",
+        "kind": "text and figure review"
+      },
+      "observation": "The lesson explains the mapping from individual arrows to points and collections before using that shorthand.",
+      "interpretation": "Our overview-and-Wink adaptation keeps a sequence legible while making changes of representation explicit.",
+      "example": "Keep the request lifecycle visible while Wink points to the handle currently being released.",
+      "avoid": [
+        "An overview crowded with unexplained technical terms.",
+        "Leaving the learner to infer the story from motion alone."
+      ],
+      "check": "Can the learner say where they are and why this change matters?",
+      "principles": [
+        "T-P04",
+        "T-P05"
+      ],
+      "review": {
+        "source_checked": true,
+        "interpretation": "user-approved design direction; application needs learner review",
         "learner_validated": false
       }
     }

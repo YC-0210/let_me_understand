@@ -1,91 +1,32 @@
-# Teaching × Motion: a two-library experiment
+# Teaching × Motion experiment
 
-For further experiments, start with [AGENT-GUIDE.md](AGENT-GUIDE.md). Shared baseline: `codex/astra_prototype`; development worktree branch: `codex/teaching-animation-libraries`.
-
-Open `http://127.0.0.1:8766/experiment/web/` while the server below runs. The browser includes a complete Part 3 course (8 chapters, 31 guided steps), a five-step search lesson, four teaching cards, six independent animation demos, and an inspectable selection manifest.
+Start with [AGENT-GUIDE.md](AGENT-GUIDE.md) and the [library principles](../library/README.md). Current variation: `codex/part3-connected-intuition`.
 
 ## Run
 
-From this worktree’s root:
+From the repository root, run `python3 -m http.server 8766 --bind 127.0.0.1`, then open `/experiment/web/?guide=course#lessons`.
 
-```sh
-python3 -m http.server 8766 --bind 127.0.0.1
-```
+The default is an article companion: six connected parts and 22 visual moments. It recalls Parts 1 and 2, follows the consequences of adding workers, and leaves code mechanics to the article. Read [CONNECTED-INTUITION.md](CONNECTED-INTUITION.md) for research, visual conventions, files, and scope.
 
-No package installation, model key, or build server is needed. The checked-in recordings and generated browser data make this version reproducible.
+The earlier 31-step course is at `?guide=detailed#lessons`. The search lesson and `#studies` comparisons remain available. [PART3-COVERAGE.md](PART3-COVERAGE.md), [OVERVIEW-MAPS.md](OVERVIEW-MAPS.md), and [MOTION-STUDIES.md](MOTION-STUDIES.md) document earlier implementations, not a requirement for exhaustive coverage or recommended circle-based representations.
 
-## What the libraries contain
+## Use the libraries
 
-`library/teaching/*.json` holds learner starting/ending states, explanation sequences, examples, source links, observations, interpretations, pitfalls, and comprehension checks. These cards contain no renderer names.
+1. Establish prior knowledge and one connected learner problem in a brief.
+2. Run `python3 experiment/pipeline.py prepare`. Read its principles and ranked teaching cards before authoring. Ranking does not determine the lesson sequence.
+3. Decide the high-level takeaway and which details belong in the source article. Name prerequisites before using them and specify needed visual relationships.
+4. Establish one visual vocabulary for the whole lesson, then adapt motion patterns within it. Preserve meaningful distinctions and explicitly explain remapping or simplification.
+5. For changes to library cards or historical plans, run `python3 experiment/pipeline.py` to rebuild the gallery and historical selection manifest. The current intuition plan is authored in `web/intuition-plan.js`; its JS/CSS needs no build.
+6. Review the whole sequence for continuity, visual attention, and readability. Use the checks in [AGENT-GUIDE.md](AGENT-GUIDE.md).
 
-`library/animation/*.json` holds visual capabilities, input contracts, renderer names, source evidence, and limits. A01–A03 implementations live in `experiment/web/animations.js`. The original A04–A06 gallery/comparison implementations live in `experiment/web/part3-renderers.js`; the current Part 3 course uses the motion adaptations in `experiment/web/course-motion.js`.
+`library/principles.json` is the authoritative shared policy. `library/teaching/` contains teaching moves; `library/animation/` contains visual techniques. Teaching cards do not choose renderers. Capability matching alone cannot enforce continuity. The deterministic pipeline reproduces earlier plans; it does not generate arbitrary lessons or train a model.
 
-The teaching source collection is deliberately small: Grant Sanderson’s published advice and derivative lesson. Animation references include Bret Victor’s interactive essay and Manim’s numeric animation driver. Cards explicitly distinguish what those sources show from the patterns authored here. This is not a representative survey or a learned model of those creators.
+A01–A03 use `web/animations.js`. A04–A06 keep historical renderer identifiers for compatibility, but their recommended gallery references the current connected guide. The older motion adapters in `web/course-motion.js` belong to the detailed comparison course. Do not treat retired prose-card demos or generic-circle models as recommended visual vocabulary.
 
-## How generation happened
+## Guidance and verification
 
-1. Write a learner brief under `experiment/briefs`.
-2. Run `python3 experiment/pipeline.py prepare`. It ranks teaching cards by overlapping tags and saves the teaching context under `experiment/runs`. The agent reads this before authoring a lesson.
-3. The coding agent authors a plan under `experiment/plans`: problem, prerequisite order, explanation, prediction, and needed visual capabilities. Plans cannot name renderers.
-4. Run `python3 experiment/pipeline.py`. It validates the plan, selects compatible animation cards, writes the selection manifest, and builds the browser data file.
-5. Lesson-specific adapters in `app.js`, `part3.js`, and `part3-models.js` supplies real trace data to the selected components and synchronizes the controls and explanatory captions.
-6. Review teaching, animation, and their alignment separately. Improve the relevant card or its application, then regenerate.
+For sequential content, establish an overview and retain a compact progress map. Wink guides attention beside the relevant object, with optional detail hidden behind its explanation. Current stops use six seconds; the standalone studies retain their historical ten-second setting. Controls and reduced-motion support allow the reader to choose the pace.
 
-The assembly and selection are deterministic. The agent authoring and source interpretation are not automated by this script. Two lesson-specific adapters are authored; arbitrary new topics will still need an adapter. There are no model API calls, weight updates, or fine-tuning. This tests an inspectable reference-library workflow before investing in broader automation.
+[TESTING.md](TESTING.md) records checks. Technical checks do not establish learning effectiveness; review whether a reader can connect the new material to previous parts and explain the whole system.
 
-## Reproduce the evidence
-
-```sh
-python3 experiment/capture.py
-python3 experiment/probe_part3.py
-python3 experiment/pipeline.py
-python3 -m unittest discover -s experiment/tests -v
-node --check experiment/web/app.js
-node --check experiment/web/animations.js
-node experiment/tests/test_models.cjs
-```
-
-Capture requires a Unix machine with `os.fork`. It launches temporary local serial/forked servers, records answer and EOF events for two clients at three arrival times, and reaps child processes. The artificial delay is 0.6 seconds, shortened from the article’s 60. Re-running changes exact measured timings. Search traces count inspected values, not runtime.
-
-See `PART3-COVERAGE.md` for the complete article map and simplifications (`INVENTORY.md` preserves the original experiment) and `TESTING.md` for the verification report.
-
-## What to review
-
-Try the server lesson first without its source article. Can you explain why a larger queue does not remove B’s wait? Then try the search lesson and target 1. Can you explain why the supposedly faster method loses that case?
-
-Assess the explanation, the motion, and whether they support each other. Passing technical tests does not show that a beginner learned successfully. A future evaluation should compare this against the earlier prototype with the same learning objective and independent readers; that comparison has not been performed.
-
-## Complete Part 3
-
-The course now covers sockets and endpoint pairs, server/client setup, file descriptors, fork and process IDs, shared socket handles, descriptor exhaustion, zombie records, blocking wait, SIGCHLD, historical EINTR and modern retries, signal coalescing, the nonblocking cleanup loop, and the final WSGI transfer exercise.
-
-The new library components show ownership, staged responsibilities, and notification/record counts. They have independent demos in the animation gallery. The full teaching plan still specifies capabilities rather than renderer names.
-
-`probe_part3.py` records six bounded Unix probes: local endpoints, inherited descriptors/EOF, isolated descriptor-limit exhaustion, three-child SIGCHLD coalescing and reaping, WNOHANG before a child exits, and current Python accept retry. `runs/part3-evidence.json` records their results. The SIGCHLD burst is made reproducible by temporarily blocking delivery in the isolated probe; the process-status inspection also creates a briefly-lived ps process. All probe children are collected.
-
-`complete_server.py` is an authored runnable modern-Python learning example. It is not a production HTTP server or a complete WSGI implementation. The WSGI section is the article's transfer exercise, with explanatory feedback. The course saves the current step locally in the browser; it does not send learner progress anywhere.
-
-## Wink guides the course
-
-Each teaching step has a concise `wink_cue`. The course shows that cue next to the mascot, then updates it with the current visual moment. Click Wink or “Wink, tell me more” to pause and open the full explanation, code, evidence, and available event history. Diagram labels stay visible; repetitive prose is folded into Wink.
-
-## Motion comparison studies
-
-Open `/experiment/web/#studies` or choose Motion studies. Three guided alternatives to A04–A06 use explicit connecting lines, moving requests and worker progress rings, and disappearing exit records. Each has play/pause, scrubbing, manual stepping, Wink source notes, and an optional original-pattern comparison. The existing course remains available for comparison. See `MOTION-STUDIES.md` for sources and scope.
-
-Wink now moves through authored focus stops. Each stop has a full ten-second hold, with a separate one-second flight to the next. Back, Next step, and a step slider allow manual pacing; pause also freezes the flight clock. Wink docks directly beside the current object inside the diagram. Speech uses the nearest clear space; if the screen is too narrow, only the speech moves below the diagram.
-
-
-## Spatial guidance in the full course
-
-The original eight-chapter Part 3 course now uses authored focus targets for every visual moment. Wink moves beside the current timeline lane, process, numbered handle, exit record, or code responsibility. A dashed outline identifies the exact target. Speech is placed after its visual row so it cannot cover another object; expanded explanations and code remain available through Wink. Playback holds each moment for six seconds, with a separate transition interval. Manual stepping, scrubbing, restart, prediction questions, and reduced-motion support remain available.
-
-
-## Motion-study visuals in Part 3
-
-The full course now replaces all A04–A06 card layouts with `web/course-motion.js`: explicit shared-socket links, spatial process/event diagrams, and filled-to-hollow-to-collected child records. The adapter uses the existing verified lesson models and adds deterministic transitions during the one-second travel interval. All 73 affected moments retain their authored teaching copy and six-second pauses. A01–A03 remain in place. The original card renderers remain in the animation gallery and the motion-study comparison toggle.
-
-
-## Overview before detail
-
-All eight chapters now begin with a high-level process map. Enter the details to dock that same map beside the animation; its highlighted stage follows playback and manual navigation. On phones it becomes a slim progress strip. Reopen the overview at any time without losing your place. See `OVERVIEW-MAPS.md` for the full lesson scan and state-mapping rationale.
+Recorded traces in `runs/` and `complete_server.py` support earlier technical demonstrations. Do not rerun `capture.py` or `probe_part3.py` for ordinary visual edits: those scripts launch Unix processes and replace measured recordings. The complete server is an educational example, not a complete WSGI implementation.

@@ -6,12 +6,12 @@
     "familiar-situation",
     "motivation"
   ],
-  "before": "The learner has everyday experience but no technical vocabulary.",
+  "before": "The learner has relevant knowledge from earlier lessons or everyday experience; establish which applies.",
   "after": "They can state the question in their own words.",
   "sequence": [
-    "Use a specific familiar situation.",
-    "Ask what should happen.",
-    "Identify the missing explanation before introducing its name."
+    "Recall the relevant model from previous parts; offer a short refresher if needed.",
+    "Introduce one specific question that this known model does not yet answer.",
+    "State what carries forward and what new relationship this section will add."
   ],
   "source": {
     "url": "https://www.3blue1brown.com/about/",
@@ -21,10 +21,12 @@
   },
   "observation": "Sanderson recommends examples before general frameworks and putting the key exercise near the opening.",
   "interpretation": "Begin with a judgment the learner can make before asking them to adopt new terminology.",
-  "example": "In the derivative lesson, a moving car gives a familiar starting point for discussing speed.",
+  "example": "Recall browser → server → WSGI application before asking how several visitors can be served.",
   "avoid": [
     "Assuming everyday experience supplies technical understanding.",
-    "Using a story that adds more unfamiliar things than it explains."
+    "Using a story that adds more unfamiliar things than it explains.",
+    "Resetting the learner to zero at each chapter.",
+    "Treating no prior article reading as no prior knowledge."
   ],
   "check": "Can a beginner describe the problem without using the new term?",
   "type": "teaching",
@@ -32,5 +34,11 @@
     "source_checked": true,
     "interpretation": "agent-authored; awaiting user review",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "T-P01",
+    "T-P02",
+    "T-P03",
+    "T-P04"
+  ]
 }

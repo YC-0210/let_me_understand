@@ -4,9 +4,9 @@
 
 The current default is the shorter connected intuition variation; read [CONNECTED-INTUITION.md](CONNECTED-INTUITION.md) for its research, visual contract, and files. Its source is `web/intuition-plan.js`, `web/intuition.js`, and `web/intuition.css`. The previous detailed course is accessible at `?guide=detailed#lessons`.
 
-This folder is the active learning prototype: a full Part 3 server lesson, a search lesson, reference libraries, and comparison demos. Use `experiment/web/`, not the older `prototype/part3/` implementation.
+This folder contains the current intuition guide, an earlier detailed Part 3 course, a search lesson, reference libraries, and comparison demos. Use `experiment/web/`, not the older `prototype/part3/` implementation.
 
-The shared baseline is on `codex/astra_prototype`. Check your current branch and working tree before editing; use a separate experiment branch when comparing alternatives. Do not assume another agent's localhost server is serving your checkout.
+The current connected guide is on `codex/part3-connected-intuition`; `codex/astra_prototype` holds an earlier baseline. Check your current branch and working tree before editing; use a separate experiment branch when comparing alternatives. Do not assume another agent's localhost server is serving your checkout.
 
 From the repository root:
 
@@ -14,9 +14,13 @@ From the repository root:
 python3 -m http.server 8766 --bind 127.0.0.1
 ```
 
-Open `http://127.0.0.1:8766/experiment/web/#lessons`. Use `#studies` for the A04–A06 comparisons. No package installation or API key is needed. If port 8766 is already in use, reuse the server only if it serves this checkout, or choose another port. The course remembers its last step in browser storage; use the chapter menu to navigate.
+Open `http://127.0.0.1:8766/experiment/web/#lessons`. Use `#studies` for the A04–A06 comparisons. No package installation or API key is needed. If port 8766 is already in use, reuse the server only if it serves this checkout, or choose another port. Use the chapter menu to navigate. The earlier detailed course remembers its last step in browser storage; the current intuition guide starts at its overview on reload.
 
 ## Where to change things
+
+Read [../library/README.md](../library/README.md) and [../library/principles.json](../library/principles.json) before selecting patterns. These rules take precedence over individual cards and historical experiment notes.
+
+For the current guide, edit `web/intuition-plan.js` for teaching, `web/intuition.js` for the persistent visual vocabulary and behavior, and `web/intuition.css` for layout. The following table describes the **earlier detailed course and supporting experiments**, not the current guide:
 
 | Goal | Source |
 | --- | --- |
@@ -41,10 +45,10 @@ Do not hand-edit generated data. JavaScript/CSS-only edits need no build. Refres
 
 ## How to experiment
 
-1. State the learner problem and one change to test. Keep teaching decisions separate from animation choices: plans request visual capabilities, not renderer names.
-2. Assume the reader has not read the article. Establish the problem and explain new terms before relying on them.
+1. State the learner problem and one change to test. Keep teaching decisions separate from animation choices: establish prior knowledge, the causal story, and what detail belongs in the article before requesting visual capabilities. Keep renderer choices out of teaching cards.
+2. Assume the reader has not read the current article, while carrying relevant prior lessons forward. Establish the problem and explain new terms or representations before relying on them.
 3. Preserve the accepted guidance: overview first, compact synchronized map during details, Wink beside the actual focus, and additional prose inside Wink. The course pauses for six seconds; standalone studies currently pause for ten.
-4. Make motion explain the system at a glance. Avoid replacing diagrams with prose in boxes. Preserve distinctions such as reply versus EOF, handle versus socket, and running child versus exit record.
+4. Make motion explain the same system at a glance. Keep a stable vocabulary across chapters; do not reuse generic circles for unrelated concepts or visualize every detail. Avoid replacing diagrams with prose in boxes. Preserve distinctions such as reply versus EOF, handle versus socket, and running child versus exit record.
 5. Check the affected sequence from its overview through its result. Verify play/pause, stepping, scrubbing, restart, overview reopening, and Wink disclosure. Inspect desktop and 390px mobile layouts for covered objects, unreadable labels, and overflow.
 
 Keep recorded evidence unless intentionally rerunning a probe. `capture.py` and `probe_part3.py` launch local processes and change measured recordings; ordinary visual experiments do not need them.
@@ -65,4 +69,4 @@ git diff --check
 
 Passing tests does not establish teaching quality. Record what changed, which learner question it addresses, what you inspected, and what still needs reader feedback. Include the branch/commit, preview route, and whether it was pushed when handing off.
 
-For context, read `PART3-COVERAGE.md` (technical coverage), `MOTION-STUDIES.md` (visual sources), `OVERVIEW-MAPS.md` (chapter mapping), and `TESTING.md` (verification history).
+For the current direction read `CONNECTED-INTUITION.md`. For historical context, read `PART3-COVERAGE.md` (technical coverage), `MOTION-STUDIES.md` (visual sources), `OVERVIEW-MAPS.md` (chapter mapping), and `TESTING.md` (verification history).

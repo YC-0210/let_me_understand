@@ -11,7 +11,8 @@
   "sequence": [
     "Recall the concrete example.",
     "Identify the shared relationship.",
-    "Introduce the conventional name with its scope."
+    "Introduce the conventional name with its scope.",
+    "If the representation changes, map the new picture back to the old one explicitly."
   ],
   "source": {
     "url": "https://www.3blue1brown.com/about/",
@@ -24,7 +25,8 @@
   "example": "After seeing work overlap, introduce concurrency as the name for that overlap.",
   "avoid": [
     "Replacing a missing explanation with a glossary.",
-    "Introducing several dependent terms at once."
+    "Introducing several dependent terms at once.",
+    "Changing a symbol’s meaning silently between chapters."
   ],
   "check": "Can the learner point to an instance of the named idea?",
   "type": "teaching",
@@ -32,5 +34,11 @@
     "source_checked": true,
     "interpretation": "agent-authored; awaiting user review",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "T-P01",
+    "T-P02",
+    "T-P03",
+    "T-P04"
+  ]
 }

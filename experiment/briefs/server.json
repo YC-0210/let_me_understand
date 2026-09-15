@@ -2,7 +2,7 @@
   "id": "server",
   "title": "Build a server that keeps working",
   "domain": "web servers",
-  "learner": "Has opened a web page; has not read the article.",
+  "learner": "Has studied Parts 1 and 2 but may need a brief recall; has not read Part 3.",
   "tags": [
     "beginner",
     "motivation",
@@ -10,11 +10,22 @@
     "bottleneck",
     "prediction",
     "terminology",
-    "terminology",
     "lifecycle",
     "ownership",
-    "notification"
+    "notification",
+    "continuity",
+    "foundation",
+    "intuition",
+    "scope",
+    "article-companion",
+    "overview"
   ],
-  "goal": "Explain and operate the complete Part 3 progression: waiting, connections, fork, descriptor ownership, zombies, signals, interrupted calls, and robust cleanup.",
-  "source": "https://ruslanspivak.com/lsbaws-part3/"
+  "goal": "Build a connected high-level intuition for sharing request work and the two cleanup responsibilities it creates, then guide reading of Part 3.",
+  "source": "https://ruslanspivak.com/lsbaws-part3/",
+  "prior_knowledge": [
+    "Browser/server request and response over a connection",
+    "Listening and accepted sockets",
+    "Server calls an application through WSGI"
+  ],
+  "detail_boundary": "Leave exact setup code, process IDs, descriptor limits, waitpid return cases, EINTR handling, and complete implementation to article reading or optional explanation."
 }

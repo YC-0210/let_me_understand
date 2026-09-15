@@ -1,0 +1,40 @@
+{
+  "id": "T07",
+  "type": "teaching",
+  "title": "Keep the current step connected to the whole",
+  "tags": [
+    "overview",
+    "guidance",
+    "sequence"
+  ],
+  "before": "The reader knows the goal but can lose their place in a sequence.",
+  "after": "They know the role of the current change in the whole process.",
+  "sequence": [
+    "Introduce a small overview using familiar roles.",
+    "Keep a compact progress map while revealing one change.",
+    "Use Wink to direct attention; disclose extra explanation on demand."
+  ],
+  "source": {
+    "url": "https://www.3blue1brown.com/lessons/span/",
+    "title": "Linear combinations, span, and basis vectors",
+    "locator": "Written lesson; reviewed in experiment/CONNECTED-INTUITION.md",
+    "kind": "text and figure review"
+  },
+  "observation": "The lesson explains the mapping from individual arrows to points and collections before using that shorthand.",
+  "interpretation": "Our overview-and-Wink adaptation keeps a sequence legible while making changes of representation explicit.",
+  "example": "Keep the request lifecycle visible while Wink points to the handle currently being released.",
+  "avoid": [
+    "An overview crowded with unexplained technical terms.",
+    "Leaving the learner to infer the story from motion alone."
+  ],
+  "check": "Can the learner say where they are and why this change matters?",
+  "principles": [
+    "T-P04",
+    "T-P05"
+  ],
+  "review": {
+    "source_checked": true,
+    "interpretation": "user-approved design direction; application needs learner review",
+    "learner_validated": false
+  }
+}

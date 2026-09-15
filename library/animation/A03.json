@@ -28,7 +28,9 @@
   "interpretation": "Keeping each candidate in its original position lets elimination be read without mentally tracking a rearrangement. This is an authored design pattern.",
   "avoid": [
     "Moving surviving values into a new order.",
-    "Fading a value without explaining why it was excluded."
+    "Fading a value without explaining why it was excluded.",
+    "Changing an established symbol’s meaning to fit this pattern.",
+    "Choosing this pattern merely because a source paragraph can be animated."
   ],
   "demo": {
     "items": [
@@ -55,5 +57,14 @@
     "source_checked": true,
     "implementation": "authored JavaScript/SVG demo",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "A-P01",
+    "A-P02",
+    "A-P03",
+    "A-P04",
+    "A-P05",
+    "A-P06",
+    "A-P07"
+  ]
 }

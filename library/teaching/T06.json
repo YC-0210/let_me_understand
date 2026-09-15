@@ -1,0 +1,39 @@
+{
+  "id": "T06",
+  "type": "teaching",
+  "title": "Set the boundary at useful intuition",
+  "tags": [
+    "intuition",
+    "scope",
+    "article-companion"
+  ],
+  "before": "The source contains more detail than the reader needs for a first mental picture.",
+  "after": "They understand the main relationship and know what to read next.",
+  "sequence": [
+    "Choose one high-level takeaway.",
+    "Show the smallest example that explains it.",
+    "Point to the source for mechanics, exact cases, and deeper study."
+  ],
+  "source": {
+    "url": "https://www.3blue1brown.com/lessons/inverse-matrices/",
+    "title": "Inverse matrices, column space, and null space",
+    "locator": "Written lesson; reviewed in experiment/CONNECTED-INTUITION.md",
+    "kind": "text and figure review"
+  },
+  "observation": "The lesson explicitly prioritizes intuition and leaves computational methods to other resources.",
+  "interpretation": "A guide can make later reading easier without reproducing a complete technical course.",
+  "example": "Show why exit records need collecting; leave the exact waitpid return cases to the article.",
+  "avoid": [
+    "Treating article coverage as a checklist of required animations.",
+    "Omitting a fact that would make the high-level picture misleading."
+  ],
+  "check": "Can the reader state the main idea and identify where to deepen it?",
+  "principles": [
+    "T-P03"
+  ],
+  "review": {
+    "source_checked": true,
+    "interpretation": "user-approved design direction; application needs learner review",
+    "learner_validated": false
+  }
+}

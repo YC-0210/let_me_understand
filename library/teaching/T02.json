@@ -12,7 +12,8 @@
   "sequence": [
     "Try the simple approach on one concrete case.",
     "Show where it stops meeting the goal.",
-    "Change the part responsible for that limitation."
+    "Change the part responsible for that limitation.",
+    "Carry the changed system forward: explain the new responsibilities or consequences it creates."
   ],
   "source": {
     "url": "https://www.3blue1brown.com/lessons/derivatives/",
@@ -25,7 +26,8 @@
   "example": "A single car snapshot cannot reveal its speed. Comparing two times provides the missing information.",
   "avoid": [
     "Artificially making the baseline worse.",
-    "Changing the task while comparing solutions."
+    "Changing the task while comparing solutions.",
+    "Restarting with an unrelated model to explain the consequences of the change."
   ],
   "check": "Can the learner identify which part of the first approach causes the limitation?",
   "type": "teaching",
@@ -33,5 +35,11 @@
     "source_checked": true,
     "interpretation": "agent-authored; awaiting user review",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "T-P01",
+    "T-P02",
+    "T-P03",
+    "T-P04"
+  ]
 }

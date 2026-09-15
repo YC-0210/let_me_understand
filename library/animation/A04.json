@@ -21,15 +21,31 @@
     "kind": "primary technical reference"
   },
   "observation": "A child inherits descriptors referring to the same open-file descriptions.",
-  "interpretation": "Authored diagram: keep two lists separate, and identify one shared resource below them. This source supplies a technical constraint, not an animation to copy.",
+  "interpretation": "Keep a shared socket identifiable while separate process handles connect to it and are released. The connected guide uses process frames, socket plugs, and access keys; the source supplies the technical constraint.",
   "avoid": [
     "Do not draw a new connection merely because a handle was copied.",
-    "Do not label a handle closed while its owner still has access."
+    "Do not label a handle closed while its owner still has access.",
+    "Changing an established symbol’s meaning to fit this pattern.",
+    "Choosing this pattern merely because a source paragraph can be animated.",
+    "Using identical circles for process, handle, and socket.",
+    "Using lists of ownership text as the main demonstration."
   ],
   "demo": {},
   "review": {
     "source_checked": true,
-    "implementation": "authored HTML/CSS renderer",
+    "implementation": "Current reference: connected-intuition SVG vocabulary. Original HTML/CSS renderer retained for historical compatibility.",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "A-P01",
+    "A-P02",
+    "A-P03",
+    "A-P04",
+    "A-P05",
+    "A-P06",
+    "A-P07"
+  ],
+  "reference_only": true,
+  "implementation_status": "The renderer field supports the earlier detailed experiment only. Its prose-card demo is retired from the recommended gallery.",
+  "current_reference": "experiment/web/intuition.js"
 }

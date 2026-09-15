@@ -25,10 +25,12 @@
     "kind": "animation API example"
   },
   "observation": "ValueTracker supports a changing numerical value driving an animation.",
-  "interpretation": "Use one shared time value for all lanes; leave completed intervals visible. This timeline design is our adaptation, not a copied Manim example.",
+  "interpretation": "Use one shared time value and preserve the intervals needed to compare overlap. Keep entity identities consistent with the surrounding system; disclose secondary history rather than accumulating it on screen. The timeline is our adaptation, not a copied Manim example.",
   "avoid": [
     "Animating a future event as if it already happened.",
-    "Resetting a completed event on every frame."
+    "Resetting a completed event on every frame.",
+    "Changing an established symbol’s meaning to fit this pattern.",
+    "Choosing this pattern merely because a source paragraph can be animated."
   ],
   "demo": {
     "duration": 10
@@ -38,5 +40,14 @@
     "source_checked": true,
     "implementation": "authored JavaScript/SVG demo",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "A-P01",
+    "A-P02",
+    "A-P03",
+    "A-P04",
+    "A-P05",
+    "A-P06",
+    "A-P07"
+  ]
 }

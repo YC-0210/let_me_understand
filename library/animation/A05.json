@@ -13,7 +13,7 @@
     "actors",
     "history"
   ],
-  "communicates": "Show who acts and how far the sequence has progressed. Preserve the history so a later result can be traced back.",
+  "communicates": "Who acts and how this change advances the same process; a compact map retains the high-level context.",
   "source": {
     "url": "https://docs.python.org/3/library/socket.html",
     "title": "Python socket documentation, example and socket methods",
@@ -21,15 +21,30 @@
     "kind": "primary technical reference"
   },
   "observation": "Server and client use different socket operations.",
-  "interpretation": "Authored animation pattern constrained by the documented sequence: role cards stay in place while one action is added at a time.",
+  "interpretation": "Keep the same meaningful objects across stages and animate their actual change. Show an overview first; synchronize a compact progress map. Additional event history belongs in optional detail.",
   "avoid": [
     "Do not imply a total order between independent concurrent actions.",
-    "Do not let a code label replace the explanation of its purpose."
+    "Do not let a code label replace the explanation of its purpose.",
+    "Changing an established symbol’s meaning to fit this pattern.",
+    "Choosing this pattern merely because a source paragraph can be animated.",
+    "Substituting role cards and an accumulating prose log for a system demonstration."
   ],
   "demo": {},
   "review": {
     "source_checked": true,
-    "implementation": "authored HTML/CSS renderer",
+    "implementation": "Current reference: connected-intuition SVG vocabulary. Original HTML/CSS renderer retained for historical compatibility.",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "A-P01",
+    "A-P02",
+    "A-P03",
+    "A-P04",
+    "A-P05",
+    "A-P06",
+    "A-P07"
+  ],
+  "reference_only": true,
+  "implementation_status": "The renderer field supports the earlier detailed experiment only. Its prose-card demo is retired from the recommended gallery.",
+  "current_reference": "experiment/web/intuition.js"
 }

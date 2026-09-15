@@ -25,7 +25,8 @@
   "example": "A learner predicts which part of a journey has the greatest speed before seeing the corresponding velocity.",
   "avoid": [
     "Testing a fact that has not been introduced.",
-    "Treating a correct guess as proof of understanding."
+    "Treating a correct guess as proof of understanding.",
+    "Adding compulsory predictions for every implementation detail."
   ],
   "check": "Ask for a reason or a new case, not only the answer.",
   "type": "teaching",
@@ -33,5 +34,9 @@
     "source_checked": true,
     "interpretation": "agent-authored; awaiting user review",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "T-P04",
+    "T-P06"
+  ]
 }

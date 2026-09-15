@@ -1,0 +1,89 @@
+{
+  "version": 2,
+  "status": "User-approved design direction; not a measured claim of learning effectiveness.",
+  "precedence": "Apply these principles before individual cards. Cards are optional techniques within one connected lesson, not a requirement to animate every topic.",
+  "teaching": [
+    {
+      "id": "T-P01",
+      "title": "Carry learning forward",
+      "rule": "Identify what the learner knows from earlier parts. Briefly recall the relevant model and explicitly connect each new idea to it. Not having read this article does not mean knowing nothing.",
+      "check": "Can the learner say what stayed the same and what this part adds?"
+    },
+    {
+      "id": "T-P02",
+      "title": "Teach one connected problem",
+      "rule": "Organize the lesson as a causal chain: familiar system, limitation, change, consequences, resolution. Explain why later sections follow from earlier ones.",
+      "check": "Can the learner explain why this section is needed in the same story?"
+    },
+    {
+      "id": "T-P03",
+      "title": "Intuition before completeness",
+      "rule": "Choose the few relationships needed to understand the article. Leave exact code, exhaustive cases, derivations, and mechanics to clearly identified reading destinations. Do not animate every paragraph.",
+      "check": "Can the learner state the big idea, then locate its details in the source?"
+    },
+    {
+      "id": "T-P04",
+      "title": "Earn new terms and representations",
+      "rule": "Show the concrete meaning before relying on its name or symbol. Explain changes of abstraction, simplifications, and departures from previous parts when they occur.",
+      "check": "Can the learner connect the new term or picture to something already understood?"
+    },
+    {
+      "id": "T-P05",
+      "title": "Overview, then guided attention",
+      "rule": "For a multi-step process, establish its high-level purpose first. Keep a compact progress map beside the sequence. Wink points out the current causal change; additional prose lives behind its explanation.",
+      "check": "Does the reader know both where to look and how that moment fits the whole?"
+    },
+    {
+      "id": "T-P06",
+      "title": "Check understanding selectively",
+      "rule": "Use a prediction or explanation only when it tests the central relationship using established knowledge. Offer a reveal; avoid compulsory quizzes on every detail.",
+      "check": "Does the answer require reasoning about the model rather than recalling a label?"
+    }
+  ],
+  "animation": [
+    {
+      "id": "A-P01",
+      "title": "One visual vocabulary for the whole lesson",
+      "rule": "Define each concept’s shape, label, color role, and identity before selecting motion techniques. Reuse that meaning across sections. Distinct concepts need distinguishable representations, not the same generic circle.",
+      "check": "Can the reader recognize the concept without relearning the legend?"
+    },
+    {
+      "id": "A-P02",
+      "title": "Use shape and labels as well as color",
+      "rule": "Color reinforces identity; it is not the only distinction. Keep identity colors separate from transient emphasis or state. Related instances can share a shape with different labels.",
+      "check": "Are process, socket, handle, record, and notification still distinguishable without color?"
+    },
+    {
+      "id": "A-P03",
+      "title": "Preserve the same system through change",
+      "rule": "Keep object identities and spatial anchors when useful. Show what changes and what remains. Explain any remapping; replay or zoom-out must be announced.",
+      "check": "Can the reader follow the same object before and after the change?"
+    },
+    {
+      "id": "A-P04",
+      "title": "Motion must explain the relationship",
+      "rule": "Aim for the main idea to be graspable in roughly ten seconds of viewing. Use transfer, separation, overlap, release, or collection to show causality. Text adds detail; prose appearing in boxes is not the main demonstration.",
+      "check": "After a short viewing, can the reader describe what happened without reading a paragraph?"
+    },
+    {
+      "id": "A-P05",
+      "title": "Reveal only what this moment needs",
+      "rule": "Do not visualize every detail or keep a growing text history on screen. Preserve essential context in the diagram and compact map; disclose secondary details on demand.",
+      "check": "Does every visible element help identify the current change or its context?"
+    },
+    {
+      "id": "A-P06",
+      "title": "Wink guides the actual focus",
+      "rule": "Place Wink beside the object being discussed. Keep mascot and speech clear of objects, labels, and paths. On narrow screens speech may dock below while Wink stays with the target.",
+      "check": "Can the learner immediately locate the important element without it being obscured?"
+    },
+    {
+      "id": "A-P07",
+      "title": "Pace for observation and control",
+      "rule": "Use six-second guided stops as the current prototype default, with manual stepping, replay, pause, and reduced-motion support. Preserve causal order; do not imply a total ordering of concurrent events.",
+      "check": "Can the learner pause and revisit the change without losing the story?"
+    }
+  ],
+  "research": "experiment/CONNECTED-INTUITION.md",
+  "scope_note": "These are our design rules informed by the user’s feedback and the 16-chapter text-and-figure review. They are not a universal color system attributed to 3Blue1Brown."
+}

@@ -14,7 +14,7 @@
     "notice",
     "result"
   ],
-  "communicates": "Keep individual records visible while notification and collection counts change independently.",
+  "communicates": "A notification prompts checking; ready exit records remain independently collectible.",
   "source": {
     "url": "https://man7.org/linux/man-pages/man7/signal.7.html",
     "title": "signal(7), queueing of standard signals",
@@ -22,15 +22,31 @@
     "kind": "primary technical reference"
   },
   "observation": "Repeated pending standard signals coalesce rather than forming a counted queue.",
-  "interpretation": "Authored ledger pattern: one notice indicator beside several separately collectible records.",
+  "interpretation": "Use a bell for a notification and folded sheets for exit records. Show records being collected separately. A running process retains its process shape; its exit record is a different object, introduced explicitly.",
   "avoid": [
     "Do not equate one notification with one record.",
-    "Do not depict an exited child as executing code."
+    "Do not depict an exited child as executing code.",
+    "Changing an established symbol’s meaning to fit this pattern.",
+    "Choosing this pattern merely because a source paragraph can be animated.",
+    "Reusing the same circle as both running worker and exit record.",
+    "Treating a text ledger as the primary high-level visualization."
   ],
   "demo": {},
   "review": {
     "source_checked": true,
-    "implementation": "authored HTML/CSS renderer",
+    "implementation": "Current reference: connected-intuition SVG vocabulary. Original HTML/CSS renderer retained for historical compatibility.",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "A-P01",
+    "A-P02",
+    "A-P03",
+    "A-P04",
+    "A-P05",
+    "A-P06",
+    "A-P07"
+  ],
+  "reference_only": true,
+  "implementation_status": "The renderer field supports the earlier detailed experiment only. Its prose-card demo is retired from the recommended gallery.",
+  "current_reference": "experiment/web/intuition.js"
 }

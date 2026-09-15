@@ -27,7 +27,9 @@
   "interpretation": "Aligned bars can isolate an outcome difference without changing the visual scale.",
   "avoid": [
     "Independent scales that exaggerate a difference.",
-    "Implying measured time when the value is an operation count."
+    "Implying measured time when the value is an operation count.",
+    "Changing an established symbol’s meaning to fit this pattern.",
+    "Choosing this pattern merely because a source paragraph can be animated."
   ],
   "demo": {
     "labels": [
@@ -46,5 +48,14 @@
     "source_checked": true,
     "implementation": "authored JavaScript/SVG demo",
     "learner_validated": false
-  }
+  },
+  "principles": [
+    "A-P01",
+    "A-P02",
+    "A-P03",
+    "A-P04",
+    "A-P05",
+    "A-P06",
+    "A-P07"
+  ]
 }

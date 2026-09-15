@@ -4,11 +4,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 def read(path): return json.loads(path.read_text())
 def cards(kind): return [read(p) for p in sorted((ROOT/'library'/kind).glob('*.json'))]
+def principles(): return read(ROOT/'library/principles.json')
 def prepare():
     for path in (ROOT/'experiment/briefs').glob('*.json'):
         brief=read(path)
         ranked=sorted(cards('teaching'),key=lambda c: -len(set(c['tags'])&set(brief['tags'])))
-        out={'brief':brief,'instruction':'Author a concrete lesson plan. Introduce prerequisites before using them. Specify visual capabilities, never renderer names. Animation selection happens after this plan.','teaching_examples':ranked}
+        out={'brief':brief,'instruction':'Apply library principles before choosing cards. Carry relevant prior knowledge forward, author one causal story, and choose an intuition boundary with article reading destinations. Introduce prerequisites before using them. Specify visual capabilities, never renderer names. Establish a whole-lesson visual vocabulary before implementing motion; capability matching alone is insufficient.', 'principles':principles(),'teaching_examples':ranked}
         (ROOT/'experiment/runs'/f'{brief["id"]}-teaching-context.json').write_text(json.dumps(out,indent=2))
 def validate(plan):
     known=set(plan['assumed_knowledge'])
@@ -30,7 +31,7 @@ def build():
                 if not matches: raise ValueError(f'No animation supports {capability}')
                 chosen=matches[0]
                 p['animation_selections'].append({'step':step['id'],'card':chosen['id'],'renderer':chosen['renderer'],'reason':f'Required capability: {capability}'})
-    data={'teaching':cards('teaching'),'animation':cards('animation'),'lessons':plans,'traces':read(ROOT/'experiment/runs/search-traces.json'),'server_traces':read(ROOT/'experiment/runs/server-traces.json'),'part3_evidence':read(ROOT/'experiment/runs/part3-evidence.json'),'server_code':(ROOT/'experiment/complete_server.py').read_text()}
+    data={'principles':principles(),'teaching':cards('teaching'),'animation':cards('animation'),'lessons':plans,'traces':read(ROOT/'experiment/runs/search-traces.json'),'server_traces':read(ROOT/'experiment/runs/server-traces.json'),'part3_evidence':read(ROOT/'experiment/runs/part3-evidence.json'),'server_code':(ROOT/'experiment/complete_server.py').read_text()}
     (ROOT/'experiment/web/data.js').write_text('window.LIBRARY_DATA = '+json.dumps(data)+';\n')
     (ROOT/'experiment/runs/selection-manifest.json').write_text(json.dumps({p['id']:p['animation_selections'] for p in plans},indent=2))
 if __name__=='__main__':

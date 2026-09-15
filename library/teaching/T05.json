@@ -1,0 +1,40 @@
+{
+  "id": "T05",
+  "type": "teaching",
+  "title": "Build the next idea from the same model",
+  "tags": [
+    "continuity",
+    "foundation",
+    "lifecycle"
+  ],
+  "before": "The learner recognizes the system and its earlier behavior.",
+  "after": "They can explain why the next topic follows from the previous one.",
+  "sequence": [
+    "Recall the relevant earlier relationship.",
+    "Introduce the smallest change that answers the current question.",
+    "Follow its consequences in the same story."
+  ],
+  "source": {
+    "url": "https://www.3blue1brown.com/lessons/eigenvalues/",
+    "title": "Eigenvectors and eigenvalues",
+    "locator": "Written lesson; reviewed in experiment/CONNECTED-INTUITION.md",
+    "kind": "text and figure review"
+  },
+  "observation": "The opening explicitly recalls transformations, determinants, linear systems, and change of basis.",
+  "interpretation": "Treat prerequisites as reusable mental models; explicitly connect later difficulties to earlier changes.",
+  "example": "Adding a worker leads to two follow-up questions: who still has socket access, and what remains after the worker exits?",
+  "avoid": [
+    "An isolated demonstration for every concept.",
+    "Leaving the connection to previous parts until the final exercise."
+  ],
+  "check": "Can the learner explain why this chapter comes next?",
+  "principles": [
+    "T-P01",
+    "T-P02"
+  ],
+  "review": {
+    "source_checked": true,
+    "interpretation": "user-approved design direction; application needs learner review",
+    "learner_validated": false
+  }
+}
