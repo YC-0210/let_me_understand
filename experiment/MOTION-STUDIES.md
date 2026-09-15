@@ -17,3 +17,8 @@ Validation: `node experiment/tests/test_motion.cjs` checks handle/record counts 
 The default playback is now a guided tour, with five or six authored focal stops per study. Wink travels for one second, then the scene holds still for a full ten-second reading interval. A dashed, unfilled ring identifies the focus without covering it. Speech appears when Wink arrives. Play/pause stops the shared clock, including flights. Back, Next step, and the step slider allow manual inspection.
 
 Wink uses authored docks beside the actual focus object, mapped through the SVG coordinate transform on every screen size. Speech selects nearby empty space after checking all visible SVG shapes, labels, paths, and Wink. When no safe space fits, only speech moves below the diagram. During flight the diagram renders in front of Wink, so moving guidance cannot obscure system marks. Reduced-motion mode relocates without animated travel. Hidden tabs do not consume reading time. Existing model timing remains schematic and is separate from presentation pauses.
+
+
+## Promoted into the full course
+
+The three techniques now replace A04–A06 throughout the full Part 3 lesson (`#lessons`). Course-specific SVG adapters retain each lesson model's handle counts, process roles, record states, and recorded endpoint values. The course has six-second holds; the standalone comparison studies retain their own timing. Wink uses scene coordinates and checks nearby free space for both mascot and speech placement. Socket references and responsibility paths are schematic, not literal network routes.

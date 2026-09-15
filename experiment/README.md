@@ -79,3 +79,8 @@ Wink now moves through authored focus stops. Each stop has a full ten-second hol
 ## Spatial guidance in the full course
 
 The original eight-chapter Part 3 course now uses authored focus targets for every visual moment. Wink moves beside the current timeline lane, process, numbered handle, exit record, or code responsibility. A dashed outline identifies the exact target. Speech is placed after its visual row so it cannot cover another object; expanded explanations and code remain available through Wink. Playback holds each moment for six seconds, with a separate transition interval. Manual stepping, scrubbing, restart, prediction questions, and reduced-motion support remain available.
+
+
+## Motion-study visuals in Part 3
+
+The full course now replaces all A04–A06 card layouts with `web/course-motion.js`: explicit shared-socket links, spatial process/event diagrams, and filled-to-hollow-to-collected child records. The adapter uses the existing verified lesson models and adds deterministic transitions during the one-second travel interval. All 73 affected moments retain their authored teaching copy and six-second pauses. A01–A03 remain in place. The original card renderers remain in the animation gallery and the motion-study comparison toggle.

@@ -20,3 +20,19 @@ for(const s of D.lessons.find(p=>p.id==='server').steps){
  }
 }
 console.log(`Ownership and cleanup invariants pass; ${rendered} authored visual states render without undefined values.`);
+
+vm.runInContext(fs.readFileSync(path.join(root,'experiment/web/course-motion.js'),'utf8'),box);
+let motionSamples=0;
+for(const s of D.lessons.find(p=>p.id==='server').steps){
+ if(s.scene==='file-limit')continue;
+ for(let n=0;n<s.frames.length;n++)for(const t of [0,.25,.5,.75,1]){
+  const html=box.window.CourseMotion.render(s.scene,n,D.part3_evidence,t);
+  assert.ok(html.includes('data-motion-focus'));
+  assert.ok(!/undefined|NaN|owner-grid|actor-grid|record-grid/.test(html));
+  motionSamples++;
+ }
+}
+assert.ok(!box.window.CourseMotion.render('lifecycle',0,D.part3_evidence).includes('>CHILD<'));
+assert.ok(box.window.CourseMotion.render('missing-close',2,D.part3_evidence).includes('still open'));
+assert.ok(box.window.CourseMotion.render('missing-close',3,D.part3_evidence).includes('EOF'));
+console.log(`${motionSamples} course motion samples pass; old card layouts are absent and retained-handle EOF stays distinct.`);

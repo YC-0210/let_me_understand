@@ -79,3 +79,10 @@ Wink now docks beside the specific scene object, rather than moving through a se
 Browser walkthroughs visited all 31 course steps and all 104 selectable visual stops at the normal desktop viewport and at 390px. Every visual stop had an authored focus and no horizontal overflow. Screenshots checked Wink beside a timeline lane, a numbered connection handle, and the shared socket. Expanded explanations, automatic advancement, pause, and manual controls were exercised without console warnings or errors. Prediction questions retain their existing non-animated guidance.
 
 `node experiment/tests/test_course_guide.cjs` checks full six-second holds, interpolated timeline transitions, and retaining the final state after completion. Existing checks still pass: 73 authored model states, 303 motion samples, and all 16 Python tests.
+
+
+## Course motion replacement
+
+All 73 A04–A06 moments now use SVG motion-study adapters. A browser walkthrough covered all 104 course stops at 1280px and 390px: no old ownership/stage/record grids remained in the course, no horizontal overflow, and no console errors. Screenshots checked ownership links, coalesced child-exit notice, and mobile process diagrams with Wink beside the focus.
+
+The model suite now additionally checks 365 course-motion transition samples, focus anchors, absence of old grids, no child before the lifecycle fork, and the distinction between a retained connection and EOF. Existing 73-state, 303-sample, six-second course timing, and 16 Python tests pass. These checks establish rendering and state consistency, not pedagogical effectiveness.

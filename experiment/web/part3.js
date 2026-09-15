@@ -2,7 +2,7 @@
 window.Part3 = (() => {
   const data=window.LIBRARY_DATA, A=window.Animations, M=window.Part3Models;
   const p=data.lessons.find(x=>x.id==='server'), e=A.esc;
-  let index=0,progress=0,playing=false,choice=null,checked=false,arrival=.12,frame=0,previous=0,lastDraw=-1,done=false,winkOpen=false,guideClock=0,guideResize;
+  let index=0,progress=0,playing=false,choice=null,checked=false,arrival=.12,frame=0,previous=0,lastDraw=-1,done=false,winkOpen=false,guideClock=0,guideResize,motionBlend=1;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   try{const n=Number(localStorage.getItem('part3-full-step'));if(Number.isInteger(n)&&n>=0&&n<p.steps.length)index=n;}catch{}
   const $=s=>document.querySelector(s),current=()=>p.steps[index];
@@ -43,7 +43,7 @@ window.Part3 = (() => {
     placeWink();
   }
   function question(s){const q=s.question;return `<div class="choices">${q.options.map((o,i)=>`<button data-course-choice="${i}" class="${choice===i?'chosen':''}" aria-pressed="${choice===i}">${e(o)}</button>`).join('')}</div><button class="primary" id="course-check" ${choice===null?'disabled':''}>Check my prediction</button>`;}
-  function go(n){stop();index=n;winkOpen=false;guideClock=0;progress=0;choice=null;checked=false;arrival=.12;done=false;try{localStorage.setItem('part3-full-step',String(index));}catch{}mount();$('.lesson-shell').scrollIntoView({block:'start',behavior:'instant'});}
+  function go(n){stop();index=n;winkOpen=false;guideClock=0;motionBlend=1;progress=0;choice=null;checked=false;arrival=.12;done=false;try{localStorage.setItem('part3-full-step',String(index));}catch{}mount();$('.lesson-shell').scrollIntoView({block:'start',behavior:'instant'});}
   function timelineHTML(){
     const s=current(),one=s.scene==='one',both=['compare','explore'].includes(s.scene),duration=one?.7:1.5,t=progress*duration;
     const run=mode=>data.server_traces.find(x=>x.arrival===arrival&&x.mode===mode),serial=run('serial'),fork=run('fork');
@@ -57,12 +57,10 @@ window.Part3 = (() => {
   }
   function frameHTML(n){
     const s=current(),E=data.part3_evidence;let html='';
-    if(['descriptors','shared','close-copies','missing-close'].includes(s.scene))html=selected('show-ownership',M.ownership(s.scene,n));
-    else if(['exit-record','zombie','wait','signal','burst','drain','not-ready'].includes(s.scene))html=selected('show-records',M.records(s.scene,n,E));
-    else if(s.scene==='file-limit'){
+    if(s.scene==='file-limit'){
       const f=E.fd_limit,opened=n===0?Math.min(5,f.opened_before_error):f.opened_before_error;
       html=`<div class="board-top"><b>Isolated subprocess limit: ${f.limit} handles</b></div>${selected('compare-amounts',{labels:['Opened in this demonstration','Released by cleanup'],values:[opened,n===2?opened:0],unit:'handles',maximum:f.limit})}<div class="ledger-result">${n===1?`${e(f.error)} (${f.errno}): kernel refuses another open.`:n===2?'Opening a new resource succeeds after cleanup.':'The process already has standard input, output, and error open.'}</div>`;
-    }else html=selected('show-stages',M.stage(s.scene,n,E));
+    }else html=window.CourseMotion.render(s.scene,n,E,motionBlend);
     html=`<div class="moment-nav"><span>VISUAL MOMENT ${n+1} / ${s.frames.length}</span><span>${n===0?'Starting situation':n===s.frames.length-1?'Result':'Follow the change'}</span></div>`+html+`<div class="observation">${e(s.frames[n].caption)}</div>`;
     if(s.scene==='code'){
       const code=data.server_code.split('\n');const ranges=[[43,43],[52,58],[67,68],[58,66],[12,22]][n];
@@ -70,11 +68,12 @@ window.Part3 = (() => {
     }
     return html;
   }
+  let lastBlend=1;
   function draw(){
     if(!$('#course-board'))return;
     const s=current(),n=timeline()?null:Math.min(s.frames.length-1,Math.floor(progress*(s.frames.length-1)+1e-7));
-    if(timeline()||n!==lastDraw){restoreWink();$('#course-board').innerHTML=timeline()?timelineHTML():frameHTML(n);lastDraw=n;if(s.scene==='code'){const panel=$('.course-code'),lit=panel.querySelector('.lit');if(lit)panel.scrollTop=Math.max(0,lit.offsetTop-panel.offsetTop-35);}}
-    updateWink();
+    if(timeline()||n!==lastDraw||motionBlend<1||lastBlend<1){restoreWink();$('#course-board').innerHTML=timeline()?timelineHTML():frameHTML(n);lastDraw=n;if(s.scene==='code'){const panel=$('.course-code'),lit=panel.querySelector('.lit');if(lit)panel.scrollTop=Math.max(0,lit.offsetTop-panel.offsetTop-35);}}
+    lastBlend=motionBlend;updateWink();
     $('#course-scrub').value=Math.round(progress*1000);$('#course-status').textContent=playing?`Next moment in ${Math.ceil(guideRemaining())}s`:guideClock>=6+(momentCount()-1)*7?'Complete':progress===0?'Ready · 6s per moment':'Paused';
     $('#course-play').textContent=playing?'Pause':progress===1?'Replay':progress?'Continue':'Play these moments';
     $('#course-moment').disabled=progress===1;
@@ -83,7 +82,7 @@ window.Part3 = (() => {
   const clockFor=n=>n===0?0:7*n;
   function guideRemaining(){return guideClock<6?6-guideClock:7-((guideClock-6)%7);}
   function syncClock(){guideClock=clockFor(Math.round(progress*(momentCount()-1)));}
-  function advance(){stop();const parts=momentCount()-1;progress=Math.min(1,Math.round(progress*parts+1)/parts);syncClock();draw();}
+  function advance(){stop();motionBlend=1;const parts=momentCount()-1;progress=Math.min(1,Math.round(progress*parts+1)/parts);syncClock();draw();}
   function play(){
     if(playing){stop();draw();return;}
     if(progress===1){progress=0;guideClock=0;lastDraw=-1;}
@@ -94,7 +93,7 @@ window.Part3 = (() => {
     if(!document.hidden)guideClock+=(now-previous)/1000;
     previous=now;
     const state=tourState(guideClock,momentCount(),timeline()&&!reduced);
-    progress=state.progress;if(state.done)playing=false;
+    progress=state.progress;motionBlend=timeline()||reduced||guideClock<6?1:Math.min(1,(guideClock-6)%7);if(state.done){motionBlend=1;}if(state.done)playing=false;
     draw();if(playing)frame=requestAnimationFrame(tick);
   }
   function tourState(clock,count,interpolate=false){
@@ -135,6 +134,7 @@ window.Part3 = (() => {
   }
   function focusWink(){
     const board=$('#course-board'),s=current(),n=Math.min(momentCount()-1,Math.floor(progress*(momentCount()-1)+1e-7));
+    if(board.querySelector('.course-motion')){motionWink();return;}
     board.querySelectorAll('.course-focus').forEach(x=>x.classList.remove('course-focus'));
     let selector=targets[s.scene]?.[n];
     if(timeline()){
@@ -166,7 +166,43 @@ window.Part3 = (() => {
     after.after(slot);slot.append(speech);
     placeWink();
   }
+  function motionWink(){
+    const board=$('#course-board');
+    $('.lesson-content').append($('#wink-toggle'));
+    let slot=board.querySelector('.course-speech-slot');
+    if(!slot){slot=document.createElement('div');slot.className='course-speech-slot';board.append(slot);}
+    slot.append($('.wink-speech'));placeMotionWink();
+  }
+  function placeMotionWink(){
+    const svg=$('.course-motion svg'),target=svg?.querySelector('[data-motion-focus]');if(!target)return;
+    const content=$('.lesson-content').getBoundingClientRect(),board=$('#course-board'),bounds=board.getBoundingClientRect();
+    const x=+target.getAttribute('cx')+(+target.dataset.dock),y=+target.getAttribute('cy')+(+target.dataset.dockY||0);
+    let at=new DOMPoint(x,y).matrixTransform(svg.getScreenCTM());
+    const avatar=$('#wink-toggle'),scene=svg.getBoundingClientRect();
+    const center=new DOMPoint(+target.getAttribute('cx'),+target.getAttribute('cy')).matrixTransform(svg.getScreenCTM());
+    const marks=[...svg.querySelectorAll('circle,line,path,text')].filter(n=>!n.hasAttribute('opacity')||+n.getAttribute('opacity')>0).map(n=>n.getBoundingClientRect());
+    const safe=p=>p.x-20>=scene.left&&p.x+20<=scene.right&&p.y-20>=scene.top&&p.y+20<=scene.bottom&&!marks.some(r=>p.x-20<r.right+3&&p.x+20>r.left-3&&p.y-20<r.bottom+3&&p.y+20>r.top-3);
+    if(!safe(at)){
+      const options=[];
+      for(let d=45;d<=130;d+=10)for(let angle=0;angle<Math.PI*2;angle+=Math.PI/8){const point={x:center.x+Math.cos(angle)*d,y:center.y+Math.sin(angle)*d};if(safe(point))options.push(point);}
+      options.sort((a,b)=>Math.hypot(a.x-center.x,a.y-center.y)+.3*Math.hypot(a.x-at.x,a.y-at.y)-Math.hypot(b.x-center.x,b.y-center.y)-.3*Math.hypot(b.x-at.x,b.y-at.y));
+      if(options.length)at=options[0];
+    }
+    avatar.style.left=`${at.x-content.left-16}px`;avatar.style.top=`${at.y-content.top-16}px`;
+    const slot=$('.course-speech-slot'),speech=$('.wink-speech');
+    slot.classList.add('motion-speech-slot');slot.style.position='relative';slot.style.left='';slot.style.top='';
+    const w=speech.offsetWidth,h=speech.offsetHeight,sr=svg.getBoundingClientRect();
+    const obstacles=[...svg.querySelectorAll('circle,line,path,text')].filter(n=>!n.hasAttribute('opacity')||+n.getAttribute('opacity')>0).map(n=>n.getBoundingClientRect());
+    obstacles.push({left:at.x-22,right:at.x+22,top:at.y-22,bottom:at.y+22});
+    const candidates=[];
+    for(let top=sr.top+8;top+h<sr.bottom-8;top+=12)for(let left=sr.left+8;left+w<sr.right-8;left+=12){
+      if(!obstacles.some(o=>left<o.right+8&&left+w>o.left-8&&top<o.bottom+8&&top+h>o.top-8))candidates.push({left,top});
+    }
+    candidates.sort((a,b)=>Math.hypot(a.left+w/2-at.x,a.top+h/2-at.y)-Math.hypot(b.left+w/2-at.x,b.top+h/2-at.y));
+    if(candidates.length){const dock=candidates[0];slot.style.position='absolute';slot.style.left=`${dock.left-bounds.left}px`;slot.style.top=`${dock.top-bounds.top}px`;}
+  }
   function placeWink(){
+    if($('#course-board .course-motion')){placeMotionWink();return;}
     if(!focusTarget?.isConnected||!$('.spatial-course'))return;
     const target=focusTarget.getBoundingClientRect(),content=$('.lesson-content').getBoundingClientRect();
     const avatar=$('#wink-toggle');avatar.style.left=`${target.left-content.left-40}px`;
@@ -182,8 +218,8 @@ window.Part3 = (() => {
     if($('#course-restart'))$('#course-restart').onclick=()=>go(0);
     if($('#course-play'))$('#course-play').onclick=play;
     if($('#course-moment'))$('#course-moment').onclick=advance;
-    if($('#course-reset'))$('#course-reset').onclick=()=>{stop();guideClock=0;progress=0;lastDraw=-1;draw();};
-    if($('#course-scrub'))$('#course-scrub').oninput=x=>{stop();progress=+x.target.value/1000;syncClock();draw();};
+    if($('#course-reset'))$('#course-reset').onclick=()=>{stop();guideClock=0;motionBlend=1;progress=0;lastDraw=-1;draw();};
+    if($('#course-scrub'))$('#course-scrub').oninput=x=>{stop();motionBlend=1;progress=+x.target.value/1000;syncClock();draw();};
     if($('#course-arrival'))$('#course-arrival').onchange=x=>{stop();arrival=+x.target.value;progress=0;guideClock=0;draw();};
     document.querySelectorAll('[data-course-choice]').forEach(b=>b.onclick=()=>{choice=+b.dataset.courseChoice;checked=false;mount();});
     if($('#course-check'))$('#course-check').onclick=()=>{checked=true;mount();};

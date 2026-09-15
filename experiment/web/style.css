@@ -27,3 +27,9 @@
 @media(prefers-reduced-motion:reduce){.spatial-course>#wink-toggle{transition:none}}
 
 .spatial-course .resource-grid:not(:has(.resource ~ .resource))>.resource{grid-column:1/-1}
+
+/* Motion studies promoted into the course; Wink docks inside these scenes. */
+.spatial-course #course-board:has(.course-motion){position:relative;padding:16px}
+.course-motion svg{display:block;width:100%;max-height:430px;position:relative;z-index:1;pointer-events:none}.motion-key{font-size:11px;color:var(--muted);text-align:center;margin:8px 0 14px}
+.motion-speech-slot{margin:0!important;z-index:2}.motion-speech-slot .wink-speech{width:225px;max-width:100%;box-sizing:border-box}.spatial-course:has(.course-motion)>#wink-toggle{z-index:0}
+@media(max-width:700px){.course-motion svg text{font-size:20px}.motion-speech-slot .wink-speech{width:100%;max-width:300px}.course-motion svg{min-height:220px}.motion-key{font-size:10px}}
