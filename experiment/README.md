@@ -1,6 +1,6 @@
 # Teaching × Motion: a two-library experiment
 
-Branch: `codex/teaching-animation-libraries`.
+For further experiments, start with [AGENT-GUIDE.md](AGENT-GUIDE.md). Shared baseline: `codex/astra_prototype`; development worktree branch: `codex/teaching-animation-libraries`.
 
 Open `http://127.0.0.1:8766/experiment/web/` while the server below runs. The browser includes a complete Part 3 course (8 chapters, 31 guided steps), a five-step search lesson, four teaching cards, six independent animation demos, and an inspectable selection manifest.
 
@@ -18,7 +18,7 @@ No package installation, model key, or build server is needed. The checked-in re
 
 `library/teaching/*.json` holds learner starting/ending states, explanation sequences, examples, source links, observations, interpretations, pitfalls, and comprehension checks. These cards contain no renderer names.
 
-`library/animation/*.json` holds visual capabilities, input contracts, renderer names, source evidence, and limits. Implementations live in `experiment/web/animations.js` and `experiment/web/part3-renderers.js`. The very same functions render the library demos and lessons.
+`library/animation/*.json` holds visual capabilities, input contracts, renderer names, source evidence, and limits. A01–A03 implementations live in `experiment/web/animations.js`. The original A04–A06 gallery/comparison implementations live in `experiment/web/part3-renderers.js`; the current Part 3 course uses the motion adaptations in `experiment/web/course-motion.js`.
 
 The teaching source collection is deliberately small: Grant Sanderson’s published advice and derivative lesson. Animation references include Bret Victor’s interactive essay and Manim’s numeric animation driver. Cards explicitly distinguish what those sources show from the patterns authored here. This is not a representative survey or a learned model of those creators.
 
