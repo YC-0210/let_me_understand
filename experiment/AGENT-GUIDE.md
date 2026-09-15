@@ -2,6 +2,8 @@
 
 ## Start here
 
+The current default is the shorter connected intuition variation; read [CONNECTED-INTUITION.md](CONNECTED-INTUITION.md) for its research, visual contract, and files. Its source is `web/intuition-plan.js`, `web/intuition.js`, and `web/intuition.css`. The previous detailed course is accessible at `?guide=detailed#lessons`.
+
 This folder is the active learning prototype: a full Part 3 server lesson, a search lesson, reference libraries, and comparison demos. Use `experiment/web/`, not the older `prototype/part3/` implementation.
 
 The shared baseline is on `codex/astra_prototype`. Check your current branch and working tree before editing; use a separate experiment branch when comparing alternatives. Do not assume another agent's localhost server is serving your checkout.
@@ -57,6 +59,7 @@ node experiment/tests/test_models.cjs
 node experiment/tests/test_motion.cjs
 node experiment/tests/test_course_guide.cjs
 node experiment/tests/test_overview.cjs
+node experiment/tests/test_intuition.cjs
 git diff --check
 ```
 

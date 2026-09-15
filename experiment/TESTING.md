@@ -93,3 +93,9 @@ The model suite now additionally checks 365 course-motion transition samples, fo
 Browser walkthroughs checked all eight opening maps and all 104 visual stops at 390px and 1280px. Each detail view had exactly one current map stage and no horizontal overflow. Screenshots verified the socket/bind/listen/accept overview and the companion map highlighting bind beside its detailed animation. No console errors were observed.
 
 `node experiment/tests/test_overview.cjs` covers all chapter/scene/moment mappings, setup order, fork branches, retained-handle and blocking-wait exceptions, and repeated collection counts. Existing course timing and model suites still pass. Map highlighting denotes the current explanation, not operation completion.
+
+## Connected intuition variation — 2026-09-15
+
+The default course route now uses six connected parts and 22 conceptual moments, with the prior course at `?guide=detailed#lessons`. Added semantic checks for handle ownership, close-before-last-handle errors, running versus exited processes, and one notification with multiple records. All 16 Python tests and the existing model, motion, guidance, and overview Node suites pass; the new intuition suite passes.
+
+Browser review traversed the full conceptual sequence, exercised chapter overviews, stepping and playback to section completion, and inspected local Wink speech and distinct shapes. A 390px viewport has no document horizontal overflow; its map is a single 54px-high scrolling row. The mobile speech sits below the diagram while Wink remains at the focus. Reader comprehension still requires feedback; these checks do not establish that the new sequence teaches better.
