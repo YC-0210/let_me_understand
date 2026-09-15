@@ -86,3 +86,10 @@ Browser walkthroughs visited all 31 course steps and all 104 selectable visual s
 All 73 A04–A06 moments now use SVG motion-study adapters. A browser walkthrough covered all 104 course stops at 1280px and 390px: no old ownership/stage/record grids remained in the course, no horizontal overflow, and no console errors. Screenshots checked ownership links, coalesced child-exit notice, and mobile process diagrams with Wink beside the focus.
 
 The model suite now additionally checks 365 course-motion transition samples, focus anchors, absence of old grids, no child before the lifecycle fork, and the distinction between a retained connection and EOF. Existing 73-state, 303-sample, six-second course timing, and 16 Python tests pass. These checks establish rendering and state consistency, not pedagogical effectiveness.
+
+
+## Chapter overview maps
+
+Browser walkthroughs checked all eight opening maps and all 104 visual stops at 390px and 1280px. Each detail view had exactly one current map stage and no horizontal overflow. Screenshots verified the socket/bind/listen/accept overview and the companion map highlighting bind beside its detailed animation. No console errors were observed.
+
+`node experiment/tests/test_overview.cjs` covers all chapter/scene/moment mappings, setup order, fork branches, retained-handle and blocking-wait exceptions, and repeated collection counts. Existing course timing and model suites still pass. Map highlighting denotes the current explanation, not operation completion.

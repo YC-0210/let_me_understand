@@ -84,3 +84,8 @@ The original eight-chapter Part 3 course now uses authored focus targets for eve
 ## Motion-study visuals in Part 3
 
 The full course now replaces all A04–A06 card layouts with `web/course-motion.js`: explicit shared-socket links, spatial process/event diagrams, and filled-to-hollow-to-collected child records. The adapter uses the existing verified lesson models and adds deterministic transitions during the one-second travel interval. All 73 affected moments retain their authored teaching copy and six-second pauses. A01–A03 remain in place. The original card renderers remain in the animation gallery and the motion-study comparison toggle.
+
+
+## Overview before detail
+
+All eight chapters now begin with a high-level process map. Enter the details to dock that same map beside the animation; its highlighted stage follows playback and manual navigation. On phones it becomes a slim progress strip. Reopen the overview at any time without losing your place. See `OVERVIEW-MAPS.md` for the full lesson scan and state-mapping rationale.
