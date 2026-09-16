@@ -51,3 +51,7 @@ Browser: inspected all 22 moments at 1280px desktop and 390px mobile. Bounding-b
 Guidance-only correction: the inherited mobile Wink anchor covered a parent handle and crossed the reply lane. In the new teaching version, Wink chooses a nearby free position and speech reserves the full future token path; guidance snaps between safe positions. Actors, transfer paths, sizes, and speeds are unchanged. The original-teaching route keeps the baseline guidance layout.
 
 Interaction checks: all chapter navigation and next steps; back; replay to the first moment; overview reopening; Wink expansion and reset on next; optional reasoning reveal pausing playback for more than six seconds; playback advancing after six seconds; both teaching-library routes; original-teaching route. The connected baseline does not provide a scrubber, so none is claimed. Reduced-motion code is preserved; OS-level reduced-motion was not toggled during browser testing. Reader learning outcomes remain untested.
+
+## Reader refinement: question-led section openings
+
+The six prominent overview headings now ask a question rather than state the answer. For example, “Two handles can reach the same socket” becomes “Does closing one handle close the socket?” This invites a prediction before the sequence explains the relationship. The supporting prompts, original-teaching route, and animations are unchanged. Checked with the teaching comparison suite; learner response still needs review.

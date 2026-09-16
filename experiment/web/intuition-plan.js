@@ -4,7 +4,7 @@ window.EducatorTeaching = new URLSearchParams(location.search).get('teaching') !
 if (window.EducatorTeaching) {
   const lessons = [
     {
-      title:'What must stay the same?', map:'Keep the promise', recall:'A browser asks. The server returns an answer.',
+      title:'What must stay the same?', map:'Keep the promise', recall:'What should the browser receive, whoever does the work?',
       question:'Part 3 changes how work is shared. What should the browser still receive?', patterns:['CS03','CS02'],
       takeaway:'Keep the request–response promise while changing who does the work.',
       beats:[
@@ -14,7 +14,7 @@ if (window.EducatorTeaching) {
       ]
     },
     {
-      title:'Why does B have to wait?', map:'Free the parent', recall:'One visitor is easy. A second reveals the bottleneck.',
+      title:'Why does B have to wait?', map:'Free the parent', recall:'How can B get served while A is still busy?',
       question:'A keeps the only handler busy. What must change so B can be accepted?', patterns:['CS01','CS02','CS03'],
       takeaway:'Delegate A’s handling so the parent can return to accepting visitors.',
       beats:[
@@ -26,7 +26,7 @@ if (window.EducatorTeaching) {
       check:{beat:1,prompt:'Suppose we only enlarge the waiting queue. Can the busy handler accept B sooner?',answer:'No. The queue can hold more waiting connections, but A still occupies the only handler. Delegating A frees the parent to accept B.'}
     },
     {
-      title:'What did fork actually copy?', map:'Count the handles', recall:'Two handles can reach the same socket.',
+      title:'What did fork actually copy?', map:'Count the handles', recall:'Does closing one handle close the socket?',
       question:'If the parent closes its copy, what access does the child still have?', patterns:['CS04','CS05'],
       takeaway:'A reply arriving and a connection ending are different events.',
       beats:[
@@ -38,7 +38,7 @@ if (window.EducatorTeaching) {
       check:{beat:2,prompt:'Imagine the parent had kept its handle. Would the child’s later close be enough?',answer:'No. The parent would still hold access to the same socket. In this close-based example, A could keep waiting for the connection to end.'}
     },
     {
-      title:'What can outlive finished work?', map:'Collect the status', recall:'Closing socket access does not collect a child’s exit status.',
+      title:'What can outlive finished work?', map:'Collect the status', recall:'When a child exits, is all its cleanup finished?',
       question:'When the child stops running, what must the parent still learn?', patterns:['CS04','CS02'],
       takeaway:'An exited child can leave status behind without still executing.',
       beats:[
@@ -49,7 +49,7 @@ if (window.EducatorTeaching) {
       ]
     },
     {
-      title:'Does one bell mean one result?', map:'Check what is ready', recall:'A notification says to check. The records say what happened.',
+      title:'Does one bell mean one result?', map:'Check what is ready', recall:'Can one notification cover several child exits?',
       question:'How can the parent collect every ready status and still stay available?', patterns:['CS05','CS06'],
       takeaway:'On notification, check for ready results until none remain; do not wait for running children.',
       beats:[
@@ -60,7 +60,7 @@ if (window.EducatorTeaching) {
       check:{beat:1,prompt:'One notification, three ready statuses. What should determine how many times we collect?',answer:'The available statuses, not the bell count. Keep checking nonblockingly until no ready child status remains; then return to serving.'}
     },
     {
-      title:'Can you explain the whole server?', map:'Explain it back', recall:'Share the work. Release access. Collect status. Keep serving.',
+      title:'Can you explain the whole server?', map:'Explain it back', recall:'Can you explain why this server keeps working?',
       question:'Follow A, then use the same rules to explain what could go wrong for B.', patterns:['CS03','CS06'],
       takeaway:'Ask who is working, who has access, and what status remains.',
       beats:[
