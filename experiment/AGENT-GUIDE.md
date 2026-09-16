@@ -70,3 +70,7 @@ git diff --check
 Passing tests does not establish teaching quality. Record what changed, which learner question it addresses, what you inspected, and what still needs reader feedback. Include the branch/commit, preview route, and whether it was pushed when handing off.
 
 For the current direction read `CONNECTED-INTUITION.md`. For historical context, read `PART3-COVERAGE.md` (technical coverage), `MOTION-STUDIES.md` (visual sources), `OVERVIEW-MAPS.md` (chapter mapping), and `TESTING.md` (verification history).
+
+## Pictograms
+
+Phosphor Regular is the current preferred family. Read [the symbol access guide](web/symbols/README.md) for the local subset, full upstream library, pinned-version fetch path, and rules for adding symbols. The comparison is on `codex/part3-symbol-comparison` at `?guide=course&symbols=phosphor#lessons`.

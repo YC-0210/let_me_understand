@@ -1,0 +1,32 @@
+{
+  "phosphor": {
+    "repo": "phosphor-icons/core",
+    "revision": "2b75f3ad12b420c9504ef05df8d2564a28f8500e",
+    "mapping": {
+      "browser": "browser",
+      "process": "terminal-window",
+      "socket": "plug",
+      "listener": "door-open",
+      "handle": "key",
+      "record": "file-text",
+      "notice": "bell",
+      "app": "code-block",
+      "message": "envelope"
+    }
+  },
+  "lucide": {
+    "repo": "lucide-icons/lucide",
+    "revision": "58ef6830c6fdf6374b751ab28b147a921bd31b34",
+    "mapping": {
+      "browser": "panels-top-left",
+      "process": "square-terminal",
+      "socket": "plug",
+      "listener": "door-open",
+      "handle": "key-round",
+      "record": "file-text",
+      "notice": "bell",
+      "app": "code-xml",
+      "message": "mail"
+    }
+  }
+}

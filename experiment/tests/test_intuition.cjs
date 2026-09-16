@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const ctx={window:{Animations:{esc:x=>String(x)}}};vm.createContext(ctx);
+const ctx={URLSearchParams,location:{search:''},window:{Animations:{esc:x=>String(x)}}};vm.createContext(ctx);
 for(const file of ['intuition-plan.js','intuition.js'])vm.runInContext(fs.readFileSync(`${__dirname}/../web/${file}`,'utf8'),ctx);
 const {IntuitionGuide:G,IntuitionPlan:P}=ctx.window;
 for(const chapter of P)for(const beat of chapter.beats){
@@ -23,3 +23,8 @@ assert.match(P[0].beats.map(x=>x.cue).join(' '),/WSGI/);
 const kinds=['browser','process','app','socket','listener','handle','record','notice','message'];
 assert.equal(new Set(kinds.map(x=>G.icon(x))).size,kinds.length,'concepts must have distinct glyphs');
 console.log(`Checked ${P.reduce((n,c)=>n+c.beats.length,0)} intuition moments: access, process status, notification, and vocabulary invariants.`);
+
+assert.equal(G.travelDuration([0,0],[180,0]),1000);
+assert.equal(G.travelDuration([0,0],[360,0]),2000);
+assert.equal(G.travelDuration([0,0],[108,144]),1000);
+assert.equal(G.tokenScale,.36);

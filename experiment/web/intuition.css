@@ -7,3 +7,10 @@
 @media(prefers-reduced-motion:reduce){.ig-entity,.ig-wink,.ig-edge{transition:none!important}}
 .ig-local-speech{position:absolute;z-index:1;background:#211e2b;border-radius:0 9px 9px 0;min-height:0;margin:0;font-size:14px;line-height:1.5;transition:left .9s ease,top .9s ease}.ig-priming .ig-entity{transition:none}.intuition .ig-map button{padding:7px 8px;margin-bottom:5px}.intuition .ig-map-number{display:inline;margin-right:5px}body:has(.intuition) main{margin-top:26px}.intuition .ig-top{margin-bottom:18px}.intuition .ig-top h1{font-size:27px}.ig-canvas .ig-speech:not(.ig-local-speech){margin-top:15px}
 @media(max-width:700px){.ig-map{flex-wrap:nowrap;gap:0}.ig-map button{flex-shrink:0}}
+
+/* A/B comparison: shared palette, original library geometry, same lesson. */
+.symbol-compare{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:13px}.symbol-compare small{color:var(--muted)}.symbol-compare button{font-size:13px}.symbol-compare button[aria-pressed=true]{background:#39314e;border-color:#b9a1ef;color:#fff}.symbol-experiment{--process:#b9a1ef}.symbol-experiment .ig-entity{color:#dedfe7}
+@media(max-width:700px){.symbol-compare{gap:8px}.symbol-compare small{width:100%}}
+
+/* Transfers use a small token in a clear lane, separate from stationary actors. */
+#ig-message{transition:opacity .3s;pointer-events:none}
