@@ -1,5 +1,7 @@
 # Guide for the next experiment
 
+This worktree is the CS-educator teaching experiment on `codex/part3-teaching-library`. Read [TEACHING-EXPERIMENT.md](TEACHING-EXPERIMENT.md) and [the new teaching library](../library/teaching-cs/README.md) first. The default lesson uses the new teaching; `?teaching=original&symbols=phosphor#lessons` preserves the prior narration. Use port 8767 for this checkout. The historical instructions below still describe the shared animation and older branches.
+
 ## Start here
 
 The current default is the shorter connected intuition variation; read [CONNECTED-INTUITION.md](CONNECTED-INTUITION.md) for its research, visual contract, and files. Its source is `web/intuition-plan.js`, `web/intuition.js`, and `web/intuition.css`. The previous detailed course is accessible at `?guide=detailed#lessons`.

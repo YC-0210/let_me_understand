@@ -1,5 +1,7 @@
 # Teaching and animation libraries
 
+New experiment: [CS educator teaching library](teaching-cs/README.md), with six source-linked patterns and a Part 3 application. It is separate from the historical cards and pipeline below.
+
 Start with [principles.json](principles.json). These user-approved design rules take precedence over the individual cards. Research and the 16-chapter source review are in [CONNECTED-INTUITION.md](../experiment/CONNECTED-INTUITION.md).
 
 ## Teaching: decide what understanding to build

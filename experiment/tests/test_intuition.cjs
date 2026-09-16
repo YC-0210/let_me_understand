@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const ctx={URLSearchParams,location:{search:''},window:{Animations:{esc:x=>String(x)}}};vm.createContext(ctx);
-for(const file of ['intuition-plan.js','intuition.js'])vm.runInContext(fs.readFileSync(`${__dirname}/../web/${file}`,'utf8'),ctx);
+for(const file of ['intuition-plan-original.js','intuition-plan.js','symbol-families.js','intuition.js'])vm.runInContext(fs.readFileSync(`${__dirname}/../web/${file}`,'utf8'),ctx);
 const {IntuitionGuide:G,IntuitionPlan:P}=ctx.window;
 for(const chapter of P)for(const beat of chapter.beats){
  const m=G.model(beat.mode);

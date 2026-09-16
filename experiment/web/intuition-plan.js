@@ -1,37 +1,79 @@
-/* Authored teaching sequence. Each new idea attaches to a previously visible object. */
-window.IntuitionPlan = [
-  {id:'foundation', title:'The server you already know', recall:'Part 1 carries messages. Part 2 makes the answer.', article:1, find:'The client initiates a TCP connection', detail:'Part 1: a browser connects, sends an HTTP request, and gets an HTTP response. Part 2 adds the application: the server calls it through WSGI, then sends its output back. WSGI is a calling agreement inside the program, not another network connection. We use new, distinct shapes here and introduce them before reusing them.', beats:[
-    {title:'Start with a familiar round trip.', cue:'The window is your browser; the purple frame is the running server. Its HTTP request travels through the cyan socket, one endpoint of their connection.', focus:'browser', mode:'request'},
-    {title:'Part 2 gives the answer a source.', cue:'The green hexagon is your application. The server calls it through WSGI, the agreement you met in Part 2.', focus:'app', mode:'application'},
-    {title:'Keep this picture in mind.', cue:'The server sends the response back. Part 3 asks how this same job can serve several visitors without getting stuck.', focus:'browser', mode:'response'}
-  ]},
-  {id:'workers', title:'Make room for another visitor', recall:'The request and response stay the same. Who does the work changes.', article:3, find:'The simplest way to write a concurrent server', detail:'A process is a running instance of a program. On Unix, fork creates a child process. The parent keeps accepting connections; the child handles the accepted connection. The article uses a fixed response to isolate this idea. If combined with Part 2, the application call belongs in the child’s request-handling work. More queued connections alone do not make the serial handler available sooner.', beats:[
-    {title:'Same exchange, a simpler reply.', cue:'Part 3 uses a fixed reply instead of the WSGI application so we can focus on sharing work. The browser and connection still do the same jobs.', focus:'parent', mode:'simple'},
-    {title:'One busy program makes B wait.', cue:'A occupies the only running program. B waits at the doorway: the listening socket for new connections. A larger queue would not free the busy program.', focus:'browserB', mode:'busy'},
-    {title:'Create another running program.', cue:'fork creates a child. Both purple frames are processes; their labels tell you which is the parent and which is the child.', focus:'child', mode:'fork'},
-    {title:'Give them different jobs.', cue:'The child handles A. The parent can accept B while A’s work continues. Now we need to clean up what fork copied.', focus:'parent', mode:'roles'}
-  ]},
-  {id:'access', title:'Two handles, one socket', recall:'The new child copied access to the connection, not the connection itself.', article:3, find:'The kernel uses descriptor reference counts', detail:'A file descriptor is a numbered handle in one process. After fork, parent and child have separate handles to the same underlying socket. The key shape means access, not encryption. Closing a handle removes that process’s access. In this simplified close-based example, the last close allows the connection to end. The child also closes its inherited listening handle. Listener access is summarized here; only the accepted connection’s handles are expanded.', beats:[
-    {title:'Return to the moment just after fork.', cue:'The cyan plug is A’s socket. Each key is one process’s handle to it. Both keys reach the same plug.', focus:'socket', mode:'twoHandles'},
-    {title:'The parent releases its copy.', cue:'The parent no longer handles A, so it closes its key. The child’s key still works. A’s connection stays open.', focus:'parent', mode:'oneHandle'},
-    {title:'A reply can arrive before the end.', cue:'The envelope has reached A. But the child still has its key, so the connection remains open.', focus:'socket', mode:'replyOpen'},
-    {title:'The last handle is released.', cue:'The child closes its key. The connection can now end. If the parent had kept its key, A could still be waiting for that end.', focus:'socket', mode:'closed'}
-  ]},
-  {id:'records', title:'Finish the worker’s lifecycle', recall:'We have cleaned up socket access. The child process has a separate ending.', article:3, find:'When a child process exits', detail:'After a child exits, the operating system retains an exit-status record so the parent can learn how it ended. An exited, unreaped child is called a zombie; it is not still executing the request. wait or waitpid collects that status (reaping). Socket cleanup and process cleanup solve different problems. The paper is a visual metaphor for retained process status, not a file or an HTTP message.', beats:[
-    {title:'The connection has ended. What about the child?', cue:'A is finished and its socket access is released. This same purple child process still has one final step: exit.', focus:'child', mode:'closed'},
-    {title:'The worker stops running.', cue:'The child’s frame fades when it exits. The operating system keeps this folded sheet: a record of how that child ended.', focus:'record', mode:'exited'},
-    {title:'Finished work can leave something behind.', cue:'This leftover record is what “zombie” means here. It is not a worker still running. Repeated exits can leave many records.', focus:'record', mode:'records'},
-    {title:'The parent collects the result.', cue:'waitpid lets the parent collect an exit record. That removes the leftover process record; it does not close a browser connection.', focus:'parent', mode:'reapOne'}
-  ]},
-  {id:'notice', title:'Check everything ready, then resume', recall:'The parent must collect records while staying available for visitors.', article:3, find:'The solution to the problem is to set up a SIGCHLD', detail:'SIGCHLD tells the parent to check child status. Standard signals can coalesce: several exits may leave one pending notification. A nonblocking waitpid loop collects all currently ready statuses, then returns to accepting clients. WNOHANG means do not wait for a child that is still running. The article’s older Python examples also retry accept after EINTR; modern Python usually retries it automatically when the signal handler returns normally. These code mechanics belong in the article, after the intuition.', beats:[
-    {title:'A notification asks for attention.', cue:'When another child exits, the operating system notifies the parent. This bell means SIGCHLD: check child status. The folded sheet remains the result.', focus:'notice', mode:'notice'},
-    {title:'One bell can mean several records.', cue:'Three ready records can share one pending notification. Collecting just one would leave the others behind.', focus:'record', mode:'burst'},
-    {title:'Collect what is ready. Keep serving.', cue:'The parent checks until no ready records remain, without waiting for still-running children. Then it returns to accepting visitors.', focus:'parent', mode:'drain'}
-  ]},
-  {id:'whole', title:'One server, one connected story', recall:'Accept → delegate → release access → collect exit status → keep accepting.', article:3, find:'Here is the modified server code', detail:'Use the article for socket setup, process IDs, fork return values, descriptor limits, waitpid return cases, EINTR, and the complete Python loop. These are implementation details of the story you now have. The two cleanup actions are independent: release unneeded socket handles; collect exited children. The guide uses an illustrative order, not a measured schedule or TCP packet simulation. This article’s close-delimited response uses connection closure to mark the body’s end; that is not a rule for all HTTP responses.', beats:[
-    {title:'Follow A once more.', cue:'The parent accepts A and creates a child to handle it. B can arrive while that child is working.', focus:'child', mode:'wholeWork'},
-    {title:'Release access when it is no longer needed.', cue:'The parent releases its copy; the child replies and releases its own. A’s connection can end.', focus:'socket', mode:'wholeClose'},
-    {title:'Collect the child’s exit status.', cue:'The child exits. The notification prompts the parent to collect the record, then resume accepting.', focus:'notice', mode:'wholeReap'},
-    {title:'Now read the article with this picture.', cue:'As you read, ask: who is doing the work, who still has socket access, and which child records remain? Those questions connect both halves.', focus:'parent', mode:'ready'}
-  ]}
-];
+/* Teaching-only alternative. The baseline supplies the exact scene sequence and focuses. */
+window.OriginalIntuitionPlan = window.IntuitionPlan;
+window.EducatorTeaching = new URLSearchParams(location.search).get('teaching') !== 'original';
+if (window.EducatorTeaching) {
+  const lessons = [
+    {
+      title:'What must stay the same?', map:'Keep the promise', recall:'A browser asks. The server returns an answer.',
+      question:'Part 3 changes how work is shared. What should the browser still receive?', patterns:['CS03','CS02'],
+      takeaway:'Keep the request–response promise while changing who does the work.',
+      beats:[
+        ['Follow one request.', 'Browser A sends an HTTP request. The plug is the server’s endpoint of that connection: its socket.', 'Start with the complete job rather than the implementation. A socket is an endpoint, not the request itself.'],
+        ['Who makes the answer?', 'The application makes the answer. WSGI is the calling agreement between server and application that Part 2 introduced.', 'The code symbol marks the application. WSGI runs inside the program; it is not another trip across the network.'],
+        ['Keep this promise.', 'An HTTP response returns to A. Whatever we change next, the server must still complete this exchange.', 'Changing the process structure does not require changing the browser’s request–response contract.']
+      ]
+    },
+    {
+      title:'Why does B have to wait?', map:'Free the parent', recall:'One visitor is easy. A second reveals the bottleneck.',
+      question:'A keeps the only handler busy. What must change so B can be accepted?', patterns:['CS01','CS02','CS03'],
+      takeaway:'Delegate A’s handling so the parent can return to accepting visitors.',
+      beats:[
+        ['Change only the work arrangement.', 'We now use Part 3’s fixed reply. The application disappears from this view; the browser’s exchange stays the same.', 'The article deliberately simplifies response generation. In a combined Part 2/3 server, the child would call the WSGI application.'],
+        ['Would a longer queue help?', 'A occupies the only handler. B waits at the listening socket, the doorway for new connections.', 'The bottleneck is who can do work, not merely how many visitors can wait.'],
+        ['Make a second running program.', 'fork creates a child process. Parent and child can now continue separately; the terminal labels distinguish them.', 'A process is a running program. Concurrency permits progress on overlapping work; this picture does not promise simultaneous CPU execution.'],
+        ['Assign each process a job.', 'The child handles A. The parent returns to accepting visitors. But creating the child also copied access to sockets.', 'The division of responsibility creates the next problem: each process must release access it no longer needs.']
+      ],
+      check:{beat:1,prompt:'Suppose we only enlarge the waiting queue. Can the busy handler accept B sooner?',answer:'No. The queue can hold more waiting connections, but A still occupies the only handler. Delegating A frees the parent to accept B.'}
+    },
+    {
+      title:'What did fork actually copy?', map:'Count the handles', recall:'Two handles can reach the same socket.',
+      question:'If the parent closes its copy, what access does the child still have?', patterns:['CS04','CS05'],
+      takeaway:'A reply arriving and a connection ending are different events.',
+      beats:[
+        ['Rewind to just after fork.', 'Two keys reach one plug. Each key means one process’s handle to A’s socket; it does not mean encryption.', 'A file descriptor is a numbered handle in a process. Fork duplicates descriptor access to the same underlying socket, not an independent connection.'],
+        ['Remove only the parent’s access.', 'The parent closes its handle. The child’s handle still reaches the same socket, so A’s connection remains open.', 'The child also closes its inherited listening handle. This diagram expands only the accepted connection’s handles.'],
+        ['The reply is here. Is A finished?', 'The response has reached A, but the child still holds a handle. This example uses connection closure to mark the end.', 'HTTP does not always use connection closure to delimit a response. The article’s particular response does; reply and EOF must remain separate ideas.'],
+        ['Now release the last handle.', 'The child closes its handle. With no handles left in this example, the connection can end.', 'Counterexample: if the parent kept its handle, the child’s close alone would not release all access.']
+      ],
+      check:{beat:2,prompt:'Imagine the parent had kept its handle. Would the child’s later close be enough?',answer:'No. The parent would still hold access to the same socket. In this close-based example, A could keep waiting for the connection to end.'}
+    },
+    {
+      title:'What can outlive finished work?', map:'Collect the status', recall:'Closing socket access does not collect a child’s exit status.',
+      question:'When the child stops running, what must the parent still learn?', patterns:['CS04','CS02'],
+      takeaway:'An exited child can leave status behind without still executing.',
+      beats:[
+        ['One responsibility is complete.', 'A’s connection has ended. The child process still needs to exit; socket cleanup and process cleanup are separate.', 'Do not read this as a mandatory global execution order. We separate these events to examine their different effects.'],
+        ['Running ends. Status remains.', 'The child exits. The operating system retains its exit status, shown as a small sheet.', 'The sheet is a metaphor for retained process information. It is not a file, a response, or another running worker.'],
+        ['Name the leftover, not a new worker.', 'An exited child whose status is not collected is a zombie. Repeated exits can leave several retained records.', 'The extra sheets summarize additional child exits; they are not three results from Child A.'],
+        ['Complete the second responsibility.', 'The parent uses waitpid to collect an exit status. This removes the retained record; it does not close A’s connection.', 'Collecting a child’s status is called reaping. It answers what happened to the child, independently of socket ownership.']
+      ]
+    },
+    {
+      title:'Does one bell mean one result?', map:'Check what is ready', recall:'A notification says to check. The records say what happened.',
+      question:'How can the parent collect every ready status and still stay available?', patterns:['CS05','CS06'],
+      takeaway:'On notification, check for ready results until none remain; do not wait for running children.',
+      beats:[
+        ['A bell asks the parent to check.', 'SIGCHLD is a notification about child status. The bell draws attention; the sheet holds the result.', 'For this lesson we focus on exits. The notification is not itself the stored exit status.'],
+        ['Test the one-bell, one-result rule.', 'Several exits can share one pending notification. Three ready records are shown; collecting just one would leave two.', 'Standard signals can coalesce. Count available results by checking child status, not by counting notifications.'],
+        ['Drain ready results. Then return.', 'Collect all currently ready statuses with nonblocking waitpid. Stop when none are ready, so running children do not hold up the parent.', 'WNOHANG makes the check nonblocking. A loop reaps ready children and returns to accepting; exact return cases belong in the article.']
+      ],
+      check:{beat:1,prompt:'One notification, three ready statuses. What should determine how many times we collect?',answer:'The available statuses, not the bell count. Keep checking nonblockingly until no ready child status remains; then return to serving.'}
+    },
+    {
+      title:'Can you explain the whole server?', map:'Explain it back', recall:'Share the work. Release access. Collect status. Keep serving.',
+      question:'Follow A, then use the same rules to explain what could go wrong for B.', patterns:['CS03','CS06'],
+      takeaway:'Ask who is working, who has access, and what status remains.',
+      beats:[
+        ['Who can accept the next visitor?', 'The parent accepts A and creates a child. While the child handles A, the parent can accept B.', 'This replay reconnects the lifecycle. It illustrates responsibilities, not one guaranteed scheduling order.'],
+        ['Who still has access?', 'The parent releases its copy. The child replies and releases its own. A’s connection can now end.', 'The same socket-access rule explains both normal completion and the retained-parent-handle bug.'],
+        ['What remains after work stops?', 'The child exits. A notification prompts the parent to check and collect its status, then continue accepting.', 'The same ready-status rule also covers several exits sharing one notification.'],
+        ['Explain it without the API names.', 'Who does the work? Who still has socket access? Which exit statuses remain? Use these three questions when reading the code.', 'Try the explanation yourself, then open the optional check. The article supplies setup, fork return values, descriptor limits, waitpid cases, and EINTR handling.']
+      ],
+      check:{beat:3,prompt:'A has its reply but waits for the end. Elsewhere, exited children accumulate. Explain the two independent fixes.',answer:'Release every unneeded handle to A’s socket so this close-based response can finish. Separately, reap all ready child statuses with nonblocking waitpid. Doing one does not do the other.'}
+    }
+  ];
+  window.IntuitionPlan = window.OriginalIntuitionPlan.map((base,i)=>{
+    const lesson=lessons[i];
+    return {...base,...lesson,beats:base.beats.map((beat,j)=>({...beat,title:lesson.beats[j][0],cue:lesson.beats[j][1],explain:lesson.beats[j][2]}))};
+  });
+}

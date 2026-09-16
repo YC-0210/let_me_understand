@@ -1,0 +1,9 @@
+/* A browser view of the authored library, separate from historical pipeline data. */
+window.CSTeachingPage = () => {
+  const {sources,cards}=window.CSTeachingLibrary,esc=window.Animations.esc;
+  return `<div class="eyebrow">Teaching library · CS educators</div><h1>Build a reason to understand.</h1><p class="intro">Six reusable teaching moves, adapted from David Malan, Hal Abelson, and John Ousterhout. Start with a need, preserve the model, then test the explanation.</p><p><a href="?guide=course&symbols=phosphor#lessons">Try the new Part 3 lesson →</a> · <a href="?teaching=original#teaching">Earlier teaching library ↗</a></p><div class="cards">${cards.map(c=>{
+    const source=sources.find(s=>s.id===c.source);
+    const uses=window.IntuitionPlan.filter(p=>p.patterns?.includes(c.id));
+    return `<article class="card"><div class="eyebrow">${c.id} · ${esc(source.name)}</div><h2>${esc(c.title)}</h2><p>${esc(c.move)}</p><p><b>Use when:</b> ${esc(c.when)}</p><p><b>Part 3:</b> ${esc(c.example)}</p><details><summary>Use this pattern in another lesson</summary><p><b>Avoid:</b> ${esc(c.avoid)}</p><p><b>Check:</b> ${esc(c.check)}</p><p><b>Used in:</b> ${uses.map(p=>esc(p.title)).join(' · ')}</p><p><b>Observed in the source:</b> ${esc(source.observation)}</p><a href="${source.url}" target="_blank" rel="noreferrer">${esc(source.title)} ↗</a><p>${esc(source.boundary)}</p></details></article>`;
+  }).join('')}</div><section class="review-note"><b>Research-informed experiment, awaiting learner feedback.</b><p>These are our adaptations, not endorsements or a ranking of the greatest teachers. We reviewed the linked written materials; we do not claim to have watched entire courses or measured learning gains.</p><a href="../TEACHING-EXPERIMENT.md">Read the source review and experiment design ↗</a></section>`;
+};

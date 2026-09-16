@@ -14,3 +14,9 @@
 
 /* Transfers use a small token in a clear lane, separate from stationary actors. */
 #ig-message{transition:opacity .3s;pointer-events:none}
+
+/* Optional reasoning stays in document flow, outside every animation lane. */
+.ig-check{margin:16px 0;padding:14px 16px;border:1px solid var(--line);border-radius:10px;font-size:14px;line-height:1.55;background:#1d1b25}.ig-check[hidden]{display:none}.ig-check p{margin:0 0 10px}.ig-check p:last-child{margin-bottom:0}.ig-check button{font-size:12px;margin-bottom:10px}.ig-check small{display:block;color:var(--muted)}.ig-check #ig-answer{border-left:2px solid var(--process);padding-left:12px}.ig-takeaway{color:#dfd6f3}.symbol-compare a{font-size:12px}.ig-top a{white-space:normal}
+
+/* Guidance snaps between safe positions so it never sweeps across the system. */
+.educator-teaching .ig-wink,.educator-teaching .ig-local-speech{transition:none}
