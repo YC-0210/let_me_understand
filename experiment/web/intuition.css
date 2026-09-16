@@ -20,3 +20,14 @@
 
 /* Guidance snaps between safe positions so it never sweeps across the system. */
 .educator-teaching .ig-wink,.educator-teaching .ig-local-speech{transition:none}
+
+/* Causal motion: the diagram owns its space; narration cannot cover a path. */
+.causal-canvas{background:#11151e;border:1px solid #2e3041;border-radius:12px;overflow:hidden;margin-bottom:18px}
+.causal-canvas>svg{overflow:hidden;min-height:260px}
+.causal-canvas svg text{fill:revert-layer;font-family:ui-sans-serif,system-ui,sans-serif;text-anchor:middle}
+.causal-canvas .ig-speech{position:relative;margin:0!important;max-width:none;padding:16px 20px;background:#1c1c29;border-top:1px solid #303044;border-left:0;min-height:0}
+.cm-status{margin:0;padding:10px 16px;text-align:center;color:#e9ddbc;font-size:14px;min-height:44px;line-height:1.5}
+.cm-scrub{display:flex;align-items:center;gap:12px;padding:10px 16px 16px;font-size:11px;color:#a9abc0;border-bottom:1px solid #303044}
+.cm-scrub input{flex:1;min-width:30px;accent-color:#baa3ff;cursor:ew-resize}
+.cm-scrub output{font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:700px){.causal-canvas .ig-speech{padding:14px}.cm-scrub{gap:8px;padding:10px}.cm-status{font-size:13px}}
