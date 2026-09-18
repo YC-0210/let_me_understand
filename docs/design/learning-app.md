@@ -11,7 +11,7 @@ The user wants a place to revisit Part 1, Part 2, and the current Part 3; rememb
 ## Existing assets and behavior
 
 - Part 1: prototype/part1/ask.html, built from ask.template.html and pages.json.
-- Part 2: prototype/part2/mix.html, built from mix.template.html; hand.html, wink-guide-prototype.html, and wink-response-prototype.html also exist. Which variant to feature remains a product decision.
+- Part 2: prototype/part2/mix.html, built from mix.template.html; hand.html, wink-guide-prototype.html, and wink-response-prototype.html also exist. History favors mix.html as the current lesson: its latest edits integrate Wink behavior, while the Wink-only pages label themselves throwaway studies. Proposed catalog entry: mix.html, with studies kept as historical artifacts.
 - Current Part 3: experiment/web/index.html?guide=course&symbols=phosphor#lessons, with question-led teaching and causal-motion.js.
 - Animation library: library/animation/A01.json–A06.json; existing browser gallery under experiment/web/.
 - Teaching libraries: library/teaching/ and library/teaching-cs/; shared principles in library/principles.json.
@@ -54,3 +54,8 @@ Update CONTEXT.md as terms become settled. Record an ADR only for a settled deci
 ## Round 2 frontier
 
 Pending decisions: per-concept versus whole-lesson understanding; format and criteria for offline checks; adaptation behavior in this first release; initial animation-library editing scope; default reusable-example eligibility; retaining past Visualization versions; local-history backup/export requirements. Specific packaging choices and the featured Part 2 variant await the read-only inventory.
+
+
+## Offline feasibility facts
+
+Part 1 ask.html and Part 2 mix.html embed lesson data and scripts, with no runtime API dependency found. Both request Google Fonts but supply fallback fonts; fully offline packaging must bundle fonts or remove those requests. Current Part 3 uses repository-local scripts/styles, including the relative library/teaching-cs path. External article and citation links require internet. Swift 6.2.3 and macOS SDK 26.2 are installed; a Mac build is feasible without installing a toolchain. These facts do not select the application framework.
