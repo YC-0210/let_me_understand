@@ -87,3 +87,26 @@ _Avoid_: level, layer, view, zoom
 Moving from a point in an abstract Rung to the concrete instance behind it. Every Rung
 above the ground must offer it.
 _Avoid_: drill down, zoom in, expand
+
+
+## The learning collection
+
+**Personal collection**:
+The Visualizations and reusable patterns a learner keeps for revisiting and future use.
+Membership does not imply understanding or permission to reuse an item as an example.
+_Avoid_: learned lessons, references
+
+**Reusable example**:
+A Visualization eligible to guide how a future Visualization teaches or animates an idea.
+This is distinct from an external reference Source used to check accuracy.
+_Avoid_: reference (when meaning an example of teaching or animation)
+
+**Example exclusion**:
+A learner’s choice to make a Visualization ineligible as a Reusable example while keeping
+it available in the Personal collection.
+_Avoid_: delete, hide, forget
+
+**Learning check**:
+A question or task whose assessed response provides evidence of the learner’s understanding.
+Viewing or finishing a Visualization is not itself a Learning check.
+_Avoid_: completion, self-assessment

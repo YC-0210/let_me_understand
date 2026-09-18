@@ -20,32 +20,37 @@ The user wants a place to revisit Part 1, Part 2, and the current Part 3; rememb
 
 ## Design tree
 
-Round 1 frontier — all answers pending:
+Round 1 — answered by the user:
 
 1. First-release scope: existing lessons/library versus source generation immediately.
-   Recommendation: existing collection first; generation later.
+   Decision: existing lessons and library first; generation is a later phase.
    Unlocks: import formats, generation review, cost/provider choices, failure recovery.
 2. Audience: personal use versus separate histories for multiple learners.
-   Recommendation: personal, local history first.
+   Decision: personal app with local learning history.
    Unlocks: identity, sync, data ownership, sharing, backup.
 3. Exclusion meaning: retain a visualization but exclude it from future generation, also hide it, or separately exclude its teaching and animation.
-   Recommendation: keep it in the collection while excluding it as a future example.
+   Decision: keep it in the collection; exclude it as an example for future generation.
    Unlocks: eligibility defaults, scope, version inheritance, retrospective behavior.
 4. Learning evidence: self-assessment, optional checks, or completion.
-   Recommendation: explicit self-assessment plus optional checks; viewing is separate from understanding.
+   Decision: checks determine understanding. The user chose this over self-assessment; viewing/completion alone is insufficient. Assessment criteria remain open.
    Unlocks: adaptation granularity, review/forgetting, override, conflicting evidence.
 5. Mac-app motivation: standalone offline collection, deeper OS integration immediately, or browser flexibility.
-   Recommendation: standalone app reusing existing lessons, with offline access first.
+   Decision: standalone Mac app with offline lessons first; deep OS integration is deferred.
    Unlocks: packaging, storage boundaries, updates, signing/distribution.
 
 Later decisions depend on these answers: exact adaptation behavior; preserving original lesson versions; preferred Part 2 variant; animation-library edits and their effect on past lessons; generation workflow and publication/reuse approval; implementation scope and acceptance criteria. Recompute the frontier after each round rather than silently adopting recommendations.
 
 ## Terminology to resolve
 
-The existing CONTEXT.md uses “reference” for an external source used to check a Departure. The user’s “visualization as a reference” appears to mean a reusable example for future generation. Proposed term: “Reusable example,” separate from an accuracy-checking Source. Await confirmation before changing the glossary.
+The existing CONTEXT.md uses “reference” for an external source used to check a Departure. The user’s “visualization as a reference” appears to mean a reusable example for future generation. Proposed term: “Reusable example,” separate from an accuracy-checking Source. The user confirmed this exclusion meaning; the glossary now distinguishes Reusable example and Example exclusion.
 
 “Learned” needs an agreed meaning distinct from opened, viewed, and completed. “Animation library” also needs a decision about whether it contains reusable patterns, executable components, approved examples, or several explicitly distinguished collections.
 
 ## Decision recording
 
-Update CONTEXT.md as terms become settled. Record an ADR only for a settled decision with a meaningful reversal cost, a non-obvious rationale, and a real trade-off. No ADR is warranted yet. App implementation awaits shared-understanding confirmation as required by the invoked grilling skill; the separately requested main merge is already complete.
+Update CONTEXT.md as terms become settled. Record an ADR only for a settled decision with a meaningful reversal cost, a non-obvious rationale, and a real trade-off. The local/offline product boundary is recorded in ADR 0006; technology choices remain open. App implementation awaits shared-understanding confirmation as required by the invoked grilling skill; the separately requested main merge is already complete.
+
+
+## Round 2 frontier
+
+Pending decisions: per-concept versus whole-lesson understanding; format and criteria for offline checks; adaptation behavior in this first release; initial animation-library editing scope; default reusable-example eligibility; retaining past Visualization versions; local-history backup/export requirements. Specific packaging choices and the featured Part 2 variant await the read-only inventory.
