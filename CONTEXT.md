@@ -121,3 +121,19 @@ _Avoid_: latest (when referring to a specific preserved edition)
 The recorded outcome of an assessed response to a Learning check, used as evidence of understanding.
 It is distinct from viewing progress and does not itself change a Visualization’s teaching.
 _Avoid_: watched, completed
+
+
+**Concept**:
+A distinct source-backed idea in an approved list, which may be taught by more than one Visualization.
+Repeated appearances do not make it a new Concept.
+_Avoid_: paragraph, term count, slide
+
+**Approved source set**:
+The agreed subject sources used consistently to define and support Concepts, distinct from
+sources used to guide explanation style.
+_Avoid_: automatically selected references
+
+**Understanding mark**:
+A learner’s explicit checkbox choice that they understand a Concept, without automated assessment.
+It is self-reported understanding, not a Check result or a consequence of generating or viewing a Visualization.
+_Avoid_: demonstrated mastery, test score, completion
