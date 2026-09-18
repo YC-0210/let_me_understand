@@ -16,7 +16,7 @@ The first release is a personal standalone Mac app for revisiting Part 1, Part 2
 - Animation library: library/animation/A01.json–A06.json; existing browser gallery under experiment/web/.
 - Teaching libraries: library/teaching/ and library/teaching-cs/; shared principles in library/principles.json.
 - Current lesson progress is in memory. Only the older detailed course persists its last step. Neither behavior establishes understanding.
-- No learner profile, adaptive teaching, arbitrary source generation, or user-controlled exclusion from future examples exists in the inspected implementation.
+- No persisted learner profile, check-score-based adaptation, arbitrary source generation, or user-controlled exclusion from future examples exists. Part 2 DOES offer session-only manual unfamiliar-term choices that adjust explanations; whether to retain these is Q17.
 
 ## Design tree
 
@@ -69,3 +69,10 @@ Define the source policy and who approves concept boundaries; how checks establi
 ## Offline feasibility facts
 
 Part 1 ask.html and Part 2 mix.html embed lesson data and scripts, with no runtime API dependency found. Both request Google Fonts but supply fallback fonts; fully offline packaging must bundle fonts or remove those requests. Current Part 3 uses repository-local scripts/styles, including the relative library/teaching-cs path. External article and citation links require internet. Swift 6.2.3 and macOS SDK 26.2 are installed; a Mac build is feasible without installing a toolchain. These facts do not select the application framework.
+
+
+## Concept and check inventory
+
+Part 2 exposes eight vocabulary IDs (server, framework, request, wsgi, environ, headers, callback, socket). The historical detailed Part 3 plan has 43 introduced identifiers and prerequisite sequencing validation; these are authoring identifiers, not a shared approved concept count. Current Part 3 has four reveal-only reflection prompts without submitted answers. Historical Part 3 has five multiple-choice questions with per-option feedback that may be reusable after review. Part 1 and Part 2 have no assessed checks in their current pages. There is no cross-lesson concept registry, concept-to-check mapping, or importable lesson-bundle format yet.
+
+The subject sources already recorded are Ruslan Spivak’s web-server Parts 1–3; the educator references are a separate teaching-method layer. Proposed concept policy and evidence thresholds are pending Q13 and Q15, not inferred from the existing identifier counts. Q14 clarifies the location of Codex authoring; Q16 concerns optional check placement; Q17 concerns retaining manual Part 2 explanation choices.
