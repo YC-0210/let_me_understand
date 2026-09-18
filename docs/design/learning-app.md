@@ -6,7 +6,7 @@ Requested workflow: grill-with-docs, applying grilling and domain-modeling.
 ## Confirmed brief
 
 The completed Part 3 experiment is merged into main at eeb68e4 and pushed.
-The user wants a place to revisit Part 1, Part 2, and the current Part 3; remember learning and adapt teaching; browse an animation library that can evolve; eventually create visualizations from websites/files; and choose whether a visualization is used as an example for future work. A Mac application is a candidate, not yet a settled architecture.
+The first release is a personal standalone Mac app for revisiting Part 1, Part 2, and current Part 3 offline, recording learning-check results, and browsing/organizing the animation library. It will NOT adapt teaching in this phase. The user will direct visualization authoring, sources, and rules through Codex. Website/file generation and automatic adaptation are future capabilities.
 
 ## Existing assets and behavior
 
@@ -38,7 +38,7 @@ Round 1 — answered by the user:
    Decision: standalone Mac app with offline lessons first; deep OS integration is deferred.
    Unlocks: packaging, storage boundaries, updates, signing/distribution.
 
-Later decisions depend on these answers: exact adaptation behavior; preserving original lesson versions; preferred Part 2 variant; animation-library edits and their effect on past lessons; generation workflow and publication/reuse approval; implementation scope and acceptance criteria. Recompute the frontier after each round rather than silently adopting recommendations.
+Remaining decisions include concept boundaries and supporting sources, assessment criteria, the Codex-to-app authoring handoff, version-specific history/reuse rules, backup restore behavior, packaging, and acceptance criteria. Future generation and adaptation are deferred; do not design their implementation as a first-release requirement.
 
 ## Terminology to resolve
 
@@ -51,9 +51,19 @@ The existing CONTEXT.md uses “reference” for an external source used to chec
 Update CONTEXT.md as terms become settled. Record an ADR only for a settled decision with a meaningful reversal cost, a non-obvious rationale, and a real trade-off. The local/offline product boundary is recorded in ADR 0006; technology choices remain open. App implementation awaits shared-understanding confirmation as required by the invoked grilling skill; the separately requested main merge is already complete.
 
 
-## Round 2 frontier
+## Round 2 — user decisions
 
-Pending decisions: per-concept versus whole-lesson understanding; format and criteria for offline checks; adaptation behavior in this first release; initial animation-library editing scope; default reusable-example eligibility; retaining past Visualization versions; local-history backup/export requirements. Specific packaging choices and the featured Part 2 variant await the read-only inventory.
+6. Track understanding per individual concept. The user asks how concept boundaries/counts are determined and wants consistent high-quality sources. Proposed, not yet approved: a source-backed concept list reviewed by the user.
+7. Use authored selectable predictions and changed scenarios, with explanations, offline.
+8. No teaching adaptation in this phase. The user leads authoring in Codex, including sources and rules. Record understanding without changing the teaching sequence or suggesting personalized recaps/shortcuts.
+9. Browse animation examples, edit descriptions/tags, and enable/exclude future reuse. Visual editing of animation behavior is deferred.
+10. New Visualizations are ineligible as reusable examples until approved by the user.
+11. Keep earlier Visualization versions; updating library patterns must not silently update saved lessons.
+12. Include manual export/import for local learning history and library choices. No account or cloud sync.
+
+## Round 3 frontier
+
+Define the source policy and who approves concept boundaries; how checks establish per-concept evidence; when checks are offered; clarify whether “Codex section” means the existing Codex app/workspace or an embedded authoring area. Then resolve lesson-update handoff and evidence across versions without adding automatic adaptation. Recommendations are not accepted decisions until answered.
 
 
 ## Offline feasibility facts

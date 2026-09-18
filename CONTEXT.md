@@ -110,3 +110,14 @@ _Avoid_: delete, hide, forget
 A question or task whose assessed response provides evidence of the learner’s understanding.
 Viewing or finishing a Visualization is not itself a Learning check.
 _Avoid_: completion, self-assessment
+
+
+**Visualization version**:
+A preserved edition of a Visualization that remains revisitable when a newer edition is added.
+Changes to a reusable pattern do not by themselves replace a saved edition.
+_Avoid_: latest (when referring to a specific preserved edition)
+
+**Check result**:
+The recorded outcome of an assessed response to a Learning check, used as evidence of understanding.
+It is distinct from viewing progress and does not itself change a Visualization’s teaching.
+_Avoid_: watched, completed
