@@ -2,7 +2,7 @@
 
 Branch: `codex/part3-teaching-library`.
 Worktree: `/Users/chen/Documents/ChatGPT/let_me_understand-teaching`.
-Preserved Phosphor snapshot: `f33c419` (copied from the dirty local symbol-comparison worktree, not from GitHub). The source worktree, branch, index, uncommitted files, and port 8766 were left untouched. This experiment is local and not pushed.
+Preserved Phosphor snapshot: `f33c419` (copied from the dirty local symbol-comparison worktree, not from GitHub). The source worktree, branch, index, uncommitted files, and port 8766 were left untouched. The initial teaching experiment was local and not pushed at that stage. See the integration update below for the combined version.
 
 ## Learner problem and hypothesis
 
@@ -55,3 +55,9 @@ Interaction checks: all chapter navigation and next steps; back; replay to the f
 ## Reader refinement: question-led section openings
 
 The six prominent overview headings now ask a question rather than state the answer. For example, “Two handles can reach the same socket” becomes “Does closing one handle close the socket?” This invites a prediction before the sequence explains the relationship. The supporting prompts, original-teaching route, and animations are unchanged. Checked with the teaching comparison suite; learner response still needs review.
+
+## Integration update — 2026-09-19
+
+Integrated the user’s newer animation commit `e477331` from `codex/part3-causal-motion` into `codex/part3-teaching-library` by fast-forward. It descends directly from the question-opening commit `2362a31`; no content conflict or teaching rewrite was needed. Both teaching plans and the CS teaching library remain byte-for-byte unchanged. The original animation preservation statements above describe the initial teaching experiment; [CAUSAL-MOTION.md](CAUSAL-MOTION.md) now defines the current animation and timing behavior. The older teaching query selects older narration with the new renderer.
+
+Revalidation: all 16 Python tests and all seven Node suites pass, including 2,222 causal timeline samples rendered at both widths. Browser smoke checks reached all 22 moments with the new renderer, confirmed the six question openings, scrubbed to completed states, and confirmed optional reasoning reveal pauses playback. This integration does not assert that the legacy token-scale/speed compatibility tests validate the new renderer’s transfer speeds. No animation geometry or timing was altered during integration.

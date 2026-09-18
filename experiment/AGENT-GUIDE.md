@@ -2,6 +2,10 @@
 
 This worktree is the CS-educator teaching experiment on `codex/part3-teaching-library`. Read [TEACHING-EXPERIMENT.md](TEACHING-EXPERIMENT.md) and [the new teaching library](../library/teaching-cs/README.md) first. The default lesson uses the new teaching; `?teaching=original&symbols=phosphor#lessons` preserves the prior narration. Use port 8767 for this checkout. The historical instructions below still describe the shared animation and older branches.
 
+## Current combined version — 2026-09-19
+
+The teaching branch now includes the newer animation from `codex/part3-causal-motion` (`e477331`) by fast-forward. See [CAUSAL-MOTION.md](CAUSAL-MOTION.md) for the current renderer and playback contract. Edit `web/causal-motion.js` for animation; `web/intuition.js` is the lesson shell and playback clock. Question-led openings, narration, optional checks, and the CS teaching library are unchanged. Use port 8767 for this combined checkout. Run `node experiment/tests/test_causal_motion.cjs` and `node experiment/tests/test_teaching_library.cjs` alongside the relevant checks below.
+
 ## Start here
 
 The current default is the shorter connected intuition variation; read [CONNECTED-INTUITION.md](CONNECTED-INTUITION.md) for its research, visual contract, and files. Its source is `web/intuition-plan.js`, `web/intuition.js`, and `web/intuition.css`. The previous detailed course is accessible at `?guide=detailed#lessons`.
