@@ -37,6 +37,9 @@ final class AppModel: ObservableObject {
     @Published var restoreGeneration = 0
     var store: CollectionStore?
     init() {
+        if let icon = Bundle.main.url(forResource: "Wink", withExtension: "icns") {
+            NSApplication.shared.applicationIconImage = NSImage(contentsOf: icon)
+        }
         perform {
             let root = ProcessInfo.processInfo.environment["LEARNING_COLLECTION_HOME"].map { URL(fileURLWithPath: $0) }
                 ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Let Me Understand")

@@ -4,6 +4,7 @@ APP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUTPUT="${1:-$APP_ROOT/dist/Let Me Understand.app}"
 swift build --package-path "$APP_ROOT" -c release
 mkdir -p "$OUTPUT/Contents/MacOS" "$OUTPUT/Contents/Resources"
+cp "$APP_ROOT/Resources/Wink.icns" "$OUTPUT/Contents/Resources/Wink.icns"
 cp "$APP_ROOT/.build/release/LearningCollection" "$OUTPUT/Contents/MacOS/LearningCollection"
 # Only disposable build resources are replaced; collection history is elsewhere.
 rm -rf "$OUTPUT/Contents/Resources/Seeds"
@@ -14,6 +15,7 @@ cat > "$OUTPUT/Contents/Info.plist" <<'PLIST'
 <plist version="1.0"><dict>
 <key>CFBundleExecutable</key><string>LearningCollection</string>
 <key>CFBundleIdentifier</key><string>com.letmeunderstand.collection</string>
+<key>CFBundleIconFile</key><string>Wink</string>
 <key>CFBundleName</key><string>Let Me Understand</string>
 <key>CFBundleDisplayName</key><string>Let Me Understand</string>
 <key>CFBundlePackageType</key><string>APPL</string>
