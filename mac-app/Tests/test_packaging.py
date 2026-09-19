@@ -25,12 +25,34 @@ class PackagingTests(unittest.TestCase):
             self.assertTrue((packages[2] / 'library/teaching-cs/library.js').is_file())
             self.assertGreaterEqual(len(json.loads((pathlib.Path(output) / 'patterns.json').read_text())), 6)
 
+    def test_money_experiment_is_offline_and_has_linked_animation_players(self):
+        with tempfile.TemporaryDirectory() as output:
+            subprocess.run(['python3', str(ROOT / 'mac-app/scripts/package_lessons.py'), output], check=True)
+            root = pathlib.Path(output)
+            lesson = root / 'money-hierarchy'
+            manifest = json.loads((lesson / 'lesson.json').read_text())
+            self.assertTrue((lesson / manifest['entry']).is_file())
+            self.assertGreaterEqual(len(manifest['concepts']), 6)
+            # All local HTML dependencies must travel with the package.
+            import re
+            for page in lesson.glob('*.html'):
+                for asset in re.findall(r'(?:src|href)="([^"#?]+)"', page.read_text()):
+                    if not asset.startswith(('https:', 'http:')):
+                        self.assertTrue((lesson / asset).is_file(), asset)
+            patterns = json.loads((root / 'patterns.json').read_text())
+            linked = [p for p in patterns if 'money-hierarchy@2026-09-19' in p['sourceLessonKeys']]
+            self.assertEqual(len(linked), 6)
+            for pattern in linked:
+                path = root / pattern['preview'].split('?')[0]
+                self.assertTrue(path.is_file())
+                self.assertNotIn('<iframe', path.read_text())
+
     def test_animation_previews_are_extracted_players_with_lesson_associations(self):
         with tempfile.TemporaryDirectory() as output:
             subprocess.run(['python3', str(ROOT / 'mac-app/scripts/package_lessons.py'), output], check=True)
             root = pathlib.Path(output)
             patterns = json.loads((root / 'patterns.json').read_text())
-            self.assertEqual(len(patterns), 8)
+            self.assertEqual(len(patterns), 14)
             for pattern in patterns:
                 player = (root / pattern['preview']).read_text()
                 self.assertIn('id="play"', player)

@@ -1,0 +1,44 @@
+{
+  "id": "money-hierarchy",
+  "title": "Money & Banking \u00b7 Natural hierarchy of money",
+  "version": "2026-09-19",
+  "entry": "index.html",
+  "route": "",
+  "concepts": [
+    {
+      "id": "money-settlement-viewpoint-v1",
+      "title": "An instrument can be money to its holder and credit relative to a higher settlement layer.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/2-the-natural-hierarchy-of-money/"
+    },
+    {
+      "id": "money-promise-counterpart-v1",
+      "title": "A financial claim is an asset of its holder and a liability of its issuer.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/2-the-natural-hierarchy-of-money/"
+    },
+    {
+      "id": "money-inside-boundary-v1",
+      "title": "Whether a claim is inside or outside depends on the consolidation boundary.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/2-the-natural-hierarchy-of-money/"
+    },
+    {
+      "id": "money-scarcity-elasticity-v1",
+      "title": "Credit can expand without its issuer creating higher-level settlement money.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/2-the-natural-hierarchy-of-money/"
+    },
+    {
+      "id": "money-quantity-moneyness-v1",
+      "title": "Credit quantity and the ease of using credit as money are distinct dimensions.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/2-the-natural-hierarchy-of-money/"
+    },
+    {
+      "id": "money-market-makers-v1",
+      "title": "Market makers maintain conversion between layers at particular prices.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/2-the-natural-hierarchy-of-money/"
+    },
+    {
+      "id": "money-policy-slippage-v1",
+      "title": "Central-bank policy influences the hierarchy without mechanically controlling every longer-term rate.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/2-the-natural-hierarchy-of-money/"
+    }
+  ]
+}

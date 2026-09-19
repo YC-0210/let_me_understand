@@ -42,3 +42,19 @@ Eleven Swift tests and one Python package test (including the encoding regressio
 Read the repository DESIGN.md and directly inspected Linear for Mac's list and detail layouts. Applied the existing palette to compact navigation, lesson rows, content-panel borders, restrained buttons and an optional learning inspector. Extracted preview chrome uses the same neutral surfaces and accent; renderer geometry and data are untouched. This is a presentation change, verified with the existing behavioral suite rather than tests asserting cosmetic constants.
 
 The redesigned app compiles and all 12 Swift / 2 packaging tests pass. After the user unlocked the Mac, native screenshots and interaction checks confirmed the compact experiment list, lesson opening, inspector visibility toggle, animation players and Properties disclosure. Visual review caught and removed a duplicated text-field border. The resize gesture was unavailable in the UI tool, so an exact minimum-window-size visual check was not completed.
+
+## Money & Banking chapter-two experiment — 2026-09-19
+
+Added a public packaging test for an offline money-hierarchy lesson and six associated players.
+It failed because the package was absent, then passed after integration. All 12 Swift tests and
+3 Python packaging tests pass; JavaScript syntax and git whitespace checks pass. Browser checks
+traversed 18 guided states with no text-to-text collisions or out-of-diagram labels, checked
+exploration-to-guided playback reset, loaded all six previews with no console errors, and
+observed the IOU player reach its final state. At 390px the page stays within its viewport;
+the diagram deliberately scrolls horizontally to preserve label legibility.
+
+Built, ad-hoc signed and signature-verified the installed app at
+`/Users/chen/Applications/Let Me Understand.app`. The Mac locked during verification, so
+native opening of this new lesson could not yet be inspected. The seed is imported on next
+app launch using the existing non-overwriting import path. User understanding and reuse
+approvals remain unchanged. Source notes explicitly disclose unavailable video captions.

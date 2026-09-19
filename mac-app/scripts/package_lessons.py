@@ -50,6 +50,13 @@ def build(destination):
         (package / 'lesson.json').write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n')
     patterns = [json.loads(p.read_text()) for p in sorted((ROOT / 'library/animation').glob('*.json'))]
     patterns = build_previews(destination, patterns)
+    money = ROOT / 'experiment/money-hierarchy'
+    shutil.copytree(money, destination / 'money-hierarchy')
+    for mode, title in [('hierarchy', 'Move the settlement viewpoint'), ('ledger', 'Trace both sides of a promise'), ('elasticity', 'Trade with an accepted IOU'), ('cycle', 'Separate quantity from moneyness'), ('bridges', 'Connect the monetary layers'), ('policy', 'Trace a liquidity-support loan')]:
+        patterns.append(dict(id='M-' + mode, title=title, tags=['economics', mode],
+                             communicates='Natural hierarchy of money: ' + title.lower() + '.',
+                             preview='money-hierarchy/preview-' + mode + '.html',
+                             sourceLessonKeys=['money-hierarchy@2026-09-19']))
     (destination / 'patterns.json').write_text(json.dumps(patterns, indent=2) + '\n')
 
 if __name__ == '__main__':

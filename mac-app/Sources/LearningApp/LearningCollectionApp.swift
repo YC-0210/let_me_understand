@@ -50,7 +50,7 @@ final class AppModel: ObservableObject {
                   FileManager.default.fileExists(atPath: seed.path) else {
                 throw NSError(domain: "App", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bundled lessons are missing. Build the app with mac-app/scripts/build_app.sh."])
             }
-            for name in ["part1", "part2", "part3"] {
+            for name in ["part1", "part2", "part3", "money-hierarchy"] {
                 let package = seed.appendingPathComponent(name)
                 let manifest = try JSONDecoder().decode(Lesson.self, from: Data(contentsOf: package.appendingPathComponent("lesson.json")))
                 if try !collection.lessons().contains(where: { $0.key == manifest.key }) { _ = try collection.importLesson(from: package) }
