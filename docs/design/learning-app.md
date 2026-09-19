@@ -1,6 +1,7 @@
 # Learning app — design interview
 
-Status: interview in progress. No app architecture or implementation approved yet.
+Status: interview decisions recorded; awaiting final shared-understanding confirmation before implementation.
+Branch: `mac-application` (explicit user request).
 Requested workflow: grill-with-docs, applying grilling and domain-modeling.
 
 ## Confirmed brief
@@ -38,7 +39,7 @@ Round 1 — answered by the user:
    Decision: standalone Mac app with offline lessons first; deep OS integration is deferred.
    Unlocks: packaging, storage boundaries, updates, signing/distribution.
 
-Remaining decisions include checkbox placement after generation, the Codex-to-app authoring handoff, concept history across versions, reuse approval scope, backup restore behavior, packaging, and acceptance criteria. Future generation and adaptation are deferred; do not design their implementation as a first-release requirement.
+Q18–Q22 settle checklist placement, authoring handoff, shared concept history, version-specific reuse approval, and backup restoration. The first-release scope below is ready for final confirmation. Future generation and adaptation are deferred; do not design their implementation as a first-release requirement.
 
 ## Terminology to resolve
 
@@ -66,12 +67,29 @@ Update CONTEXT.md as terms become settled. Record an ADR only for a settled deci
 13. Accepted: each subject uses a consistent approved source set. Technical sources support concepts; educator sources guide explanation style. Codex proposes concepts with citations; the user approves the list. The app counts approved concepts without inventing them.
 14. Accepted: author in the existing Codex app/workspace, not a new embedded authoring area.
 15. Changed direction: just a checkbox for the user to tick, for convenience. No quiz, score, assessment threshold, or additional judgment. This supersedes earlier Q4/Q7 check-based understanding decisions. A checked concept is self-reported, not demonstrated mastery.
-16. The control should appear “after the visualization has generated.” Clarify whether this means availability as soon as it is added to the app or presentation after viewing; creation and learning must remain distinct.
+16. The control should appear “after the visualization has generated.” Q18 resolves this: make the initially unticked checklist available as soon as the finished Visualization is added; creation never implies understanding.
 17. Accepted: preserve Part 2’s existing manual unfamiliar-term explanation choices; no automatic changes based on stored understanding.
 
-## Round 4 frontier
+## Round 4 — user decisions
 
-Clarify post-generation checkbox placement; choose how Codex-created/updated Visualizations enter the standalone collection; decide whether the same unchanged concept shares an Understanding mark across lessons/versions; decide reuse eligibility for a newly edited version; settle backup restore behavior. Framework and packaging are implementation decisions to propose once the authoring handoff is settled. Future generation internals and adaptation rules remain out of scope.
+18. Accepted: a concept checklist is available as soon as a finished Visualization is added, initially unticked except where the same unchanged Concept already has an Understanding mark. The learner can tick or untick at any time.
+19. Accepted: Codex produces an importable lesson package. The app imports an offline copy independent of the original project folder.
+20. Accepted: share Understanding marks for the same unchanged approved Concept across Visualizations. A genuinely different or changed idea gets a separate unticked entry.
+21. Accepted: each new Visualization version needs its own example-reuse approval. Prior version approval is preserved but not inherited.
+22. Accepted: importing a backup shows a restore preview and creates a safety backup before replacing current learning history and library choices.
+
+## First-release acceptance scope
+
+- A standalone personal Mac app with offline Part 1 (ask), Part 2 (mix), and the accepted current Part 3, preserving their interactive behavior and manual explanations.
+- A browsable collection with preserved versions, supporting explicit import of Codex-authored lesson packages into app-owned offline storage.
+- Per-Concept self-reported checkboxes available beside finished Visualizations. Shared unchanged Concepts share marks; no scoring or teaching adaptation.
+- Consistent approved subject source sets and user-reviewed, cited concept lists. Existing identifier counts are not treated as an approved list; preparation of the initial list remains part of content authoring and review.
+- A browsable animation library with editable descriptions/tags and explicit reuse controls. No visual animation editor.
+- Per-version, default-off example eligibility; exclusion keeps material available for viewing. Pattern changes never silently alter preserved lessons.
+- Local persistence and manual backup export/import, with preview and safety backup before restore.
+- Authoring remains in the existing Codex workspace. In-app generation, account/sync features, automatic teaching adaptation, and automated mastery judgments are deferred.
+
+Final shared-understanding confirmation is the remaining interview step. Routine implementation choices stay within these boundaries; new product trade-offs must be surfaced rather than silently expanding scope.
 
 ## Offline feasibility facts
 
@@ -82,4 +100,4 @@ Part 1 ask.html and Part 2 mix.html embed lesson data and scripts, with no runti
 
 Part 2 exposes eight vocabulary IDs (server, framework, request, wsgi, environ, headers, callback, socket). The historical detailed Part 3 plan has 43 introduced identifiers and prerequisite sequencing validation; these are authoring identifiers, not a shared approved concept count. Current Part 3 has four reveal-only reflection prompts without submitted answers. Historical Part 3 has five multiple-choice questions with per-option feedback that may be reusable after review. Part 1 and Part 2 have no assessed checks in their current pages. There is no cross-lesson concept registry, concept-to-check mapping, or importable lesson-bundle format yet.
 
-The subject sources already recorded are Ruslan Spivak’s web-server Parts 1–3; the educator references are a separate teaching-method layer. Q13 approved consistent subject sources and a reviewed concept list; existing identifier counts are not an approved concept inventory. Q15 removes assessment thresholds and scoring from this release. Q16 still needs clarification about post-generation placement.
+The subject sources already recorded are Ruslan Spivak’s web-server Parts 1–3; the educator references are a separate teaching-method layer. Q13 approved consistent subject sources and a reviewed concept list; existing identifier counts are not an approved concept inventory. Q15 removes assessment thresholds and scoring from this release. Q18 resolves post-generation placement.

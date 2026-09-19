@@ -125,7 +125,7 @@ _Avoid_: watched, completed
 
 **Concept**:
 A distinct source-backed idea in an approved list, which may be taught by more than one Visualization.
-Repeated appearances do not make it a new Concept.
+Repeated appearances share the same Understanding mark; a changed idea is a separate Concept.
 _Avoid_: paragraph, term count, slide
 
 **Approved source set**:
@@ -137,3 +137,14 @@ _Avoid_: automatically selected references
 A learner’s explicit checkbox choice that they understand a Concept, without automated assessment.
 It is self-reported understanding, not a Check result or a consequence of generating or viewing a Visualization.
 _Avoid_: demonstrated mastery, test score, completion
+
+
+**Lesson package**:
+A portable authored Visualization edition with the material needed to display it offline
+and its associated concept/source information.
+_Avoid_: project folder, generated URL
+
+**Reuse approval**:
+The learner’s permission for a particular Visualization version to serve as a Reusable example.
+Approval of one edition does not approve a changed edition.
+_Avoid_: collection membership, blanket approval
