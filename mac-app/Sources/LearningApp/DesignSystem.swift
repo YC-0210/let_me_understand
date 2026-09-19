@@ -49,7 +49,7 @@ struct WorkspaceBadge: View {
 
 struct WorkspaceFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
-        configuration.font(.system(size: 13)).padding(8)
+        configuration.textFieldStyle(.plain).font(.system(size: 13)).padding(8)
             .background(WorkspaceStyle.raised, in: RoundedRectangle(cornerRadius: 6))
             .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(WorkspaceStyle.strongLine))
     }

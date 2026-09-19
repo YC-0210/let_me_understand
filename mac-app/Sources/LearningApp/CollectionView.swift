@@ -77,7 +77,7 @@ struct CollectionView: View {
                     Button("Show local collection") { if let root = model.store?.root { NSWorkspace.shared.open(root) } }
                 } label: {
                     HStack { Image(systemName: "slider.horizontal.3"); Text("Collection tools"); Spacer(); Image(systemName: "chevron.down").font(.system(size: 9)) }
-                }.menuStyle(.borderlessButton).foregroundStyle(WorkspaceStyle.muted)
+                }.menuStyle(.borderlessButton).foregroundStyle(WorkspaceStyle.muted).tint(WorkspaceStyle.muted)
                 Label("Local workspace", systemImage: "internaldrive").font(.system(size: 11)).foregroundStyle(WorkspaceStyle.subtle)
             }.padding(14)
         }.padding(.horizontal, 6).frame(maxHeight: .infinity).background(WorkspaceStyle.canvas)
@@ -210,7 +210,7 @@ struct CollectionView: View {
                     model.perform { try model.store?.setExperiment(lesson.key, !(model.store?.isExperiment(lesson.key) ?? true)) }
                 }
             } label: { Image(systemName: "ellipsis").foregroundStyle(WorkspaceStyle.subtle) }
-                .menuStyle(.borderlessButton).frame(width: 22).help("Visualization options")
+                .menuStyle(.borderlessButton).tint(WorkspaceStyle.subtle).frame(width: 22).help("Visualization options")
         }.padding(.horizontal, 20).frame(height: 76)
             .background(hoveredRow == lesson.key ? WorkspaceStyle.hover : .clear)
             .overlay(alignment: .bottom) { WorkspaceRule().padding(.leading, 54) }
