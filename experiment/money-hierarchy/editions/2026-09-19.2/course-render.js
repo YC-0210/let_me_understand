@@ -10,36 +10,16 @@ window.MoneyCourseDrawing=(()=>{
  const moving=(name,t,active,color=purple)=>{const x=160+(active?Math.min(280,Math.max(0,t-.3)*180):0);return icon(name,x,213,26,color);};
  const actors=(left,right,leftIcon='user',rightIcon='storefront')=>icon(leftIcon,110,123,54)+txt(110,172,left)+icon(rightIcon,490,123,54)+txt(490,172,right);
  function render(p,active,t){const motion=active&&Boolean(p.action),done=motion&&t>=1.86;let a='';const scene=p.scene;
-  if(scene==='loan'){
-   a+=icon('user',100,52,42)+txt(100,92,'You')+icon('bank',500,52,42)+txt(500,92,'Your bank');
-   a+=line(150,145,450,145,purple,true)+icon('wallet',300,145,36,purple)+txt(300,117,active?'Bank owes you $5 now':'Spendable balance','small')+txt(100,151,active?'$5':'$0','amount');
-   a+=line(150,229,450,229,green,true)+icon('scroll',300,229,36,green)+txt(300,201,active?'You owe bank $5 later':'Loan to repay','small')+txt(500,235,active?'$5':'$0','amount');
-   a+=txt(300,281,'Two promises · no new reserves','small')+wink(45,137);
-  }else if(scene==='interbank'){
-   a+=icon('wallet',100,43,34)+txt(100,83,'You · Bank A','small')+txt(100,119,done?'$0':'$5','amount')+icon('wallet',500,43,34)+txt(500,83,'Café · Bank B','small')+txt(500,119,done?'$5':'$0','amount');
-   a+=txt(300,62,'Customer deposits','small')+txt(300,96,done?'Accounts updated':'One $5 purchase','small',purple);
-   a+=icon('bank',100,174,38)+icon('bank',500,174,38)+txt(300,167,'At the central bank','small')+txt(300,195,'Reserves','small',purple)+line(160,222,440,222,gray,true);
-   const x=160+(motion?Math.min(280,Math.max(0,t-.3)*180):0);a+=icon('vault',x,222,26,purple);
-   a+=txt(100,264,done?'$15':'$20','amount')+txt(500,264,done?'$25':'$20','amount')+wink(done?555:45,167);
-  }else if(scene==='dealer'){
-   a+=actors('You','Dealer','user','user')+txt(300,36,'Bond: $10 next year','small');
-   const dx=motion?Math.min(280,Math.max(0,t-.3)*180):0;
-   a+=line(160,206,440,206,purple,true)+icon('scroll',160+dx,206,26,purple)+line(160,252,440,252,green,true)+icon('wallet',440-dx,252,26,green)+txt(300,178,'$9 today ←','small',green)+focus(done?448:68,60);
-  }else if(scene==='bond-price'){
-   a+=icon('scroll',300,68,46,purple)+txt(300,112,'Still promises $10 next year','small')+txt(145,176,'Old quote','small')+txt(145,213,'$9','amount')+txt(455,176,'New quote','small')+txt(455,213,'$8','amount')+line(207,200,386,200,gray,true)+txt(300,275,active?'Price changed · promise unchanged':'What changed?','small')+wink(385,144);
-  }else if(scene==='timing'){
-   a+=icon('storefront',300,46,40)+txt(300,83,'The café','small')+line(90,200,510,200,gray,true)+icon('money',140,140,36,green)+txt(140,179,'$5 due','amount')+txt(140,237,'Today','small')+icon('scroll',460,140,36,purple)+txt(460,179,'$10 expected','amount')+txt(460,237,'Tomorrow','small')+txt(300,278,active?'Dates matter, not only totals':'Cash available today: $0','small')+wink(65,140);
-  }else if(['cash','iou','repay-iou','deposit','reserves','withdraw','support'].includes(scene)){
-   const config={cash:['You','Café','user','storefront','money'],'repay-iou':['You','Café','user','storefront','money'],iou:['You','Café','user','storefront','scroll'],deposit:['Your account','Café account','wallet','wallet','wallet'],reserves:['Bank A','Bank B','bank','bank','vault'],withdraw:['Your bank','You','bank','user','money'],dealer:['Bond holder','Dealer','user','user','scroll'],support:['Central bank','Your bank','bank','bank','vault']}[scene];
+  if(['cash','iou','deposit','reserves','withdraw','dealer','support'].includes(scene)){
+   const config={cash:['You','Café','user','storefront','money'],iou:['You','Café','user','storefront','scroll'],deposit:['Your account','Café account','wallet','wallet','wallet'],reserves:['Bank A','Bank B','bank','bank','vault'],withdraw:['Your bank','You','bank','user','money'],dealer:['Bond holder','Dealer','user','user','scroll'],support:['Central bank','Your bank','bank','bank','vault']}[scene];
    a+=actors(...config.slice(0,4))+line(160,213,440,213,gray,true)+moving(config[4],t,motion,scene==='cash'?green:purple);
    if(['cash','iou'].includes(scene)){a+=icon('fork-knife',300,58,32)+txt(300,93,scene==='cash'?'Lunch · $5':'“$5 tomorrow”','small',scene==='cash'?green:purple);}
    if(scene==='cash'||scene==='deposit'){a+=txt(110,265,done?'$0':'$5','amount')+txt(490,265,done?'$5':'$0','amount',done?green:'');}
    if(scene==='iou'){a+=txt(300,266,done?'You still owe $5':'A promise, not cash','',purple);}
-   if(scene==='repay-iou'){a+=icon('scroll',300,58,34,done?gray:purple)+txt(300,93,done?'IOU paid · $0 owed':'IOU unpaid · $5 owed','small')+txt(300,267,done?'Cash received · promise settled':'Pay the existing debt','small',green);}
    if(scene==='reserves'){a+=txt(300, 70,'Central-bank reserves','small',purple);}
-   if(scene==='withdraw'){a+=txt(300,70,'$5 balance → $5 note','',purple)+txt(300,266,done?'Your balance: $0 · Cash: $5':'Your balance: $5 · Cash: $0','muted');}
+   if(scene==='withdraw'){a+=txt(300,70,'$5 balance → $5 note','',purple)+txt(300,266,done?'One-for-one':'The bank promises conversion','muted');}
    if(scene==='dealer'){a+=txt(300,70,'A bond: future payments','small')+txt(300,266,done?'Sale price can change':'Sell for money now','muted');}
-   if(scene==='support'){a+=txt(300,70,'A loan of reserves','small',purple)+txt(300,266,done?'New reserves · new loan owed':'Bank cannot issue its own reserves','muted');}
+   if(scene==='support'){a+=txt(300,70,'A loan of reserves','small',purple)+txt(300,266,done?'The bank now owes a loan':'Reserves for payments','muted');}
    a+=focus(done?448:p.focus==='shop'?448:p.focus==='promise'?265:68,!done&&p.focus==='promise'?125:60);
   }else if(scene==='pair'){
    a+=box(42,96,224,138,active?gray:purple)+box(334,96,224,138,active?purple:gray)+icon('user',154,63,36)+icon('bank',446,63,36)+txt(154,132,'You')+txt(446,132,'Your bank')+txt(154,178,'Are owed $5','',green)+txt(446,178,'Owes you $5','',purple)+txt(154,212,active?'Your asset':'','small')+txt(446,212,active?'Its liability':'','small')+line(270,167,330,167,purple,true)+txt(300,276,'One bank balance','muted')+focus(active?535: 62,45);
@@ -55,11 +35,11 @@ window.MoneyCourseDrawing=(()=>{
   }else if(scene==='quantity'||scene==='trust'){
    const n=scene==='quantity'?(active?4:2):4;
    for(let i=0;i<n;i++)a+=icon('scroll',180+i*80,147,36,scene==='trust'&&active?'#979daa':purple);
-   a+=txt(300, 80,scene==='trust'&&active?'Supplier: “Payment today, please.”':'Promises to pay later','small')+txt(300,225,`${n} IOUs`,'amount')+txt(300,270,scene==='trust'?(active?'Same count · harder to use':'Café accepted these IOUs'):'Each is still the same size','small')+wink(111,109);
+   a+=txt(300, 80,scene==='trust'&&active?'“Please pay cash instead.”':'Promises to pay later','small')+txt(300,225,`${n} IOUs`,'amount')+txt(300,270,scene==='trust'?(active?'Same count · harder to use':'Willingly accepted'):'Each is still the same size','small')+wink(111,109);
   }else if(scene==='rates'){
-   a+=icon('bank',110,120,54)+txt(110,174,'Central bank')+txt(445,118,'Business')+txt(445,149,'loan rate')+line(180,130,340,130,purple,true)+txt(300,240,active?'Influence ≠ identical changes':'One policy rate · many other rates','small')+focus(66,60);
+   a+=icon('bank',110,120,54)+txt(110,174,'Central bank')+txt(445,118,'Longer-term')+txt(445,149,'borrowing')+line(180,130,340,130,purple,true)+txt(300,240,active?'Influence ≠ identical changes':'One policy rate · many other rates','small')+focus(66,60);
   }else{
-   a+=icon('storefront',110,102,48)+txt(110,152,'Café')+icon('scroll',110,204,34,purple)+txt(110,248,'Holds your IOU','small')+icon('user',490,102,48)+txt(490,152,'Supplier')+icon('wallet',490,204,34,green)+txt(490,248,'Wants bank payment','small')+txt(300,205,'≠','amount')+wink(300,94);
+   a+=icon('scroll',300,140,64,purple)+txt(300,225,'Who owes? What pays? Who connects?','small')+wink(228,87);
   }
   return a;
  }

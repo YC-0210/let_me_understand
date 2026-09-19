@@ -4,11 +4,11 @@ An original offline experiment based on chapter 2 of Perry Mehrling’s course n
 printed pp. 7–14 (PDF pp. 8–15). See [sources](sources.html) and the
 [economics teaching library](../../library/teaching-economics/README.md).
 
-## Beginner-first edition · 2026-09-19.2
+## Beginner-first edition · 2026-09-20
 
 Start with buying a $5 lunch, then distinguish payment from a promise. Introduce bank
 balances, reserves, paired claims and the historical hierarchy only after their everyday
-motivation. Twenty-one short screens each contain one diagram, visible Wink guidance and
+motivation. Twenty-five short screens each contain one diagram, visible Wink guidance and
 one next action or a two-choice question. Additional explanation and the route map are
 optional. Animations last six seconds; advancing is always manual. No scoring or adaptation.
 
@@ -19,7 +19,7 @@ optional. Animations last six seconds; advancing is always manual. No scoring or
 - `lesson.json`: seven proposed concepts; approval and understanding remain user choices.
 - `overview-edition.html`: preserved previous overview, using `plan.js`, `render.js`, `lesson.js` and `style.css`.
 
-The new package key is `money-hierarchy@2026-09-19.2`; saved previous editions are preserved.
+The new package key is `money-hierarchy@2026-09-20`; saved previous editions are preserved.
 Linked animation placement follows the new edition. Future-example approval defaults to off.
 
 ## Representation contract
@@ -36,9 +36,11 @@ Consolidation does not repay debt. Reduced motion displays settled states. No ru
 ## Verification
 
 The new edition packaging assertion failed before integration and passed afterward.
-All 12 Swift and 3 Python packaging tests pass. Browser review traversed all 21 screens,
+All 12 Swift and 3 Python packaging tests pass. Browser review traversed all 25 screens,
 checked label collisions, manual progression, feedback and pause/resume. At 390px the opening
 fits without horizontal scrolling. See mac-app/TESTING.md for installation verification.
 
 The Brilliant reference was sampled, not completed; no learning-effectiveness claim is made.
 No verified video transcript was available; the source page retains that limitation.
+
+The [depth review](../../library/teaching-economics/DEPTH-REVIEW.md) records the extended reading. The accepted 21-step edition remains at `editions/2026-09-19.2/index.html`. New scenes distinguish IOU repayment, loan creation, cross-bank account updates, a two-sided bond sale and a cash-flow timing gap.

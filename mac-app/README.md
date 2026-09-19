@@ -73,4 +73,4 @@ Preview extraction lives in `scripts/extract_previews.py`. It retains original d
 
 ## Money & Banking experiment
 
-Chapter 2 adds 21 short, user-paced screens beginning with a $5 lunch, visible Wink guidance, six-second animations, optional source notes, and seven proposed concepts. Its six animation entries use the same renderer as the lesson. See [the experiment notes](../experiment/money-hierarchy/README.md). The supplied lecture compilation has no available transcript; the installed source notes disclose this.
+Chapter 2 adds 25 short, user-paced screens beginning with a $5 lunch, visible Wink guidance, six-second animations, optional source notes, and seven proposed concepts. Its six animation entries use the same renderer as the lesson. See [the experiment notes](../experiment/money-hierarchy/README.md). The supplied lecture compilation has no available transcript; the installed source notes disclose this.

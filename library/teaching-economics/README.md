@@ -69,3 +69,8 @@ Teaching card ECON06: start with a familiar purchase, ask what happens when cash
 then name the new concept after the learner has seen its purpose. Keep one decision on screen.
 Wink speaks directly and points at the object involved. More explanation stays behind a
 voluntary disclosure; the route map stays closed. The new money edition has 21 manual steps.
+
+
+## Deeper subject preparation
+
+The [teacher depth review](DEPTH-REVIEW.md) records the 90-page primary reading, ten conceptual audits, worked accounting examples, source boundaries and resulting changes in the 2026-09-20 edition. Use it before authoring further money lessons. Deeper preparation should improve the explanation, not increase simultaneous screen density.

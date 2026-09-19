@@ -75,3 +75,25 @@ native window; Wink, café, customer, balances and the payment button are visibl
 The payment button starts the animation and Wink changes to a watching instruction. The
 previous overview source remains available at overview-edition.html; saved editions are
 not overwritten. This is functional/visual verification, not a measured learning study.
+
+## Subject-depth revision · 2026-09-20
+
+The teacher preparation record is `library/teaching-economics/DEPTH-REVIEW.md`.
+Updated the existing public packaging edition assertion first; observed its failure against
+2026-09-19.2, then passed it after adding 2026-09-20 and matching pattern source keys.
+All 12 Swift and 3 packaging tests pass; JavaScript syntax and whitespace checks pass.
+
+Browser checks traversed all 25 screens and inspected initial/final diagram labels for
+collisions and overflow. Verified the new repayment, loan, cross-bank transfer, bond sale,
+price comparison and timing cases. The cross-bank final state is customer $0 / café $5,
+A reserves $15 / B $25 from initial $20 each. Animations stop at six seconds without advancing.
+The final question returns to the opening through Start again. No console errors observed.
+The long cross-bank and loan screens fit at 390×844 without horizontal scrolling; screenshots
+were inspected. Additional explanation remains collapsed. No effectiveness claim follows from
+these checks; the transfer question is formative, not a stored assessment.
+
+Built, installed and signature-verified the app. Native inspection confirmed both preserved
+2026-09-19.2 and new 2026-09-20 editions, with the new 25-step course loaded from app-owned
+file storage. The accepted earlier beginner edition is also linked from the source page.
+All six library preview entry points also render without console errors; the archived
+beginner page opens as 1 / 21, independently of the new 1 / 25 course.
