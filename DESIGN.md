@@ -546,3 +546,17 @@ Linear's depth is carried by surface ladder + hairline borders. The brand resist
 - Light mode is not documented because the marketing site does not ship a light theme.
 - Linear's actual product UI uses a richer color-tag palette (red, orange, yellow, green, blue, purple) for issue priorities and project labels — those colors live in the in-product surfaces shown in mockups.
 - The custom display, text, and mono families are proprietary; an open-source substitute is acceptable.
+
+## Mac application adaptation — 2026-09-19
+
+The native application uses this palette together with direct, read-only observation of Linear for Mac's list and detail views. The marketing display sizes above are not applied to workspace navigation.
+
+- **Frame:** near-black sidebar and titlebar surround a slightly raised content panel. Use a thin border and 10px panel corners; avoid drop shadows.
+- **Navigation:** compact 32px rows, 13px system text, 16px monochrome glyphs, quiet counts and neutral selected backgrounds. Wink is the workspace mark. No oversized wordmark or lavender selection blocks.
+- **Page hierarchy:** 52px title/action header, then a 46px tab strip when needed. Titles identify the current section instead of advertising it. Section labels and metadata use 11–12px text.
+- **Collection:** lessons are scannable rows with a title, edition, learning status, date and overflow action. Whole-row opening stays keyboard accessible. Primary accent belongs to the import action, links and focus.
+- **Detail:** a compact breadcrumb/action bar sits over the visualization; learning properties occupy a quiet, optional right inspector separated by a hairline.
+- **Animation library:** real extracted animations remain the focus. Header and properties occupy compact bands around each player, with 8px panel corners. Player controls share the application palette, while experimental drawing geometry and semantic colors retain their authored meaning.
+- **Inputs and controls:** 6px corners, 30px desktop buttons, charcoal surfaces, thin borders and visible focus. SF system fonts implement the documented fallback rather than copying Linear's proprietary fonts.
+
+Implementation tokens live in `mac-app/Sources/LearningApp/DesignSystem.swift`. Collection layout lives in `CollectionView.swift`; the standalone preview player chrome lives in `mac-app/scripts/extract_previews.py`. No Linear workspace content is incorporated into this application.

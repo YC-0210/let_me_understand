@@ -36,3 +36,9 @@ Eleven Swift tests and one Python package test (including the encoding regressio
 - Browser runtime checks exercised all eight players and scrubbed the extracted Part 2 and all six pattern players, checking rendered shapes, labels and no JavaScript errors.
 - Native app inspection confirmed Parts 1–3 under Experiments and inline WebKit players with playback controls in Animation library. Descriptions/tags/reuse are secondary disclosures.
 - Current suite: 12 Swift tests and 2 packaging tests. Original visualization source files are unchanged.
+
+## Linear-inspired desktop design
+
+Read the repository DESIGN.md and directly inspected Linear for Mac's list and detail layouts. Applied the existing palette to compact navigation, lesson rows, content-panel borders, restrained buttons and an optional learning inspector. Extracted preview chrome uses the same neutral surfaces and accent; renderer geometry and data are untouched. This is a presentation change, verified with the existing behavioral suite rather than tests asserting cosmetic constants.
+
+The redesigned app compiles and all 12 Swift / 2 packaging tests pass. Final native screenshot, minimum-window-size and interaction checks for this design revision are pending: the Mac locked after Linear was inspected, and computer-use reported that manual unlock is required. Do not treat the earlier native checks as visual approval of this revision.
