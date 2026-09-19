@@ -55,3 +55,17 @@ reported no captions; the browser transcript-export tool returned no transcript.
 also reported no captions. A focused search found the course listing and notes, not a verified
 spoken transcript. No spoken claims, timecodes or lecture quotes are invented. The source page
 in the installed lesson discloses this limitation.
+
+
+## Beginner-first layout reference · 2026-09-19
+
+Inspected Brilliant’s [Why Vector Spaces?](https://brilliant.org/courses/lin-alg/introduction-to-vector-spaces-2/why-vector-spaces/)
+opening, first exercise and the user's open point/line/plane analogy screen. Did not submit
+answers or complete the course; the user's existing progress was preserved. The observed
+pattern is a narrow central column, one graphic, concise setup and one explicit next action.
+This informs presentation only, not economic claims. No Brilliant text or artwork is copied.
+
+Teaching card ECON06: start with a familiar purchase, ask what happens when cash is missing,
+then name the new concept after the learner has seen its purpose. Keep one decision on screen.
+Wink speaks directly and points at the object involved. More explanation stays behind a
+voluntary disclosure; the route map stays closed. The new money edition has 21 manual steps.

@@ -58,3 +58,20 @@ Built, ad-hoc signed and signature-verified the installed app at
 native opening of this new lesson could not yet be inspected. The seed is imported on next
 app launch using the existing non-overwriting import path. User understanding and reuse
 approvals remain unchanged. Source notes explicitly disclose unavailable video captions.
+
+## Beginner-first money edition · 2026-09-19.2
+
+Added a failing public packaging assertion for the new edition and its six source-linked
+patterns, then updated the package and versioned pattern keys. All 12 Swift and 3 Python
+tests pass. JavaScript syntax and whitespace checks pass. Browser review traversed all 21
+screens, checked SVG label collisions and tested wrong-answer feedback, correct answers,
+manual progression, map navigation and pause/resume. All six extracted previews render
+without console errors; the completed preview stops instead of advancing. At 390×844 the
+opening has no horizontal overflow and its primary action fits within the viewport.
+
+Built and installed the signed app. Native inspection confirmed edition 2026-09-19.2 opens
+from app-owned file storage with learning notes initially hidden. The opening fits in the
+native window; Wink, café, customer, balances and the payment button are visible together.
+The payment button starts the animation and Wink changes to a watching instruction. The
+previous overview source remains available at overview-edition.html; saved editions are
+not overwritten. This is functional/visual verification, not a measured learning study.

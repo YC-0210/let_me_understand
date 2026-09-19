@@ -9,6 +9,8 @@
     "holder": "user",
     "conversion": "arrows-left-right",
     "institution": "bank",
-    "reserves": "vault"
+    "reserves": "vault",
+    "lunch": "fork-knife",
+    "cafe": "storefront"
   }
 }

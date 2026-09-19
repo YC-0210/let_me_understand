@@ -24,7 +24,8 @@ struct Pattern: Decodable, Identifiable {
     let communicates: String
     let preview: String
     let sourceLessonKeys: [String]
-    var key: String { "pattern-" + id + "@2026-09-19" }
+    let version: String?
+    var key: String { "pattern-" + id + "@" + (version ?? "2026-09-19") }
 }
 
 @MainActor

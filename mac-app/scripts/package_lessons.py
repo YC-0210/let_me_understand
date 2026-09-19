@@ -56,7 +56,7 @@ def build(destination):
         patterns.append(dict(id='M-' + mode, title=title, tags=['economics', mode],
                              communicates='Natural hierarchy of money: ' + title.lower() + '.',
                              preview='money-hierarchy/preview-' + mode + '.html',
-                             sourceLessonKeys=['money-hierarchy@2026-09-19']))
+                             version='2026-09-19.2', sourceLessonKeys=['money-hierarchy@2026-09-19.2']))
     (destination / 'patterns.json').write_text(json.dumps(patterns, indent=2) + '\n')
 
 if __name__ == '__main__':

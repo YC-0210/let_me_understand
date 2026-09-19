@@ -1,50 +1,44 @@
 # Money & Banking — Natural hierarchy of money
 
-An original, offline experiment for chapter 2 of the user's Perry Mehrling course notes.
-Main line: printed pp. 7–14, PDF pp. 8–15. Research and transcript-access limitation:
-[Sources](sources.html) and [economics teaching library](../../library/teaching-economics/README.md).
+An original offline experiment based on chapter 2 of Perry Mehrling’s course notes,
+printed pp. 7–14 (PDF pp. 8–15). See [sources](sources.html) and the
+[economics teaching library](../../library/teaching-economics/README.md).
 
-## Learner problem
+## Beginner-first edition · 2026-09-19.2
 
-“Money” and “credit” sound like permanent labels. This experiment asks the learner to follow
-settlement through different viewpoints, then explain the claims and institutions that make
-conversion possible. Six question-led sections contain three six-second moments each.
-The chapter is a conceptual overview, not a complete banking or monetary-policy course.
+Start with buying a $5 lunch, then distinguish payment from a promise. Introduce bank
+balances, reserves, paired claims and the historical hierarchy only after their everyday
+motivation. Twenty-one short screens each contain one diagram, visible Wink guidance and
+one next action or a two-choice question. Additional explanation and the route map are
+optional. Animations last six seconds; advancing is always manual. No scoring or adaptation.
 
-## Files
+- `course-plan.js`: original examples, questions, guidance and deeper explanation.
+- `course-render.js`: shared SVG drawing and Wink focus; selected ledger entries are incomplete.
+- `course.js` / `course.css`: manual progression, feedback, pause/replay and responsive layout.
+- `preview-*.html`: six standalone players sharing the actual lesson renderer, without iframes.
+- `lesson.json`: seven proposed concepts; approval and understanding remain user choices.
+- `overview-edition.html`: preserved previous overview, using `plan.js`, `render.js`, `lesson.js` and `style.css`.
 
-- `plan.js`: question, explanation, deeper reading, source pages, voluntary reflection.
-- `render.js`: six shared SVG diagrams; selected balance-sheet entries are deliberately incomplete.
-- `lesson.js`: playback and independent exploration controls. No scoring or history adaptation.
-- `symbols/`: pinned Phosphor Regular geometry, mappings and MIT license; `icons.js` embeds it offline.
-- `preview-*.html`: standalone entry points sharing the same drawing and playback, not iframes.
-- `lesson.json`: seven proposed concepts. App approval and understanding remain user choices.
-
-The six pattern entries are bundled by `mac-app/scripts/package_lessons.py`. Their source key
-is `money-hierarchy@2026-09-19`, so their experiment/collection placement follows the lesson.
-All future-example approvals default to off. Existing saved editions and history are preserved.
+The new package key is `money-hierarchy@2026-09-19.2`; saved previous editions are preserved.
+Linked animation placement follows the new edition. Future-example approval defaults to off.
 
 ## Representation contract
 
-Gold = coins; currency = banknote; deposit = wallet; security/IOU = scroll;
-institution = bank; central-bank reserves = vault. Every symbol also has a text label.
-The gold-standard ladder is explicitly historical. The reserve-support scene is explicitly
-modern and schematic. Counts, amounts and qualitative distances are illustrative, never data.
+Pinned Phosphor Regular geometry is embedded offline, with labelled objects and its MIT
+license in `symbols/`. Gold = coins; currency = banknote; deposit = wallet; IOU = scroll;
+reserves = vault; café = storefront; lunch = fork and knife. Historical gold conversion is
+explicitly distinguished from modern reserves. Amounts and distances are illustrative.
 
-Travelling claim/reserve tokens have a constant 26-unit size and travel at 180 SVG units/s.
-Wink identifies the active layer or relation. Ledger links draw progressively; credit-count
-changes fade new entries in. Boundary changes do not destroy underlying claims. Reduced motion
-renders settled states. No assets are downloaded at lesson runtime.
+Moving tokens remain 26 SVG units and travel at 180 SVG units/second. Wink points to the
+active object while its speech tells the reader what to do or watch. Refused IOUs do not move.
+Consolidation does not repay debt. Reduced motion displays settled states. No runtime downloads.
 
-## Verification, 2026-09-19
+## Verification
 
-The public package-output test failed when the money package was absent, then passed after
-integration. All 12 Swift tests and 3 packaging tests pass. JavaScript syntax checks pass.
-Browser inspection traversed all 18 moments, checked SVG text bounds/pairwise label overlaps,
-changed the settlement viewpoint and independent credit controls, and checked playback reset.
-At 390px the page has no horizontal overflow; the labelled diagram has its own horizontal
-scroll region to retain legible labels. Desktop screenshots reviewed the hierarchy, ledger,
-and policy views. Native installation status and final verification are recorded in mac-app/TESTING.md.
+The new edition packaging assertion failed before integration and passed afterward.
+All 12 Swift and 3 Python packaging tests pass. Browser review traversed all 21 screens,
+checked label collisions, manual progression, feedback and pause/resume. At 390px the opening
+fits without horizontal scrolling. See mac-app/TESTING.md for installation verification.
 
-No measured learning-effectiveness claim. No verified transcript was available from the supplied
-YouTube compilation or the author-linked instruments segment; this remains a research limitation.
+The Brilliant reference was sampled, not completed; no learning-effectiveness claim is made.
+No verified video transcript was available; the source page retains that limitation.

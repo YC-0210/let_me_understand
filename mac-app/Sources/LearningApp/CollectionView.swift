@@ -5,7 +5,7 @@ struct CollectionView: View {
     @ObservedObject var model: AppModel
     @State private var section = "experiments"
     @State private var experimentalAnimations = true
-    @State private var showNotes = true
+    @State private var showNotes = false
     @State private var hoveredRow: String? = nil
 
     private var sectionTitle: String { section == "library" ? "Animation library" : section == "experiments" ? "Experiments" : "Collection" }
