@@ -1,0 +1,5 @@
+# Use a native Mac shell with preserved web lessons
+
+Use SwiftUI for the personal collection, understanding controls and file dialogs, with WebKit for existing visualizations. Swift and the macOS SDK are already installed. The alternative of rewriting the lesson renderers would duplicate their timing and interaction behavior and risk changing the accepted teaching outcome. A local HTML copy preserves those lessons while native controls manage durable history through a small CollectionStore interface.
+
+Lesson directories are copied into Application Support and never overwritten by an import. Metadata changes are atomically saved in JSON; backups have an explicit format version. The initial personal build is ad-hoc signed and has no account, hosted service or runtime package dependency. External citations open in the user's browser, while HTTP resources within the lesson WebView are blocked. This supports offline learning but does not promise that arbitrary remotely dependent web pages can be imported as working lessons.

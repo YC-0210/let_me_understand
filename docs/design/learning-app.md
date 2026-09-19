@@ -1,6 +1,6 @@
 # Learning app — design interview
 
-Status: interview decisions recorded; awaiting final shared-understanding confirmation before implementation.
+Status: shared understanding and all five TDD seams confirmed; first-release implementation built on mac-application.
 Branch: `mac-application` (explicit user request).
 Requested workflow: grill-with-docs, applying grilling and domain-modeling.
 
@@ -39,7 +39,7 @@ Round 1 — answered by the user:
    Decision: standalone Mac app with offline lessons first; deep OS integration is deferred.
    Unlocks: packaging, storage boundaries, updates, signing/distribution.
 
-Q18–Q22 settle checklist placement, authoring handoff, shared concept history, version-specific reuse approval, and backup restoration. The first-release scope below is ready for final confirmation. Future generation and adaptation are deferred; do not design their implementation as a first-release requirement.
+Q18–Q22 settle checklist placement, authoring handoff, shared concept history, version-specific reuse approval, and backup restoration. The first-release scope below was confirmed by the user. Future generation and adaptation are deferred; do not design their implementation as a first-release requirement.
 
 ## Terminology to resolve
 
@@ -49,7 +49,7 @@ The existing CONTEXT.md uses “reference” for an external source used to chec
 
 ## Decision recording
 
-Update CONTEXT.md as terms become settled. Record an ADR only for a settled decision with a meaningful reversal cost, a non-obvious rationale, and a real trade-off. The local/offline product boundary is recorded in ADR 0006; technology choices remain open. App implementation awaits shared-understanding confirmation as required by the invoked grilling skill; the separately requested main merge is already complete.
+Update CONTEXT.md as terms become settled. Record an ADR only for a settled decision with a meaningful reversal cost, a non-obvious rationale, and a real trade-off. The local/offline product boundary is recorded in ADR 0006; the implementation choice is recorded in ADR 0009. Shared understanding was confirmed before implementation; the separately requested main merge is already complete.
 
 
 ## Round 2 — user decisions
@@ -89,7 +89,19 @@ Update CONTEXT.md as terms become settled. Record an ADR only for a settled deci
 - Local persistence and manual backup export/import, with preview and safety backup before restore.
 - Authoring remains in the existing Codex workspace. In-app generation, account/sync features, automatic teaching adaptation, and automated mastery judgments are deferred.
 
-Final shared-understanding confirmation is the remaining interview step. Routine implementation choices stay within these boundaries; new product trade-offs must be surfaced rather than silently expanding scope.
+The user confirmed shared understanding and requested implementation using the TDD skill. Routine implementation choices stay within these boundaries; new product trade-offs must be surfaced rather than silently expanding scope.
+
+## Confirmed TDD seams
+
+The user confirmed these public interfaces before test implementation:
+
+1. Collection interface: import and open independent offline lesson editions, preserve prior editions, reject invalid packages without damaging the collection. Verify through collection operations and returned lesson resources.
+2. Learning-history interface: tick/untick shared Concepts and retain marks after reopening the store; opening a lesson does not mark understanding or change its teaching.
+3. Library interface: browse patterns, save descriptions/tags, and approve/exclude reuse per edition; new editions default to unapproved and edits do not rewrite saved lessons.
+4. Backup interface: export, preview, and restore history/library choices, creating a recoverable safety backup before replacement; invalid backups leave current state intact.
+5. App interface: launch the packaged Mac app, open bundled Parts 1–3 offline, and exercise navigation and understanding controls through the visible UI. Combine focused automated coverage with a real-app smoke check.
+
+Use real temporary storage and authored package fixtures where appropriate. Do not test private methods or mock internal collaborators. Implement one failing behavior and its minimal passing implementation at a time.
 
 ## Offline feasibility facts
 
