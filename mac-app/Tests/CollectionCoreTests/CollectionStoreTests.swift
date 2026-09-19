@@ -131,4 +131,17 @@ final class CollectionStoreTests: XCTestCase {
         XCTAssertThrowsError(try collection.importLesson(from: source))
         XCTAssertTrue(try collection.lessons().isEmpty)
     }
+    func testExperimentPlacementPersistsAndLinkedAnimationsFollowTheirLesson() throws {
+        let collection = try store()
+        let lesson = try collection.importLesson(from: package())
+        XCTAssertTrue(collection.isExperiment(lesson.key))
+        XCTAssertTrue(collection.animationIsExperiment(sourceLessonKeys: [lesson.key]))
+        try collection.setExperiment(lesson.key, false)
+        let reopened = try store()
+        XCTAssertFalse(reopened.isExperiment(lesson.key))
+        XCTAssertFalse(reopened.animationIsExperiment(sourceLessonKeys: [lesson.key]))
+        try reopened.setExperiment(lesson.key, true)
+        XCTAssertTrue(reopened.animationIsExperiment(sourceLessonKeys: [lesson.key]))
+        XCTAssertEqual(try reopened.lessons().count, 1)
+    }
 }

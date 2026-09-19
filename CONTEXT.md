@@ -148,3 +148,10 @@ _Avoid_: project folder, generated URL
 The learner’s permission for a particular Visualization version to serve as a Reusable example.
 Approval of one edition does not approve a changed edition.
 _Avoid_: collection membership, blanket approval
+
+
+**Experiment**:
+A preserved Visualization edition used to explore teaching, animation, symbols or style,
+outside the collection selected for a consistent visual system. Its associated animations
+follow its section. Experiment placement does not itself approve or prohibit future reuse.
+_Avoid_: rejected, deleted, automatically approved

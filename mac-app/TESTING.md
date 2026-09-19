@@ -28,3 +28,11 @@ Eleven Swift tests and one Python package test (including the encoding regressio
 - Animation gallery displays A01–A06 and their examples.
 - In isolated test storage: approve a proposed list, tick a concept, observe “1 of 3” on the shelf; save cleared animation tags and reuse approval; export history, change approval, restore via count preview, observe restored approval and safety-backup location.
 - Native smoke checks complement the automated store tests; they are not a full automated UI suite or a new animation collision audit. Existing renderer bytes are preserved.
+
+## Experiment sections and extracted players
+
+- Added a failing store test for persistent experiment placement and linked-animation classification, then implemented placement independently of reuse approval. Existing history decodes without the optional placement field.
+- Added a failing packaging test for eight standalone players with source-lesson associations; extraction now supplies original Part 1/2 drawings, A01–A03 renderers, and direct CausalMotion previews for A04–A06. Players contain no lesson/gallery navigation or iframe.
+- Browser runtime checks exercised all eight players and scrubbed the extracted Part 2 and all six pattern players, checking rendered shapes, labels and no JavaScript errors.
+- Native app inspection confirmed Parts 1–3 under Experiments and inline WebKit players with playback controls in Animation library. Descriptions/tags/reuse are secondary disclosures.
+- Current suite: 12 Swift tests and 2 packaging tests. Original visualization source files are unchanged.

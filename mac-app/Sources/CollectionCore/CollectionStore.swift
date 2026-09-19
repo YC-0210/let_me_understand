@@ -91,6 +91,16 @@ public final class CollectionStore {
         next.visits[key] = Date()
         try save(next)
     }
+    public func isExperiment(_ key: String) -> Bool { state.experiments?[key] ?? true }
+    public func setExperiment(_ key: String, _ experiment: Bool) throws {
+        var next = state
+        if next.experiments == nil { next.experiments = [:] }
+        next.experiments?[key] = experiment
+        try save(next)
+    }
+    public func animationIsExperiment(sourceLessonKeys: [String]) -> Bool {
+        sourceLessonKeys.isEmpty || sourceLessonKeys.contains(where: isExperiment)
+    }
     private func validate(_ lesson: Lesson, in package: URL) throws {
         let safe = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.")
         guard [lesson.id, lesson.version].allSatisfy({ !$0.isEmpty && $0 != "." && $0 != ".." && $0.unicodeScalars.allSatisfy(safe.contains) }),
@@ -121,6 +131,7 @@ public enum CollectionError: LocalizedError {
 }
 
 private struct History: Codable {
+    var experiments: [String: Bool]? = nil
     var visits: [String: Date] = [:]
     var approvedConceptLists: Set<String> = []
     var understood: Set<String> = []

@@ -5,6 +5,7 @@ import pathlib
 import re
 import shutil
 import sys
+from extract_previews import build_previews
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -48,6 +49,7 @@ def build(destination):
                         route='?guide=course&symbols=phosphor#lessons' if number == 3 else '', concepts=CONCEPTS[number-1])
         (package / 'lesson.json').write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n')
     patterns = [json.loads(p.read_text()) for p in sorted((ROOT / 'library/animation').glob('*.json'))]
+    patterns = build_previews(destination, patterns)
     (destination / 'patterns.json').write_text(json.dumps(patterns, indent=2) + '\n')
 
 if __name__ == '__main__':

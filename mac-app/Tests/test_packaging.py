@@ -23,7 +23,23 @@ class PackagingTests(unittest.TestCase):
             animation = pathlib.Path('experiment/web/causal-motion.js')
             self.assertEqual((packages[2] / animation).read_bytes(), (ROOT / animation).read_bytes())
             self.assertTrue((packages[2] / 'library/teaching-cs/library.js').is_file())
-            self.assertEqual(len(json.loads((pathlib.Path(output) / 'patterns.json').read_text())), 6)
+            self.assertGreaterEqual(len(json.loads((pathlib.Path(output) / 'patterns.json').read_text())), 6)
+
+    def test_animation_previews_are_extracted_players_with_lesson_associations(self):
+        with tempfile.TemporaryDirectory() as output:
+            subprocess.run(['python3', str(ROOT / 'mac-app/scripts/package_lessons.py'), output], check=True)
+            root = pathlib.Path(output)
+            patterns = json.loads((root / 'patterns.json').read_text())
+            self.assertEqual(len(patterns), 8)
+            for pattern in patterns:
+                player = (root / pattern['preview']).read_text()
+                self.assertIn('id="play"', player)
+                self.assertNotIn('<iframe', player)
+                self.assertNotIn('data-nav=', player)
+                self.assertTrue(pattern['sourceLessonKeys'])
+            self.assertIn('function draw()', (root / 'previews/part1.html').read_text())
+            self.assertIn('function draw()', (root / 'previews/part2.html').read_text())
+            self.assertIn('CausalMotion.render', (root / 'previews/A04.html').read_text())
 
 if __name__ == '__main__':
     unittest.main()

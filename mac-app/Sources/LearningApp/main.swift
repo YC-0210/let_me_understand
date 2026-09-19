@@ -21,6 +21,8 @@ struct Pattern: Decodable, Identifiable {
     let title: String
     let tags: [String]
     let communicates: String
+    let preview: String
+    let sourceLessonKeys: [String]
     var key: String { "pattern-" + id + "@2026-09-19" }
 }
 
@@ -30,7 +32,6 @@ final class AppModel: ObservableObject {
     @Published var patterns: [Pattern] = []
     @Published var selected: String? = nil
     @Published var opened: Lesson? = nil
-    @Published var gallery = false
     @Published var error: String? = nil
     @Published var revision = 0
     @Published var restoreGeneration = 0
@@ -58,8 +59,8 @@ final class AppModel: ObservableObject {
         do { try action(); revision += 1 } catch { self.error = error.localizedDescription }
     }
     func reload() throws { lessons = try store?.lessons() ?? [] }
-    func open(_ lesson: Lesson, gallery: Bool = false) {
-        perform { try store?.recordVisit(lesson.key); self.gallery = gallery; opened = lesson }
+    func open(_ lesson: Lesson) {
+        perform { try store?.recordVisit(lesson.key); opened = lesson }
     }
     func importLesson() {
         let panel = NSOpenPanel()
@@ -102,7 +103,8 @@ final class AppModel: ObservableObject {
 
 struct CollectionView: View {
     @ObservedObject var model: AppModel
-    @State private var section = "collection"
+    @State private var section = "experiments"
+    @State private var experimentalAnimations = true
     @State private var showNotes = true
     var body: some View {
         NavigationSplitView {
@@ -113,7 +115,9 @@ struct CollectionView: View {
                     Text("YOUR LEARNING COLLECTION").font(.system(size: 9, weight: .semibold)).tracking(1.5).foregroundStyle(.secondary)
                 }.padding(.top, 22)
                 VStack(spacing: 6) {
-                    sidebar("My visualizations", icon: "square.stack", id: "collection")
+                    Text("VISUALIZATIONS").font(.caption2).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 10)
+                    sidebar("Collection", icon: "square.stack", id: "collection")
+                    sidebar("Experiments", icon: "flask", id: "experiments")
                     sidebar("Animation library", icon: "play.rectangle.on.rectangle", id: "library")
                 }
                 Spacer()
@@ -132,7 +136,7 @@ struct CollectionView: View {
                 VStack(spacing: 0) {
                     HStack {
                         Button { model.opened = nil } label: { Label("Collection", systemImage: "chevron.left") }
-                        Text(model.gallery ? "Animation gallery" : lesson.title).font(.headline)
+                        Text(lesson.title).font(.headline)
                         Spacer()
                         Text(lesson.version).font(.caption).foregroundStyle(.secondary)
                         Button { showNotes.toggle() } label: { Label("Learning notes", systemImage: "sidebar.right") }
@@ -140,10 +144,10 @@ struct CollectionView: View {
                     Divider()
                     HStack(spacing: 0) {
                         if let resource = try? store.resource(for: lesson) {
-                            LessonWebView(file: resource, directory: store.root.appendingPathComponent("lessons").appendingPathComponent(lesson.key), route: model.gallery ? "?symbols=phosphor#animation" : lesson.route)
-                                .id(lesson.key + (model.gallery ? "gallery" : "lesson"))
+                            LessonWebView(file: resource, directory: store.root.appendingPathComponent("lessons").appendingPathComponent(lesson.key), route: lesson.route)
+                                .id(lesson.key)
                         }
-                        if showNotes && !model.gallery {
+                        if showNotes {
                             Divider()
                             LessonNotes(model: model, lesson: lesson).frame(width: 280)
                         }
@@ -154,28 +158,45 @@ struct CollectionView: View {
                     VStack(alignment: .leading, spacing: 26) {
                         HStack(alignment: .top) {
                             VStack(alignment: .leading, spacing: 10) {
-                                Text(section == "collection" ? "Pick up an idea." : "Motion with a purpose.").font(.system(size: 34, weight: .semibold, design: .rounded))
-                                Text(section == "collection" ? "Revisit your visualizations. Keep what you understand." : "Browse the patterns behind your lessons and choose what can guide future work.")
+                                Text(section == "experiments" ? "Room to experiment." : section == "collection" ? "Your visual language, together." : "Motion with a purpose.").font(.system(size: 34, weight: .semibold, design: .rounded))
+                                Text(section == "experiments" ? "Studies with different symbols, styles and ways of moving. Revisit them here." : section == "collection" ? "Visualizations selected for a consistent animation, symbol and style system." : "Play the animations here. Their section follows the visualization they came from.")
                                     .foregroundStyle(.secondary)
                             }
                             Spacer()
-                            if section == "collection" { Button("Import lesson…", action: model.importLesson).buttonStyle(.borderedProminent).tint(.purple) }
+                            if section != "library" { Button("Import lesson…", action: model.importLesson).buttonStyle(.borderedProminent).tint(.purple) }
                         }
-                        if section == "collection" {
-                            ForEach(model.lessons, id: \.key) { lesson in lessonCard(lesson) }
+                        if section != "library" {
+                            let items = model.lessons.filter { (model.store?.isExperiment($0.key) ?? true) == (section == "experiments") }
+                            if items.isEmpty {
+                                ContentUnavailableView("Your collection is taking shape", systemImage: "square.stack", description: Text("Parts 1–3 are in Experiments. Move a visualization here when its animation, symbols and style fit your chosen system."))
+                            }
+                            ForEach(items, id: \.key) { lesson in lessonCard(lesson) }
                         } else {
-                            ForEach(model.patterns) { pattern in
-                                VStack(alignment: .leading, spacing: 14) {
-                                    HStack {
-                                        Text(pattern.id).font(.caption.monospaced()).foregroundStyle(.purple)
-                                        Text(pattern.title).font(.title3.bold())
-                                        Spacer()
-                                        Button("View animations") {
-                                            if let lesson = model.lessons.last(where: { $0.id == "part3" }) { model.open(lesson, gallery: true) }
+                            Picker("Animation section", selection: $experimentalAnimations) {
+                                Text("Collection").tag(false)
+                                Text("Experiments").tag(true)
+                            }.pickerStyle(.segmented).frame(maxWidth: 340)
+                            let patterns = model.patterns.filter { (model.store?.animationIsExperiment(sourceLessonKeys: $0.sourceLessonKeys) ?? true) == experimentalAnimations }
+                            if patterns.isEmpty {
+                                ContentUnavailableView("No collection animations yet", systemImage: "play.rectangle", description: Text("Animations from experimental visualizations stay in Experiments until their source visualization moves into the collection."))
+                            }
+                            LazyVStack(spacing: 24) {
+                                ForEach(patterns) { pattern in
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        HStack {
+                                            Text(pattern.title).font(.title3.bold())
+                                            Spacer()
+                                            Text(experimentalAnimations ? "EXPERIMENT" : "COLLECTION").font(.caption2).foregroundStyle(.secondary)
                                         }
-                                    }
-                                    LibraryEditor(model: model, itemKey: pattern.key, initialDescription: pattern.communicates, initialTags: pattern.tags)
-                                }.padding(22).background(.white.opacity(0.035), in: RoundedRectangle(cornerRadius: 18))
+                                        if let seed = Bundle.main.resourceURL?.appendingPathComponent("Seeds") {
+                                            LessonWebView(file: seed.appendingPathComponent(pattern.preview), directory: seed.appendingPathComponent("previews"), route: "")
+                                                .frame(height: 360).clipShape(RoundedRectangle(cornerRadius: 12))
+                                        }
+                                        DisclosureGroup("Description, tags & reuse") {
+                                            LibraryEditor(model: model, itemKey: pattern.key, initialDescription: pattern.communicates, initialTags: pattern.tags).padding(.top, 10)
+                                        }.foregroundStyle(.secondary)
+                                    }.padding(20).background(.white.opacity(0.035), in: RoundedRectangle(cornerRadius: 18))
+                                }
                             }
                         }
                     }.padding(36).frame(maxWidth: 1150, alignment: .leading)
@@ -206,6 +227,11 @@ struct CollectionView: View {
                     }
                 }
                 Spacer()
+                Menu {
+                    Button(model.store?.isExperiment(lesson.key) == true ? "Move to Collection" : "Move to Experiments") {
+                        model.perform { try model.store?.setExperiment(lesson.key, !(model.store?.isExperiment(lesson.key) ?? true)) }
+                    }
+                } label: { Image(systemName: "ellipsis.circle") }.menuStyle(.borderlessButton).frame(width: 24)
                 Button("Open visualization →") { model.open(lesson) }.buttonStyle(.borderedProminent).tint(.purple)
             }
             HStack {
@@ -300,8 +326,6 @@ struct LessonWebView: NSViewRepresentable {
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
-        let gallery = "if(location.hash==='#animation') document.querySelector('[data-nav=animation]')?.click();"
-        configuration.userContentController.addUserScript(WKUserScript(source: gallery, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
         let web = WKWebView(frame: .zero, configuration: configuration)
         web.navigationDelegate = context.coordinator
         web.setValue(false, forKey: "drawsBackground")
@@ -317,6 +341,10 @@ struct LessonWebView: NSViewRepresentable {
         return web
     }
     func updateNSView(_ web: WKWebView, context: Context) {}
+    static func dismantleNSView(_ web: WKWebView, coordinator: Coordinator) {
+        web.stopLoading()
+        web.loadHTMLString("", baseURL: nil)
+    }
     @MainActor final class Coordinator: NSObject, WKNavigationDelegate {
         let directory: URL
         init(directory: URL) { self.directory = directory }
