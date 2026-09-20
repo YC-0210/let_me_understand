@@ -33,7 +33,7 @@ class PackagingTests(unittest.TestCase):
             manifest = json.loads((lesson / 'lesson.json').read_text())
             self.assertTrue((lesson / manifest['entry']).is_file())
             self.assertGreaterEqual(len(manifest['concepts']), 6)
-            self.assertEqual(manifest['version'], '2026-09-20')
+            self.assertEqual(manifest['version'], '2026-09-20.2')
             # All local HTML dependencies must travel with the package.
             import re
             for page in lesson.glob('*.html'):
@@ -41,8 +41,8 @@ class PackagingTests(unittest.TestCase):
                     if not asset.startswith(('https:', 'http:')):
                         self.assertTrue((lesson / asset).is_file(), asset)
             patterns = json.loads((root / 'patterns.json').read_text())
-            linked = [p for p in patterns if 'money-hierarchy@2026-09-20' in p['sourceLessonKeys']]
-            self.assertEqual(len(linked), 6)
+            linked = [p for p in patterns if 'money-hierarchy@2026-09-20.2' in p['sourceLessonKeys']]
+            self.assertEqual(len(linked), 9)
             for pattern in linked:
                 path = root / pattern['preview'].split('?')[0]
                 self.assertTrue(path.is_file())
@@ -53,7 +53,7 @@ class PackagingTests(unittest.TestCase):
             subprocess.run(['python3', str(ROOT / 'mac-app/scripts/package_lessons.py'), output], check=True)
             root = pathlib.Path(output)
             patterns = json.loads((root / 'patterns.json').read_text())
-            self.assertEqual(len(patterns), 14)
+            self.assertEqual(len(patterns), 17)
             for pattern in patterns:
                 player = (root / pattern['preview']).read_text()
                 self.assertIn('id="play"', player)

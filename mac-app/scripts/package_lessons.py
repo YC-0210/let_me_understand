@@ -52,11 +52,11 @@ def build(destination):
     patterns = build_previews(destination, patterns)
     money = ROOT / 'experiment/money-hierarchy'
     shutil.copytree(money, destination / 'money-hierarchy')
-    for mode, title in [('hierarchy', 'Move the settlement viewpoint'), ('ledger', 'Trace both sides of a promise'), ('elasticity', 'Trade with an accepted IOU'), ('cycle', 'Separate quantity from moneyness'), ('bridges', 'Connect the monetary layers'), ('policy', 'Trace a liquidity-support loan')]:
+    for mode, title in [('hierarchy', 'Move the settlement viewpoint'), ('ledger', 'Trace both sides of a promise'), ('elasticity', 'Trade with an accepted IOU'), ('cycle', 'Separate quantity from moneyness'), ('bridges', 'Connect the monetary layers'), ('policy', 'Trace a liquidity-support loan'), ('dynamics', 'Expand and contract the credit pyramid'), ('overnight', 'Borrow reserves for one night'), ('yield', 'Compare short and long interest rates')]:
         patterns.append(dict(id='M-' + mode, title=title, tags=['economics', mode],
                              communicates='Natural hierarchy of money: ' + title.lower() + '.',
                              preview='money-hierarchy/preview-' + mode + '.html',
-                             version='2026-09-20', sourceLessonKeys=['money-hierarchy@2026-09-20']))
+                             version='2026-09-20.2', sourceLessonKeys=['money-hierarchy@2026-09-20.2']))
     (destination / 'patterns.json').write_text(json.dumps(patterns, indent=2) + '\n')
 
 if __name__ == '__main__':

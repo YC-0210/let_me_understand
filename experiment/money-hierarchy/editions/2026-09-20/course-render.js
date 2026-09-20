@@ -10,60 +10,6 @@ window.MoneyCourseDrawing=(()=>{
  const moving=(name,t,active,color=purple)=>{const x=160+(active?Math.min(280,Math.max(0,t-.3)*180):0);return icon(name,x,213,26,color);};
  const actors=(left,right,leftIcon='user',rightIcon='storefront')=>icon(leftIcon,110,123,54)+txt(110,172,left)+icon(rightIcon,490,123,54)+txt(490,172,right);
  function render(p,active,t){const motion=active&&Boolean(p.action),done=motion&&t>=1.86;let a='';const scene=p.scene;
-  if(scene==='pyramid'){
-   const u=motion?Math.min(1,Math.max(0,t-.3)/2.4):0;
-   const grow=p.mode==='expand'?u:p.mode==='contract'?1-u:0;
-   const w=110+75*grow;
-   a+=txt(300,22,'Historical model · not data','small')+`<path d="M300 82L${300-w} 224H${300+w}Z" fill="${purple}" fill-opacity=".08" stroke="${purple}" stroke-width="2"/>`;
-   [108,162].forEach(y=>{const half=w*(y-82)/142;a+=line(300-half,y,300+half,y,gray,true);});
-   a+=icon('coins',300,59,26,gold)+txt(525,81,'Money','small')+txt(525,122,'Currency','small')+txt(525,174,'Deposits','small')+txt(525,217,'Credit','small')+line(77,211,77,65,purple)+txt(78,44,'Quality ↑','small');
-   const n=3+Math.floor(grow*4);for(let i=0;i<n;i++)a+=icon('scroll',[265,300,335,230,370,195,405][i],201,26,purple);
-   a+=line(300-w,242,300+w,242,green)+txt(300,274,p.mode==='read'?'← Quantity →':p.mode==='expand'?'Credit expands relative to money':'Credit contracts; distinctions return','small')+wink(128,111);
-  }else if(scene==='deadline'){
-   a+=actors('Café','Supplier','storefront','user');
-   for(let i=0;i<4;i++)a+=icon('scroll',218+i*54,41,26,purple);
-   a+=txt(300,82,'4 customer IOUs · cash unchanged','small');
-   if(p.mode==='elasticity'){
-    a+=line(160,213,440,213,gray,true)+moving('scroll',t,motion)+txt(300,267,done?'Café owes supplier tomorrow':'Supplier agrees to wait','small');
-   }else{
-    a+=line(300,191,300,244,green)+txt(300,267,active?'Payment is due now':'A deadline is approaching','small')+txt(300,183,'Today','small');
-   }
-   a+=wink(548,73)+line(538,94,518,112,purple);
-  }else if(scene==='principles'){
-   a+=icon('money',150,98,52,green)+icon('scroll',450,98,52,purple)+txt(150,155,'Settlement limits','small')+txt(450,155,'Credit can expand','small')+txt(150,195,'Currency principle','small')+txt(450,195,'Banking principle','small')+line(223,100,377,100,gray,true)+txt(300,266,active?'Both belong to the same system':'Which part can we leave out?','small')+wink(300,54);
-  }else if(scene==='overnight'){
-   const repay=p.mode==='repay';const dx=motion?Math.min(280,Math.max(0,t-.3)*180):0;
-   a+=actors('Bank A','Bank B','bank','bank')+txt(300,32,repay?'Tomorrow · return $100 + $0.01':'Today · B lends $100 to A','small');
-   a+=txt(300,72,repay?'A has received funds before repayment':'Reserves already exist','small')+line(160,213,440,213,gray,true)+icon('vault',repay?160+dx:440-dx,213,26,purple);
-   a+=txt(110,268,repay?(done?'$0':'$100.01'):(done?'$100':'$0'),'amount')+txt(490,268,repay?(done?'$200.01':'$100'):(done?'$100':'$200'),'amount')+txt(300,263,'Reserves','small')+wink(repay?55:545,65)+line(repay?70:530,82,repay?95:505,96,purple);
-  }else if(scene==='anchor'){
-   const raise=p.mode==='raise',changed=motion&&t>=1;
-   a+=txt(300,27,'An eligible lender compares','small')+icon('bank',150,100,48)+icon('bank',450,100,48)+txt(150,149,'Central bank','small')+txt(450,149,'Market borrower','small');
-   a+=txt(150,199,raise&&changed?'4%':'3%','amount',purple)+txt(450,199,raise&&t>=2&&motion?'New offer?':'2%','amount')+txt(150,230,'Earn on reserves','small')+txt(450,230,'Offer to borrow','small')+txt(300,276,'Illustrative annual rates','small')+wink(55,161);
-  }else if(scene==='funding'){
-   const u=motion?Math.min(1,Math.max(0,t-.3)/2):0;
-   a+=icon('scroll',300,47,40,purple)+txt(300,89,'Bond pays later','small')+icon('bank',110,143,42)+icon('user',490,143,42)+txt(110,190,'Lender','small')+txt(490,190,'Dealer','small')+line(180,150,420,150,gray,true);
-   a+=txt(300,143,'Overnight funding','small')+txt(300,222,`${(3+2*u).toFixed(1)}% per year`,'amount',purple)+txt(300,267,'Renewed daily · invented rates','small')+wink(60,50);
-  }else if(scene==='yield'){
-   const u=motion?Math.min(1,Math.max(0,t-.3)/2.4):0;
-   const start=p.mode==='premium'?[2,4,5]:[2,3,4];
-   const end={read:[2,3,4],expect:[2,4,5],premium:[2,4.5,5.8],invert:[5.5,4.4,4]}[p.mode];
-   const xs=[118,300,508],y=r=>228-r*27;
-   a+=line(211,41,233,41,gray,true)+txt(272,46,'Before','small')+line(344,41,366,41,purple)+txt(398,46,'Now','small');
-   a+=txt(300,20,'Annual interest rate · illustrative','small')+line(87,51,87,228)+line(87,228,546,228);
-   [0,3,6].forEach(r=>{a+=txt(59,y(r)+5,r+'%','small')+line(87,y(r),546,y(r),'#343742',true);});
-   a+=`<path d="M${xs.map((x,i)=>x+' '+y(start[i])).join('L')}" fill="none" stroke="${gray}" stroke-width="2" stroke-dasharray="5 6"/>`;
-   a+=`<path d="M${xs.map((x,i)=>x+' '+y(start[i]+(end[i]-start[i])*u)).join('L')}" fill="none" stroke="${purple}" stroke-width="3"/>`;
-   ['1 day','1 year','10 years'].forEach((label,i)=>{a+=txt(xs[i],252,label,'small');});
-   a+=txt(300,280,'Time until repayment →','small');
-   const longFocus=p.mode==='expect'||p.mode==='premium',fi=longFocus?2:0;
-   a+=wink(longFocus?565:118,43)+line(longFocus?550:118,66,xs[fi],y(start[fi]+(end[fi]-start[fi])*u)-10,purple);
-  }else if(scene==='countercycle'){
-   const ease=p.mode==='ease',u=motion?Math.min(1,Math.max(0,t-.3)/2.4):0,w=ease?80+60*u:165-50*u;
-   a+=icon('bank',85,96,47)+txt(85,143,'Central bank','small')+`<path d="M360 51L${360-w} 231H${360+w}Z" fill="${purple}" fill-opacity=".07" stroke="${purple}" stroke-width="2"/>`+icon('money',360,85,26,green);
-   for(let i=0;i<3;i++)a+=icon('scroll',320+i*40,200,26,purple);
-   a+=line(135,100,245,100,purple,true)+txt(300,273,ease?'Room to finance payments':'Pressure on new borrowing','small')+wink(40,39);
-  }else
   if(scene==='loan'){
    a+=icon('user',100,52,42)+txt(100,92,'You')+icon('bank',500,52,42)+txt(500,92,'Your bank');
    a+=line(150,145,450,145,purple,true)+icon('wallet',300,145,36,purple)+txt(300,117,active?'Bank owes you $5 now':'Spendable balance','small')+txt(100,151,active?'$5':'$0','amount');

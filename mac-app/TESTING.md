@@ -97,3 +97,15 @@ Built, installed and signature-verified the app. Native inspection confirmed bot
 file storage. The accepted earlier beginner edition is also linked from the source page.
 All six library preview entry points also render without console errors; the archived
 beginner page opens as 1 / 21, independently of the new 1 / 25 course.
+
+## Lecture-based money edition · 2026-09-20.2
+
+- Red: package-output tests rejected the old version and missing three player associations.
+- Green: all 3 Python packaging tests and all 12 Swift collection tests pass.
+- All 42 lesson steps were traversed in the browser, including both feedback paths for
+  checks whose first option is incorrect. Desktop/mobile visual checks corrected Wink
+  proximity to captions. The new standalone players render actual SVG diagrams.
+- Rebuilt and signature-verified `/Users/chen/Applications/Let Me Understand.app`.
+  After restart it shows six experiments and 17 animations. Opened the new edition and
+  verified its 42-step offline entry and overnight scene. Previous editions remain.
+- Source review method and limits: `library/teaching-economics/LECTURE-REVIEW.md`.

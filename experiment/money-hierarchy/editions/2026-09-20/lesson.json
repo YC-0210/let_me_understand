@@ -1,7 +1,7 @@
 {
   "id": "money-hierarchy",
-  "title": "Money & Banking · Natural hierarchy of money",
-  "version": "2026-09-20.2",
+  "title": "Money & Banking \u00b7 Natural hierarchy of money",
+  "version": "2026-09-20",
   "entry": "index.html",
   "route": "",
   "concepts": [
@@ -39,21 +39,6 @@
       "id": "money-policy-slippage-v1",
       "title": "Central-bank policy influences the hierarchy without mechanically controlling every longer-term rate.",
       "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/2-the-natural-hierarchy-of-money/"
-    },
-    {
-      "id": "money-overnight-rate-v1",
-      "title": "An overnight loan lasts one day while its rate is normally quoted on an annual basis.",
-      "source": "https://www.coursera.org/learn/money-banking/lecture/SEgm2/managing-the-hierarchy"
-    },
-    {
-      "id": "money-two-principles-v1",
-      "title": "The currency and banking principles emphasize settlement constraints and credit elasticity respectively.",
-      "source": "https://www.coursera.org/learn/money-banking/lecture/meRLQ/discipline-and-elasticity-currency-principle-and-banking-principle"
-    },
-    {
-      "id": "money-term-structure-v1",
-      "title": "Longer yields reflect expected future short rates and compensation for risk, rather than today’s policy rate alone.",
-      "source": "https://www.coursera.org/learn/money-banking/lecture/SEgm2/managing-the-hierarchy"
     }
   ]
 }

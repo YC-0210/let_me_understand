@@ -47,7 +47,7 @@ for accepted IOUs and reserve support; they do not multiply or shrink in transit
 encoded by claim count. Qualitative convertibility is encoded by distance, explicitly labelled
 as schematic, not data. The six library players share the exact lesson renderer.
 
-## Transcript limitation
+## Earlier transcript limitation (resolved by Coursera downloads)
 
 On 2026-09-19 the user's [six-hour compilation](https://www.youtube.com/watch?v=wjcU98Uk0gM)
 reported no captions; the browser transcript-export tool returned no transcript. The
@@ -74,3 +74,7 @@ voluntary disclosure; the route map stays closed. The new money edition has 21 m
 ## Deeper subject preparation
 
 The [teacher depth review](DEPTH-REVIEW.md) records the 90-page primary reading, ten conceptual audits, worked accounting examples, source boundaries and resulting changes in the 2026-09-20 edition. Use it before authoring further money lessons. Deeper preparation should improve the explanation, not increase simultaneous screen density.
+
+## Lecture-based revision · 2026-09-20.2
+
+Read [LECTURE-REVIEW.md](LECTURE-REVIEW.md) for full transcript coverage, visual-review intervals, key timestamps, corrections and teaching decisions. The updated lesson contains 42 screens and nine animation players. New principle: earn the graph by explaining its axes before changing it; connect policy to an explicit funding choice before drawing transmission arrows.
