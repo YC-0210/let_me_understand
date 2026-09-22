@@ -20,6 +20,59 @@ final class CollectionStoreTests: XCTestCase {
         return folder
     }
     func store() throws -> CollectionStore { try CollectionStore(root: temporary.appendingPathComponent("collection")) }
+    func testEditionNotesPreserveOldNotesButEditsAndClearingAreIndependent() throws {
+        let collection = try store()
+        let first = try collection.importLesson(from: package())
+        let second = try collection.importLesson(from: package(version: "2"))
+        try collection.setVisualizationNote(for: first.id, text: "Existing shared note")
+        XCTAssertEqual(collection.editionNote(for: first), "Existing shared note")
+        try collection.setEditionNote(for: first, text: "First edition reminder")
+        XCTAssertEqual(try store().editionNote(for: first), "First edition reminder")
+        XCTAssertEqual(collection.editionNote(for: second), "Existing shared note")
+        try collection.setEditionNote(for: second, text: "")
+        XCTAssertEqual(try store().editionNote(for: second), "")
+        let backup = try collection.exportBackup()
+        try collection.setEditionNote(for: first, text: "Changed")
+        _ = try collection.restoreBackup(backup)
+        XCTAssertEqual(try store().editionNote(for: first), "First edition reminder")
+    }
+    func testFoldersKeepEditionsTogetherNewestFirst() throws {
+        let collection = try store()
+        _ = try collection.importLesson(from: package(version: "2"))
+        _ = try collection.importLesson(from: package(version: "10"))
+        let folders = VisualizationFolder.grouping(try collection.lessons())
+        XCTAssertEqual(folders.count, 1)
+        XCTAssertEqual(folders[0].id, "web-server")
+        XCTAssertEqual(folders[0].editions.map(\.version), ["10", "2"])
+    }
+    func testVisualizationNoteIsSharedByEditionsAndIncludedInBackup() throws {
+        let collection = try store()
+        let first = try collection.importLesson(from: package())
+        let second = try collection.importLesson(from: package(version: "2"))
+        try collection.setVisualizationNote(for: first.id, text: "Explain this with a daily-life example next time.")
+        XCTAssertEqual(try store().visualizationNote(for: second.id), "Explain this with a daily-life example next time.")
+        XCTAssertEqual(collection.visualizationNote(for: "another-lesson"), "")
+        let backup = try collection.exportBackup()
+        try collection.setVisualizationNote(for: first.id, text: "")
+        XCTAssertEqual(try store().visualizationNote(for: first.id), "")
+        _ = try collection.restoreBackup(backup)
+        XCTAssertEqual(try store().visualizationNote(for: first.id), "Explain this with a daily-life example next time.")
+    }
+    func testPersonalWordingPersistsPerEditionAndCanRestoreOriginal() throws {
+        let collection = try store()
+        let first = try collection.importLesson(from: package())
+        let second = try collection.importLesson(from: package(version: "2"))
+        try collection.setTextEdit(for: first.key, field: "heading", text: "A clearer explanation")
+        let reopened = try store()
+        XCTAssertEqual(reopened.textEdits(for: first.key)["heading"], "A clearer explanation")
+        XCTAssertTrue(reopened.textEdits(for: second.key).isEmpty)
+        XCTAssertEqual(try String(contentsOf: reopened.resource(for: first), encoding: .utf8), "<h1>Independent lesson</h1>")
+        let backup = try reopened.exportBackup()
+        try reopened.setTextEdit(for: first.key, field: "heading", text: nil)
+        XCTAssertTrue(try store().textEdits(for: first.key).isEmpty)
+        _ = try reopened.restoreBackup(backup)
+        XCTAssertEqual(try store().textEdits(for: first.key)["heading"], "A clearer explanation")
+    }
     func testImportedLessonSurvivesRemovalOfAuthoringFolder() throws {
         let collection = try store()
         let source = try package()

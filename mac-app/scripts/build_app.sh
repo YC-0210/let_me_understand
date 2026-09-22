@@ -5,6 +5,8 @@ OUTPUT="${1:-$APP_ROOT/dist/Let Me Understand.app}"
 swift build --package-path "$APP_ROOT" -c release
 mkdir -p "$OUTPUT/Contents/MacOS" "$OUTPUT/Contents/Resources"
 cp "$APP_ROOT/Resources/Wink.icns" "$OUTPUT/Contents/Resources/Wink.icns"
+mkdir -p "$OUTPUT/Contents/Resources/AgentContext"
+cp "$APP_ROOT/Resources/AgentContext/workspace.json" "$OUTPUT/Contents/Resources/AgentContext/workspace.json"
 cp "$APP_ROOT/.build/release/LearningCollection" "$OUTPUT/Contents/MacOS/LearningCollection"
 # Only disposable build resources are replaced; collection history is elsewhere.
 rm -rf "$OUTPUT/Contents/Resources/Seeds"

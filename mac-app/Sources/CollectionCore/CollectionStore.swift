@@ -14,6 +14,18 @@ public struct Lesson: Codable, Equatable, Sendable, Identifiable {
     public let concepts: [Concept]
     public var key: String { id + "@" + version }
 }
+public struct VisualizationFolder: Identifiable {
+    public let id: String
+    public let editions: [Lesson]
+    public var title: String { editions.first?.title ?? id }
+    public static func grouping(_ lessons: [Lesson]) -> [VisualizationFolder] {
+        Dictionary(grouping: lessons, by: \.id).map { id, editions in
+            VisualizationFolder(id: id, editions: editions.sorted {
+                $0.version.compare($1.version, options: .numeric) == .orderedDescending
+            })
+        }.sorted { $0.id < $1.id }
+    }
+}
 public final class CollectionStore {
     public let root: URL
     private var state = History()
@@ -45,6 +57,33 @@ public final class CollectionStore {
         }.sorted { $0.key < $1.key }
     }
     public func resource(for lesson: Lesson) throws -> URL { directory(for: lesson).appendingPathComponent(lesson.entry) }
+    public func editionNote(for lesson: Lesson) -> String {
+        state.editionNotes?[lesson.key] ?? state.visualizationNotes?[lesson.id] ?? ""
+    }
+    public func setEditionNote(for lesson: Lesson, text: String) throws {
+        var next = state
+        if next.editionNotes == nil { next.editionNotes = [:] }
+        next.editionNotes?[lesson.key] = text
+        try save(next)
+    }
+    public func visualizationNote(for id: String) -> String { state.visualizationNotes?[id] ?? "" }
+    public func setVisualizationNote(for id: String, text: String) throws {
+        var next = state
+        if next.visualizationNotes == nil { next.visualizationNotes = [:] }
+        next.visualizationNotes?[id] = text.isEmpty ? nil : text
+        try save(next)
+    }
+    public func textEdits(for lessonKey: String) -> [String: String] {
+        state.textEdits?[lessonKey] ?? [:]
+    }
+    public func setTextEdit(for lessonKey: String, field: String, text: String?) throws {
+        var next = state
+        if next.textEdits == nil { next.textEdits = [:] }
+        var edits = next.textEdits?[lessonKey] ?? [:]
+        edits[field] = text
+        next.textEdits?[lessonKey] = edits.isEmpty ? nil : edits
+        try save(next)
+    }
     public func isUnderstood(_ concept: String) -> Bool { state.understood.contains(concept) }
     public func setUnderstood(_ concept: String, _ understood: Bool) throws {
         var next = state
@@ -131,6 +170,9 @@ public enum CollectionError: LocalizedError {
 }
 
 private struct History: Codable {
+    var editionNotes: [String: String]? = nil
+    var visualizationNotes: [String: String]? = nil
+    var textEdits: [String: [String: String]]? = nil
     var experiments: [String: Bool]? = nil
     var visits: [String: Date] = [:]
     var approvedConceptLists: Set<String> = []

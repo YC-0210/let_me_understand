@@ -51,8 +51,10 @@ final class AppModel: ObservableObject {
                   FileManager.default.fileExists(atPath: seed.path) else {
                 throw NSError(domain: "App", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bundled lessons are missing. Build the app with mac-app/scripts/build_app.sh."])
             }
-            for name in ["part1", "part2", "part3", "money-hierarchy"] {
-                let package = seed.appendingPathComponent(name)
+            let packages = try FileManager.default.contentsOfDirectory(at: seed, includingPropertiesForKeys: nil)
+                .filter { FileManager.default.fileExists(atPath: $0.appendingPathComponent("lesson.json").path) }
+                .sorted { $0.lastPathComponent < $1.lastPathComponent }
+            for package in packages {
                 let manifest = try JSONDecoder().decode(Lesson.self, from: Data(contentsOf: package.appendingPathComponent("lesson.json")))
                 if try !collection.lessons().contains(where: { $0.key == manifest.key }) { _ = try collection.importLesson(from: package) }
             }
@@ -181,10 +183,19 @@ struct LessonWebView: NSViewRepresentable {
     let file: URL
     let directory: URL
     let route: String
-    func makeCoordinator() -> Coordinator { Coordinator(directory: directory) }
+    var editingText = false
+    var textEdits: [String: String] = [:]
+    var saveText: ((String, String?) throws -> Void)? = nil
+    func makeCoordinator() -> Coordinator { Coordinator(directory: directory, saveText: saveText) }
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
+        if saveText != nil {
+            configuration.userContentController.add(context.coordinator, contentWorld: LessonTextEditing.world, name: "editLessonText")
+            configuration.userContentController.addUserScript(WKUserScript(source: LessonTextEditing.script, injectionTime: .atDocumentEnd, forMainFrameOnly: true, in: LessonTextEditing.world))
+        }
+        context.coordinator.edits = textEdits
+        context.coordinator.editing = editingText
         let web = WKWebView(frame: .zero, configuration: configuration)
         web.navigationDelegate = context.coordinator
         web.setValue(false, forKey: "drawsBackground")
@@ -199,14 +210,45 @@ struct LessonWebView: NSViewRepresentable {
         }
         return web
     }
-    func updateNSView(_ web: WKWebView, context: Context) {}
+    func updateNSView(_ web: WKWebView, context: Context) {
+        context.coordinator.editing = editingText
+        context.coordinator.edits = textEdits
+        context.coordinator.configure(web)
+    }
     static func dismantleNSView(_ web: WKWebView, coordinator: Coordinator) {
+        web.configuration.userContentController.removeScriptMessageHandler(forName: "editLessonText", contentWorld: LessonTextEditing.world)
         web.stopLoading()
         web.loadHTMLString("", baseURL: nil)
     }
-    @MainActor final class Coordinator: NSObject, WKNavigationDelegate {
+    @MainActor final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         let directory: URL
-        init(directory: URL) { self.directory = directory }
+        var edits: [String: String] = [:]
+        var editing = false
+        let saveText: ((String, String?) throws -> Void)?
+        init(directory: URL, saveText: ((String, String?) throws -> Void)?) {
+            self.directory = directory
+            self.saveText = saveText
+        }
+        func configure(_ web: WKWebView) {
+            guard saveText != nil else { return }
+            web.callAsyncJavaScript("window.lessonTextEditor?.configure(edits, editing, root)", arguments: ["edits": edits, "editing": editing, "root": directory.path], in: nil, in: LessonTextEditing.world, completionHandler: nil)
+        }
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { configure(webView) }
+        func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage) {
+            guard message.frameInfo.isMainFrame, let web = message.webView,
+                  let body = message.body as? [String: String], let field = body["field"],
+                  let original = body["original"], let current = body["current"], let saveText else { return }
+            let replacement: String? = current == original ? nil : current
+            guard !current.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+            do {
+                try saveText(field, replacement)
+                edits[field] = replacement
+            } catch {
+                configure(web)
+                let failure = NSAlert(error: error)
+                failure.runModal()
+            }
+        }
         func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction, decisionHandler: @escaping @MainActor @Sendable (WKNavigationActionPolicy) -> Void) {
             guard let url = action.request.url else { decisionHandler(.cancel); return }
             if url.isFileURL && url.standardizedFileURL.path.hasPrefix(directory.standardizedFileURL.path + "/") {
