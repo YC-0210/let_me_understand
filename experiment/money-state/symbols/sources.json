@@ -1,0 +1,16 @@
+{
+  "family": "Phosphor Regular",
+  "revision": "2b75f3ad12b420c9504ef05df8d2564a28f8500e",
+  "mapping": {
+    "gold": "coins",
+    "currency": "money",
+    "deposit": "wallet",
+    "security": "scroll",
+    "holder": "user",
+    "conversion": "arrows-left-right",
+    "institution": "bank",
+    "reserves": "vault",
+    "lunch": "fork-knife",
+    "cafe": "storefront"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "title": "Table 35.1: Deposits and reserves of national banks",
+  "observationDate": null,
+  "units": "Millions of dollars except counts and ratios",
+  "source": "https://www.coursera.org/learn/money-banking/lecture/m8Imm/national-banking-system-before-the-fed",
+  "sourceTime": "00:01:20",
+  "columns": [
+    "Bank category",
+    "Number of banks",
+    "Deposits",
+    "Total reserves",
+    "Reserve ratio",
+    "Lawful money in bank",
+    "Due from reserve agents",
+    "Redemption fund"
+  ],
+  "rows": [
+    [
+      "New York",
+      38,
+      825.7,
+      221.3,
+      "26.8%",
+      218.8,
+      "\u2014",
+      2.6
+    ],
+    [
+      "Chicago",
+      14,
+      262.9,
+      66.6,
+      "25.3%",
+      66.1,
+      "\u2014",
+      0.5
+    ],
+    [
+      "St. Louis",
+      8,
+      116.8,
+      27.6,
+      "23.6%",
+      26.8,
+      "\u2014",
+      0.7
+    ],
+    [
+      "Other reserve cities",
+      306,
+      1423.4,
+      362.3,
+      "25.5%",
+      190.3,
+      165.7,
+      6.3
+    ],
+    [
+      "Country banks",
+      6178,
+      2627.2,
+      443.5,
+      "16.9%",
+      199.6,
+      226.7,
+      17.2
+    ],
+    [
+      "Total",
+      6544,
+      5256.1,
+      1121.4,
+      "21.3%",
+      701.6,
+      392.4,
+      27.3
+    ]
+  ],
+  "notes": [
+    "Transcribed from the lecture frame. Observation date not supplied.",
+    "Printed rounding can cause component sums to differ slightly.",
+    "The separate $50m drain is a worked example, not a historical observation."
+  ]
+}

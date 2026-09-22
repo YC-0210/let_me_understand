@@ -9,14 +9,14 @@ window.MoneyCourseDrawing=(()=>{
  const focus=(x,y)=>wink(x,y)+`<path d="M${x+5} ${y+23}l10 12" fill="none" stroke="${purple}" stroke-width="2" stroke-linecap="round"/>`;
  const moving=(name,t,active,color=purple)=>{const x=160+(active?Math.min(280,Math.max(0,t-.3)*180):0);return icon(name,x,213,26,color);};
  const actors=(left,right,leftIcon='user',rightIcon='storefront')=>icon(leftIcon,110,123,54)+txt(110,172,left)+icon(rightIcon,490,123,54)+txt(490,172,right);
- function render(p,active,t){const motion=active&&Boolean(p.action),done=motion&&t>=1.86;let a='';const scene=p.scene;if(p.recap)return '';
+ function render(p,active,t){const motion=active&&Boolean(p.action),done=motion&&t>=1.86;let a='';const scene=p.scene;
   if(scene==='pyramid'){
    const u=motion?Math.min(1,Math.max(0,t-.3)/2.4):0;
    const grow=p.mode==='expand'?u:p.mode==='contract'?1-u:0;
    const w=110+75*grow;
    a+=txt(300,22,'Historical model · not data','small')+`<path d="M300 82L${300-w} 224H${300+w}Z" fill="${purple}" fill-opacity=".08" stroke="${purple}" stroke-width="2"/>`;
    [108,162].forEach(y=>{const half=w*(y-82)/142;a+=line(300-half,y,300+half,y,gray,true);});
-   a+=icon('coins',300,59,26,gold)+txt(535,64,'Gold','small')+txt(535,101,'Currency','small')+txt(535,148,'Deposits','small')+txt(535,207,'Securities','small')+line(65,211,65,78,purple)+line(65,78,60,86,purple)+line(65,78,70,86,purple)+txt(65,64,'Money','small')+txt(65,237,'Credit','small');
+   a+=icon('coins',300,59,26,gold)+txt(525,81,'Money','small')+txt(525,122,'Currency','small')+txt(525,174,'Deposits','small')+txt(525,217,'Credit','small')+line(77,211,77,65,purple)+txt(78,44,'Quality ↑','small');
    const n=3+Math.floor(grow*4);for(let i=0;i<n;i++)a+=icon('scroll',[265,300,335,230,370,195,405][i],201,26,purple);
    a+=line(300-w,242,300+w,242,green)+txt(300,274,p.mode==='read'?'← Quantity →':p.mode==='expand'?'Credit expands relative to money':'Credit contracts; distinctions return','small')+wink(128,111);
   }else if(scene==='deadline'){

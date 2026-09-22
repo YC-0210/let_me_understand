@@ -51,7 +51,7 @@ window.MoneyCourse = [
   {
     "topic": "hierarchy",
     "title": "Now try your bank account.",
-    "say": "So far, you paid with cash or asked the café to wait. Now you both use the same bank. What changes when you pay from your $5 balance?",
+    "say": "You and the café use the same bank. You have $5 in your account. Tap to pay for lunch from your balance.",
     "scene": "deposit",
     "action": "Pay from your account",
     "result": "The bank now owes the café $5 instead of you. No note moved. The bank changed its records.",
@@ -73,7 +73,7 @@ window.MoneyCourse = [
   {
     "topic": "hierarchy",
     "title": "Where could that balance come from?",
-    "say": "We’ve used a balance you already had. Where might a new one come from? Suppose your account is empty and the bank approves a $5 loan. Watch the two promises appear.",
+    "say": "Suppose your account is empty. The bank approves a $5 loan and adds $5 to your balance. What promises appear?",
     "scene": "loan",
     "action": "Create the loan and deposit",
     "result": "The bank owes you $5 you can spend now. You owe the bank $5 later. Two promises—not a gift.",
@@ -84,21 +84,8 @@ window.MoneyCourse = [
   },
   {
     "topic": "hierarchy",
-    "title": "A moment with Wink",
-    "scene": "recap",
-    "recap": true,
-    "say": "So now you know:",
-    "bullets": [
-      "Cash pays now; an IOU promises payment later.",
-      "A bank balance is the bank’s promise to you.",
-      "A bank loan creates a deposit and a debt to repay."
-    ],
-    "transition": "So far, you and the café used the same bank. But what if you use different banks—how does your payment reach the café?"
-  },
-  {
-    "topic": "hierarchy",
     "title": "The café uses a different bank this time.",
-    "say": "Now you use Bank A and the café uses Bank B. Both banks have accounts at the central bank; those balances are called reserves. Watch how they settle your $5 payment.",
+    "say": "Your bank is A; the café’s is B. Banks have accounts at a central bank. Those balances are reserves. Follow this $5 payment.",
     "scene": "interbank",
     "action": "Pay the café at Bank B",
     "result": "Your deposit falls; the café’s rises. Between the banks, A’s reserves fall and B’s rise. The café holds a claim on its own bank.",
@@ -110,7 +97,7 @@ window.MoneyCourse = [
   {
     "topic": "hierarchy",
     "title": "A balance at a bank. A bank’s balance.",
-    "say": "You paid with your bank balance; your bank paid with reserves. Let’s put those two layers together. What counts as money depends on who needs to pay.",
+    "say": "Follow the two layers. Each participant needs something the other side will accept to finish a payment.",
     "scene": "two-layers",
     "action": "Trace the two layers",
     "result": "The café accepts its bank’s promise. The banks settle using the central bank’s balances. “What settles this payment?” reveals the hierarchy.",
@@ -121,7 +108,7 @@ window.MoneyCourse = [
   {
     "topic": "hierarchy",
     "title": "Was gold always part of this?",
-    "say": "We’ve seen that banks settle using central-bank money. Was there ever another layer above that? Under a gold standard, currency promised gold; today’s ordinary banknotes generally do not.",
+    "say": "Let’s step into the past. Under a gold standard, currency promised gold. Today’s ordinary banknotes generally do not.",
     "scene": "gold",
     "action": "See the historical promise",
     "result": "In that historical example: deposits promise currency; currency promises gold. Keep this separate from today’s fiat-money system.",
@@ -132,7 +119,7 @@ window.MoneyCourse = [
   {
     "topic": "ledger",
     "title": "One $5 promise, or two?",
-    "say": "The layers tell us who pays whom. Now let’s count the promises: your bank says “I owe you $5,” and you say “the bank owes me $5.” Is that one promise or two?",
+    "say": "Your bank records “I owe you $5.” You record “the bank owes me $5.” How many promises is that?",
     "scene": "pair",
     "choices": [
       "One promise, seen twice",
@@ -168,22 +155,9 @@ window.MoneyCourse = [
     "more": "Within a boundary containing its issuer, currency has a matching liability. Physical gold has no issuer’s liability in the chapter’s model."
   },
   {
-    "topic": "ledger",
-    "title": "A moment with Wink",
-    "say": "So now you know:",
-    "scene": "recap",
-    "recap": true,
-    "bullets": [
-      "Your bank balance is the bank’s promise; reserves let banks settle with each other.",
-      "A claim is someone’s asset and someone else’s debt.",
-      "“Inside” and “outside” depend on whose accounts we group together."
-    ],
-    "transition": "So far, we’ve mapped the layers. But the hierarchy doesn’t stand still. What changes when people make more promises?"
-  },
-  {
     "topic": "elasticity",
     "title": "Did your IOU create any cash?",
-    "say": "Let’s return to your lunch IOU. You created a promise—but did writing it also create the $5 note needed to repay it?",
+    "say": "Back when you wrote the lunch IOU, did writing it also create the $5 note needed to repay it?",
     "scene": "iou",
     "choices": [
       "Yes, another $5 note exists",
@@ -200,7 +174,7 @@ window.MoneyCourse = [
   {
     "topic": "cycle",
     "title": "More promises can circulate.",
-    "say": "One IOU postponed one payment. What happens when more people do the same? Two café regulars already owe money; two more buy on credit.",
+    "say": "Start a separate café example: two regulars have unpaid IOUs. Two more buy on credit. Watch how many promises now remain unpaid.",
     "scene": "quantity",
     "action": "Add two IOUs",
     "result": "Four unpaid IOUs now exist. That is more credit outstanding. Paying them off would reduce the count.",
@@ -222,7 +196,7 @@ window.MoneyCourse = [
   {
     "topic": "cycle",
     "title": "What if we zoom out from the café?",
-    "say": "At the café, promises grew while cash stayed unchanged. Now zoom out: the vertical axis runs from credit toward money. Gold, currency, deposits and securities are the historical layers; width shows quantity.",
+    "say": "Let’s draw a pyramid. Higher means closer to settlement money; wider means more claims outstanding. Read it with me.",
     "scene": "pyramid",
     "action": "Read the two directions",
     "result": "Up tells us about the kind of claim. Across tells us about quantity. These are different questions.",
@@ -230,7 +204,7 @@ window.MoneyCourse = [
     "focus": "promise",
     "page": "10–14",
     "mode": "read",
-    "watching": "The professor draws a pyramid. Money and credit describe the vertical dimension. The labels on the right name the instruments. Width shows quantity."
+    "watching": "The professor draws a pyramid. Higher means closer to settlement money; wider means more claims outstanding. Let’s read it first."
   },
   {
     "topic": "cycle",
@@ -263,7 +237,7 @@ window.MoneyCourse = [
   {
     "topic": "principles",
     "title": "The supplier needs payment today. What gives?",
-    "say": "We’ve watched credit expand and contract. What puts pressure on it? Return to the café: four customers owe it money, but its supplier needs a bank payment today.",
+    "say": "The café holds four customer IOUs. Its supplier requires a bank payment today. Watch the payment deadline arrive.",
     "scene": "deadline",
     "action": "Reach the deadline",
     "result": "The café must obtain an accepted payment, agree an extension, or fail to pay. This constraint is discipline.",
@@ -289,7 +263,7 @@ window.MoneyCourse = [
   {
     "topic": "principles",
     "title": "Which view explains the whole café story?",
-    "say": "The deadline imposed a limit; the new promise gave breathing room. The currency principle emphasizes settlement limits, and the banking principle emphasizes credit’s ability to expand. Can we ignore either?",
+    "say": "The currency principle emphasizes settlement limits. The banking principle emphasizes credit’s ability to expand. Which one can we ignore?",
     "scene": "principles",
     "result": "Neither. Credit enables trade, and settlement obligations constrain it. Mehrling asks us to keep both in view.",
     "more": "Discipline and Elasticity, 04:40–08:35. These are two emphases in monetary thought, not two kinds of money or a mechanical policy switch. We do not equate all monetarist, Keynesian, metallist and chartalist theories.",
@@ -305,7 +279,7 @@ window.MoneyCourse = [
   {
     "topic": "bridges",
     "title": "Why can a balance buy the same lunch?",
-    "say": "We’ve seen why someone may need money instead of a promise. Who helps make that exchange? Start with your bank: try exchanging a $5 balance for $5 in notes.",
+    "say": "Banks promise to exchange deposits for currency one-for-one. Start with $5 in your account and no cash. Try a withdrawal.",
     "scene": "withdraw",
     "action": "Withdraw $5",
     "result": "Your balance is now $0; you hold a $5 note. One-for-one is called par. The withdrawal changed the form, not the amount, of your money.",
@@ -332,7 +306,7 @@ window.MoneyCourse = [
   {
     "topic": "bridges",
     "title": "Need money before a promise comes due?",
-    "say": "Your bank exchanged a balance for cash. Can another promise be sold before it is due? You hold a bond promising $10 next year; a dealer offers $9 today.",
+    "say": "You hold a bond promising $10 next year. A dealer offers $9 today. Watch the bond and the payment change owners.",
     "scene": "dealer",
     "action": "Sell for $9 today",
     "result": "You have $9 now; the dealer holds the claim to $10 later. The issuer still owes the bond payment. Selling is not repayment.",
@@ -361,7 +335,7 @@ window.MoneyCourse = [
   {
     "topic": "bridges",
     "title": "Now the chapter’s ladder has a purpose.",
-    "say": "We’ve tried a bank withdrawal and a bond sale. Now connect the layers: each link asks, “How can I turn this claim into the payment I need?”",
+    "say": "Each link answers a familiar question: how do I turn this claim into the payment I need?",
     "scene": "ladder",
     "action": "Follow the links",
     "result": "Dealers connect securities to money. Banks support deposit conversion. Under a gold standard, central banks support currency-to-gold conversion.",
@@ -370,22 +344,9 @@ window.MoneyCourse = [
     "more": "This is Mehrling’s historical, simplified hierarchy. His “natural hierarchy” is an analytical perspective; it does not mean institutions or political decisions are irrelevant."
   },
   {
-    "topic": "bridges",
-    "title": "A moment with Wink",
-    "say": "So now you know:",
-    "scene": "recap",
-    "recap": true,
-    "bullets": [
-      "Credit can expand and contract; payment deadlines still matter.",
-      "Accepting a new promise can give a borrower more time.",
-      "Banks and dealers help exchange claims for the money needed now."
-    ],
-    "transition": "So far, we’ve watched people respond to payment pressures. What if a central bank deliberately acts to ease—or restrain—the whole system?"
-  },
-  {
     "topic": "policy",
     "title": "Can tomorrow’s income pay today’s bill?",
-    "say": "Before we look at policy, recall the timing problem. The café owes $5 today; customers will pay it $10 tomorrow. Can tomorrow’s money pay today’s bill?",
+    "say": "The café must pay its supplier $5 today. Customers will pay the café $10 tomorrow. Is tomorrow’s money available today?",
     "scene": "timing",
     "choices": [
       "Yes, the café has enough overall",
@@ -414,7 +375,7 @@ window.MoneyCourse = [
   {
     "topic": "policy",
     "title": "Can the central bank soften the swing?",
-    "say": "So far, a loan helped one bank meet a payment. Policy asks a wider question: can the central bank influence the whole credit cycle? Watch higher borrowing costs put pressure on expansion.",
+    "say": "When borrowing and spending run too hot, higher borrowing costs can discourage some new credit. Watch the pressure on expansion.",
     "scene": "countercycle",
     "action": "Lean against the boom",
     "result": "Policy can add discipline. It aims to moderate the swing, not remove every risk or dictate each loan.",
@@ -442,7 +403,7 @@ window.MoneyCourse = [
   {
     "topic": "overnight",
     "title": "Could another bank help until tomorrow?",
-    "say": "Central-bank support is one source of reserves. Banks can also borrow from each other. Bank A needs $100 until tomorrow; Bank B agrees to lend it.",
+    "say": "Bank A needs $100 of reserves until tomorrow. Bank B agrees to lend. Follow the reserves from B to A.",
     "scene": "overnight",
     "action": "Borrow for one night",
     "result": "A can use the reserves today. Tomorrow it owes B the $100 plus interest. The loan lasts overnight.",
@@ -470,7 +431,7 @@ window.MoneyCourse = [
   {
     "topic": "overnight",
     "title": "Why would a bank lend for less?",
-    "say": "That one-night loan has a price. What shapes the lender’s offer? An eligible bank can earn 3% at the central bank, while another bank offers only 2%. Compare its choices.",
+    "say": "Suppose an eligible bank can earn 3% at the central bank. Another bank offers only 2% to borrow overnight. Compare the choices.",
     "scene": "anchor",
     "action": "Compare the alternatives",
     "result": "The central bank’s rate gives the lender an alternative. A borrower may need to offer more to attract its money.",
@@ -499,7 +460,7 @@ window.MoneyCourse = [
   {
     "topic": "rates",
     "title": "Why would a one-night rate affect a dealer?",
-    "say": "We’ve seen how policy can influence a one-night loan. How does that reach securities markets? A dealer borrows overnight to hold a bond and must keep renewing the funding.",
+    "say": "A dealer borrows overnight to hold a bond. The bond pays later, but the funding must be renewed. Watch its daily funding cost rise.",
     "scene": "funding",
     "action": "Raise the funding cost",
     "result": "Holding the bond becomes less attractive unless its price or expected return adjusts. Short funding can influence longer securities.",
@@ -513,7 +474,7 @@ window.MoneyCourse = [
   {
     "topic": "rates",
     "title": "One night or ten years: the same deal?",
-    "say": "The dealer’s loan lasts one night; the bond pays much later. Now compare rates for different commitments: one day, one year, ten years.",
+    "say": "Now compare rates by how long the money is committed. Read left to right: one day, one year, ten years.",
     "scene": "yield",
     "action": "Trace the yield curve",
     "result": "This is a yield curve: rates at different maturities, all observed today. It is not a forecast line moving through time.",
@@ -527,7 +488,7 @@ window.MoneyCourse = [
   {
     "topic": "rates",
     "title": "Would you lock in a low rate for years?",
-    "say": "A longer commitment spans many future nights. What if today’s overnight rate stays unchanged, but investors expect higher short rates next year?",
+    "say": "Imagine today’s overnight rate stays the same, but investors now expect higher short rates next year. Watch longer rates react.",
     "scene": "yield",
     "action": "Change expectations",
     "result": "Longer rates can rise before today’s policy rate changes. Investors compare a long commitment with renewing shorter investments.",
@@ -542,7 +503,7 @@ window.MoneyCourse = [
   {
     "topic": "rates",
     "title": "What else might a long commitment cost?",
-    "say": "Expectations are part of the story. What about uncertainty? Keep expected short rates unchanged and watch investors ask for more compensation to hold a long bond.",
+    "say": "Keep expected short rates unchanged. Investors now want more compensation for the uncertainty of holding a long bond.",
     "scene": "yield",
     "action": "Add compensation for risk",
     "result": "Long yields can move again. The extra compensation is a term premium. Liquidity and market conditions matter too.",
@@ -572,7 +533,7 @@ window.MoneyCourse = [
   {
     "topic": "rates",
     "title": "Does cheaper borrowing remove every obstacle?",
-    "say": "We’ve seen several influences on rates. So how much can policy guarantee? If the central bank lowers short-term borrowing costs, must a risky business get an equally cheaper loan?",
+    "say": "The central bank can influence short-term borrowing costs. If it lowers them, must a risky business get an equally cheaper loan?",
     "scene": "rates",
     "choices": [
       "Yes, every loan gets the same cut",
@@ -589,7 +550,7 @@ window.MoneyCourse = [
   {
     "topic": "policy",
     "title": "One last café puzzle.",
-    "say": "Bring the whole story back to lunch. The café has your $5 IOU, but its supplier accepts only a bank payment. Has the IOU alone solved the payment problem?",
+    "say": "The café has your $5 IOU, but its supplier accepts only a bank payment. Has the IOU alone solved the café’s payment problem?",
     "scene": "finish",
     "result": "Exactly. Ask who owes, when payment is due, what will settle it, and who can help convert the claim. That is the money hierarchy in action.",
     "focus": "promise",
@@ -601,18 +562,5 @@ window.MoneyCourse = [
     ],
     "correct": 1,
     "hint": "Equal amounts do not make two promises equally usable for the next payment."
-  },
-  {
-    "topic": "policy",
-    "title": "A moment with Wink",
-    "say": "So now you know:",
-    "scene": "recap",
-    "recap": true,
-    "bullets": [
-      "Banks can borrow reserves for one night.",
-      "Central banks influence the cost of that borrowing.",
-      "Longer-term rates also reflect expectations and risk."
-    ],
-    "transition": "Now connect it back to lunch: a promise may help you trade today, but someone still has to settle the payment."
   }
 ];

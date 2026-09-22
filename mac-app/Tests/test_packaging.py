@@ -8,6 +8,27 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 class PackagingTests(unittest.TestCase):
+    def test_money_state_lesson_and_its_players_travel_offline(self):
+        with tempfile.TemporaryDirectory() as output:
+            subprocess.run(['python3', str(ROOT / 'mac-app/scripts/package_lessons.py'), output], check=True)
+            root = pathlib.Path(output)
+            lesson = root / 'money-state'
+            manifest = json.loads((lesson / 'lesson.json').read_text())
+            self.assertEqual(manifest['id'], 'money-state')
+            self.assertTrue((lesson / manifest['entry']).is_file())
+            import re
+            for page in lesson.glob('*.html'):
+                for asset in re.findall(r'(?:src|href)="([^"#?]+)"', page.read_text()):
+                    if not asset.startswith(('https:', 'http:')):
+                        self.assertTrue((lesson / asset).is_file(), asset)
+            patterns = json.loads((root / 'patterns.json').read_text())
+            linked = [p for p in patterns if 'money-state@2026-09-20' in p['sourceLessonKeys']]
+            self.assertEqual(len(linked), 3)
+            for pattern in linked:
+                player = (root / pattern['preview']).read_text()
+                self.assertIn('id="play"', player)
+                self.assertNotIn('<iframe', player)
+
     def test_packages_contain_three_offline_lessons_and_unchanged_animation(self):
         with tempfile.TemporaryDirectory() as output:
             subprocess.run(['python3', str(ROOT / 'mac-app/scripts/package_lessons.py'), output], check=True)
@@ -33,7 +54,10 @@ class PackagingTests(unittest.TestCase):
             manifest = json.loads((lesson / 'lesson.json').read_text())
             self.assertTrue((lesson / manifest['entry']).is_file())
             self.assertGreaterEqual(len(manifest['concepts']), 6)
-            self.assertEqual(manifest['version'], '2026-09-20.2')
+            self.assertEqual(manifest['version'], '2026-09-20.3')
+            plan = json.loads((lesson / 'course-plan.js').read_text().split('=', 1)[1].strip().rstrip(';'))
+            self.assertEqual(len(plan), 46)
+            self.assertEqual([i + 1 for i, step in enumerate(plan) if step.get('recap')], [8, 15, 30, 46])
             # All local HTML dependencies must travel with the package.
             import re
             for page in lesson.glob('*.html'):
@@ -41,7 +65,7 @@ class PackagingTests(unittest.TestCase):
                     if not asset.startswith(('https:', 'http:')):
                         self.assertTrue((lesson / asset).is_file(), asset)
             patterns = json.loads((root / 'patterns.json').read_text())
-            linked = [p for p in patterns if 'money-hierarchy@2026-09-20.2' in p['sourceLessonKeys']]
+            linked = [p for p in patterns if 'money-hierarchy@2026-09-20.3' in p['sourceLessonKeys']]
             self.assertEqual(len(linked), 9)
             for pattern in linked:
                 path = root / pattern['preview'].split('?')[0]
@@ -53,7 +77,7 @@ class PackagingTests(unittest.TestCase):
             subprocess.run(['python3', str(ROOT / 'mac-app/scripts/package_lessons.py'), output], check=True)
             root = pathlib.Path(output)
             patterns = json.loads((root / 'patterns.json').read_text())
-            self.assertEqual(len(patterns), 17)
+            self.assertGreaterEqual(len(patterns), 20)
             for pattern in patterns:
                 player = (root / pattern['preview']).read_text()
                 self.assertIn('id="play"', player)

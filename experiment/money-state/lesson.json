@@ -1,0 +1,49 @@
+{
+  "id": "money-state",
+  "title": "Money & Banking \u00b7 Money and the state",
+  "version": "2026-09-20",
+  "entry": "index.html",
+  "route": "",
+  "concepts": [
+    {
+      "id": "state-bond-loan-v1",
+      "title": "A bond purchase can transfer existing deposits; a bank loan can create a new deposit.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/3-money-and-the-state-domestic/"
+    },
+    {
+      "id": "state-convertibility-v1",
+      "title": "A withdrawal of gold reduces bank reserves without extinguishing the government\u2019s loan.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/3-money-and-the-state-domestic/"
+    },
+    {
+      "id": "state-notes-v1",
+      "title": "Greenbacks and national banknotes have different issuers and backing.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/3-money-and-the-state-domestic/"
+    },
+    {
+      "id": "state-seasonal-v1",
+      "title": "Seasonal cash withdrawals can propagate through reserve deposits and call loans.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/3-money-and-the-state-domestic/"
+    },
+    {
+      "id": "state-rediscount-v1",
+      "title": "Rediscounting exchanges eligible paper for newly issued reserve balances.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/3-money-and-the-state-domestic/"
+    },
+    {
+      "id": "state-reserve-form-v1",
+      "title": "Converting reserves into notes changes the form of central-bank liabilities.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/3-money-and-the-state-domestic/"
+    },
+    {
+      "id": "state-hybrid-v1",
+      "title": "The central bank serves banks and the government; their financing needs can reshape its operations.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/3-money-and-the-state-domestic/"
+    },
+    {
+      "id": "state-omo-v1",
+      "title": "An outright securities purchase creates reserve balances; a secured advance also creates a bank debt.",
+      "source": "https://sites.bu.edu/perry/lectures/mb-lectures/section-1/3-money-and-the-state-domestic/"
+    }
+  ]
+}

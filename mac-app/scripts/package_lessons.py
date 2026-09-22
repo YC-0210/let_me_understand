@@ -56,7 +56,15 @@ def build(destination):
         patterns.append(dict(id='M-' + mode, title=title, tags=['economics', mode],
                              communicates='Natural hierarchy of money: ' + title.lower() + '.',
                              preview='money-hierarchy/preview-' + mode + '.html',
-                             version='2026-09-20.2', sourceLessonKeys=['money-hierarchy@2026-09-20.2']))
+                             version='2026-09-20.3', sourceLessonKeys=['money-hierarchy@2026-09-20.3']))
+    shutil.copytree(ROOT / 'experiment/money-state', destination / 'money-state')
+    for mode, title in [('bank-loan', 'Create a deposit and a debt'), ('reserve-drain', 'Withdraw a correspondent balance'), ('rediscount', 'Exchange a bill for reserves')]:
+        patterns.append(dict(id='MS-' + mode, title=title, tags=['economics', 'history', 't-account'],
+                             communicates='Money and the state: ' + title.lower() + '.',
+                             preview='money-state/preview-' + mode + '.html',
+                             version='2026-09-20', sourceLessonKeys=['money-state@2026-09-20']))
+    shutil.copytree(ROOT / 'experiment/interest-rate', destination / 'interest-rate')
+    patterns.extend(json.loads((ROOT / 'experiment/interest-rate/patterns.json').read_text()))
     (destination / 'patterns.json').write_text(json.dumps(patterns, indent=2) + '\n')
 
 if __name__ == '__main__':

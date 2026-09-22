@@ -78,3 +78,13 @@ The [teacher depth review](DEPTH-REVIEW.md) records the 90-page primary reading,
 ## Lecture-based revision · 2026-09-20.2
 
 Read [LECTURE-REVIEW.md](LECTURE-REVIEW.md) for full transcript coverage, visual-review intervals, key timestamps, corrections and teaching decisions. The updated lesson contains 42 screens and nine animation players. New principle: earn the graph by explaining its axes before changing it; connect policy to an explicit funding choice before drawing transmission arrows.
+
+## Chapter 3 · Historical stories and progressive T-accounts
+
+[Money and the state](../../experiment/money-state/index.html) uses the user's annotated causal
+transitions to connect Civil War finance, seasonal reserves, and the Fed's plan versus practice.
+Read [CHAPTER-3-REVIEW.md](CHAPTER-3-REVIEW.md) for the nine-segment review, accounting audit,
+historical corrections and data provenance. New cards: establish date and payment problem before
+changing roles; reveal one account entry and explain its meaning before adding its counterpart;
+name a new term when the current story creates the need for it; distinguish historical observations,
+legal authorizations, rounded lecture examples and hypothetical shocks directly on the graphic.

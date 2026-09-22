@@ -1,0 +1,6 @@
+[
+  {"id":"IR-time","title":"See the cost of money over time","tags":["economics","interest","time"],"communicates":"Separate principal from one year of interest.","preview":"interest-rate/preview-time.html","version":"2026-09-20","sourceLessonKeys":["interest-rate@2026-09-20"]},
+  {"id":"IR-spread","title":"Build a loan rate from its ingredients","tags":["economics","interest","risk"],"communicates":"Combine a benchmark with risk and other pricing allowances.","preview":"interest-rate/preview-spread.html","version":"2026-09-20","sourceLessonKeys":["interest-rate@2026-09-20"]},
+  {"id":"IR-curve","title":"Build the yield curve one maturity at a time","tags":["economics","interest","yield-curve"],"communicates":"Compare yearly yields across repayment maturities on one date.","preview":"interest-rate/preview-curve.html","version":"2026-09-20","sourceLessonKeys":["interest-rate@2026-09-20"]},
+  {"id":"IR-qe","title":"Exchange a bond for central-bank payment","tags":["economics","interest","QE"],"communicates":"Show the two sides of a central-bank asset purchase.","preview":"interest-rate/preview-qe.html","version":"2026-09-20","sourceLessonKeys":["interest-rate@2026-09-20"]}
+]
